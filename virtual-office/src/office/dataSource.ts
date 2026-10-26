@@ -253,3 +253,51 @@ export function createStaticDataSource(
 // the loopback-backed variants (live-dev inspection). These are NOT used by the
 // static Pages build; `useStaticRunEvents` is the no-network path.
 export { useReplay, useHistorical };
+
+// ---------------------------------------------------------------------------
+// Latest published run resolver (static Pages replay)
+// ---------------------------------------------------------------------------
+//
+// On the published Pages site the office runs in replay mode and must pick a
+// run to play back. The published bundle exposes `./data/index.json`
+// (newest-first `{ runs: [{ runId, ... }] }`). This hook fetches that index
+// over a single same-origin relative request and returns the most-recent
+// runId, so the office App can feed it to `useOfficeModel(mode, runId)`.
+//
+// Same static-no-network guarantee as the rest of this module: relative fetch
+// only, no SSE, no loopback. Any error -> null, so the office degrades to
+// honest idle rather than throwing or fabricating a run.
+export function useLatestPublishedRunId(enabled: boolean): string | null {
+  const [runId, setRunId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!enabled) {
+      setRunId(null);
+      return;
+    }
+    void (async () => {
+      try {
+        const res = await fetch("./data/index.json");
+        if (!res.ok) return;
+        const raw: unknown = await res.json();
+        // Accept `{ runs: [...] }`; tolerate a bare array; ignore anything else.
+        const runs = Array.isArray(raw)
+          ? raw
+          : raw && typeof raw === "object" && Array.isArray((raw as { runs?: unknown }).runs)
+            ? ((raw as { runs: unknown[] }).runs)
+            : [];
+        const first = runs[0] as { runId?: unknown; id?: unknown } | undefined;
+        const id = first && (typeof first.runId === "string" ? first.runId : typeof first.id === "string" ? first.id : null);
+        if (!cancelled && typeof id === "string" && id.length > 0) setRunId(id);
+      } catch {
+        // Leave runId null; office stays honestly idle.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled]);
+
+  return runId;
+}

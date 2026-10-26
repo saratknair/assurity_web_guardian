@@ -1,4 +1,4 @@
-# Dependency Ledger
+﻿# Dependency Ledger
 
 This ledger records the cost and licensing of dependencies introduced by the
 Guardian, so that any non-free or restrictively licensed dependency is flagged
@@ -14,13 +14,11 @@ libraries (Requirement 13.2). This is the final Phase 2 ledger.
 
 ### Chart.js vendoring status
 
-As of scaffolding task 4.4, the build machine had no network / npm access, so
-`dashboard/vendor/chart.umd.min.js` is a placeholder
-(`chart.umd.min.js.NEEDS_VENDORING`) that documents the exact pinned version and
-source URL. Vendoring must be completed when network is available by dropping the
-real pinned MIT-licensed UMD build in place and deleting the placeholder. The
-dashboard scaffold already references the final filename, so no further wiring is
-needed once the file is present.
+Chart.js v4.4.6 (MIT) is now VENDORED: the real pinned UMD build is committed at
+`dashboard/vendor/chart.umd.min.js` (~201 KB) and loaded same-origin (no CDN), so
+the Pages_Site renders charts with no external requests (Req 1.4, 1.5). The former
+`chart.umd.min.js.NEEDS_VENDORING` placeholder has been removed. Source of the
+pinned bundle: `https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js`.
 
 ## Phase 2 Virtual Office runtime dependencies
 
@@ -59,3 +57,4 @@ direct runtime dependencies are under permissive or weak-copyleft licenses
 (MIT, Apache-2.0, ISC, MPL-2.0) that permit free use, redistribution, and
 vendoring. All versions are pinned (Req 13.1) and sourced from well-known,
 actively maintained libraries (Req 13.2).
+

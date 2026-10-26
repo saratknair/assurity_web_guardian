@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { useOfficeModel } from "./office/dataSource";
+import { useOfficeModel, resolveOfficeMode, useLatestPublishedRunId } from "./office/dataSource";
 import { defaultDesks } from "./office/deskManager";
 import type { OfficeCharacter } from "./office/stateMachine";
 import { CommandCenter, SPAWN_CAMERA_POSITION } from "./office3d/CommandCenter";
@@ -37,8 +37,15 @@ export default function App() {
   const [revealed, setRevealed] = useState(false);
   const [cam, setCam] = useState<CameraMode>("orbit");
 
-  // Default local dev = live SSE against the read-only Event_Server (:7788).
-  const model = useOfficeModel("live", null, DESK_COUNT);
+  // Mode is resolved at build/runtime: the published Pages site is built with
+  // VITE_AWG_MODE=replay -> "replay"; local dev defaults to "live" (SSE against
+  // the read-only Event_Server :7788). In replay/historical we fetch the most
+  // recent published run from ./data/index.json and play it back; in live we
+  // pass no runId. Hooks are always called (gated by the `enabled` arg) to
+  // respect the Rules of Hooks.
+  const mode = resolveOfficeMode();
+  const latestRunId = useLatestPublishedRunId(mode !== "live");
+  const model = useOfficeModel(mode, mode === "live" ? null : latestRunId, DESK_COUNT);
 
   // Desk placements, looked up by a character's assigned deskId to seat them.
   const desks = useMemo(() => defaultDesks(DESK_COUNT), []);
@@ -48,7 +55,7 @@ export default function App() {
     return map;
   }, [desks]);
 
-  // Scene phase shown on the command-center screen wall — derived only from the
+  // Scene phase shown on the command-center screen wall â€” derived only from the
   // honest model, never invented. Reflects whether any present character works.
   const scenePhase = useMemo(() => derivePhase(model.characters, model.idle), [model.characters, model.idle]);
 
@@ -87,7 +94,7 @@ export default function App() {
 
       {/* Minimal HUD: camera toggle + honest idle indicator. */}
       <div className="hud-top">
-        <h1>Assurity Web Guardian — Virtual Office</h1>
+        <h1>Assurity Web Guardian â€” Virtual Office</h1>
         <div className="modes">
           <span className="cam-toggle">
             <button className={cam === "orbit" ? "active" : ""} onClick={() => setCam("orbit")}>Orbit</button>
@@ -99,16 +106,16 @@ export default function App() {
       <div className="hud-runcontrol">
         <strong>Run Control Board</strong>{" "}
         {model.idle ? (
-          <span className="idle-badge">IDLE — no Guardian run is active</span>
+          <span className="idle-badge">IDLE â€” no Guardian run is active</span>
         ) : (
           <span>
-            run {model.runId ?? "—"} — phase {scenePhase} — agents present: {model.characters.length}
+            run {model.runId ?? "â€”"} â€” phase {scenePhase} â€” agents present: {model.characters.length}
           </span>
         )}
       </div>
 
       {cam === "walk" && (
-        <div className="hud-help">Click the scene to look around (Esc to release) — W A S D to move</div>
+        <div className="hud-help">Click the scene to look around (Esc to release) â€” W A S D to move</div>
       )}
     </div>
   );
@@ -127,3 +134,4 @@ function derivePhase(characters: OfficeCharacter[], idle: boolean): string {
   if (characters.some((c) => c.phase === "entering")) return "entering";
   return "idle";
 }
+
