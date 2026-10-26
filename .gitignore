@@ -109,3 +109,6 @@ Thumbs.db
 dist/
 artifacts/
 virtual-office-src/
+
+# --- Historical per-phase source snapshots (kept OFF main) -----------------
+checkpoints/
