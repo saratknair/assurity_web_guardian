@@ -250,3 +250,165 @@ body {
 .is-hidden {
   display: none !important;
 }
+
+/* ========================================================================
+   Page-detail drill-down drawer (follow-up to task 4.6)
+   ======================================================================== */
+
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 40;
+}
+.detail-overlay[hidden] { display: none; }
+
+.detail-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: min(560px, 100vw);
+  background: #ffffff;
+  box-shadow: -8px 0 28px rgba(15, 23, 42, 0.25);
+  z-index: 41;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.detail-panel[hidden] { display: none; }
+
+.detail-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: #1a365d;
+  color: #fff;
+}
+.detail-panel__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  word-break: break-all;
+}
+.detail-panel__close {
+  background: transparent;
+  border: 0;
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+.detail-panel__close:hover,
+.detail-panel__close:focus { background: rgba(255, 255, 255, 0.15); outline: none; }
+
+.detail-panel__body {
+  padding: 1.25rem;
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+.detail-section__title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #475569;
+  margin: 1.25rem 0 0.5rem;
+}
+.detail-section__title:first-child { margin-top: 0; }
+
+/* Outcomes list */
+.detail-outcome {
+  border: 1px solid #e2e8f0;
+  border-left-width: 4px;
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.5rem;
+  background: #f8fafc;
+}
+.detail-outcome__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.25rem;
+}
+.detail-outcome__detail { margin: 0; font-size: 0.9rem; color: #1e293b; }
+
+/* Severity badges reuse the chart palette */
+.sev-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  color: #fff;
+}
+.sev-critical { background: #c53030; }
+.sev-serious  { background: #dd6b20; }
+.sev-moderate { background: #d69e2e; }
+.sev-minor    { background: #718096; }
+.detail-outcome.sev-critical-border { border-left-color: #c53030; }
+.detail-outcome.sev-serious-border  { border-left-color: #dd6b20; }
+.detail-outcome.sev-moderate-border { border-left-color: #d69e2e; }
+.detail-outcome.sev-minor-border    { border-left-color: #718096; }
+.detail-outcome.sev-none-border     { border-left-color: #2b6cb0; }
+
+.detail-kind {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #475569;
+  background: #e2e8f0;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+/* Screenshots grid */
+.detail-shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+.detail-shot { display: flex; flex-direction: column; gap: 0.25rem; }
+.detail-shot__label { font-size: 0.72rem; color: #64748b; }
+.detail-shot img {
+  width: 100%;
+  height: auto;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  display: block;
+  background: #f1f5f9;
+}
+
+/* Accessible page-list fallback below the Findings-by-page chart */
+.page-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.page-list__btn {
+  font-size: 0.75rem;
+  color: #1a365d;
+  background: #edf2f7;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.page-list__btn:hover,
+.page-list__btn:focus { background: #e2e8f0; outline: 2px solid #2b6cb0; outline-offset: 1px; }
+
+.detail-empty { color: #64748b; font-size: 0.9rem; font-style: italic; }

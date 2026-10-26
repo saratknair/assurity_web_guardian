@@ -1,8 +1,8 @@
-// Assurity Web Guardian — static dashboard app (entry point, task 4.6).
+﻿// Assurity Web Guardian â€” static dashboard app (entry point, task 4.6).
 //
 // Plain browser ES module (NO TypeScript, NO build step). Served same-origin as
 // static HTML + JS + CSS. This file renders the redesigned dashboard from the
-// `DashboardData` contract (see dashboard/data-source.js and design.md →
+// `DashboardData` contract (see dashboard/data-source.js and design.md â†’
 // DashboardData) using the vendored Chart.js UMD global (`window.Chart`).
 //
 // Responsibilities (Req 1.1, 1.2, 1.3, 1.5, 1.6, 1.7, 1.8, 1.9, 11.3):
@@ -19,7 +19,7 @@
 //     it throws and the app falls back to the empty state instead of presenting
 //     unlabelled AI content.
 //   - Any error anywhere (load failure, missing Chart, chart failure, AI-label
-//     assertion failure) is caught and shown as the empty state — never a broken
+//     assertion failure) is caught and shown as the empty state â€” never a broken
 //     chart container.
 
 import { resolveDataSource } from "./data-source.js";
@@ -57,9 +57,9 @@ const charts = [];
 init();
 
 /**
- * Async entry point. Resolves and loads the data, then renders. ANY failure —
+ * Async entry point. Resolves and loads the data, then renders. ANY failure â€”
  * data load, missing Chart library, chart construction, or the AI-labelling
- * assertion — is caught here and converted into the visible empty state, so the
+ * assertion â€” is caught here and converted into the visible empty state, so the
  * page never shows blank or broken chart containers (Req 1.7, 1.9).
  */
 async function init() {
@@ -86,6 +86,9 @@ async function init() {
     renderCharts(data);
     renderAiAnalysis(data); // includes the fail-closed render-time assertion
     showContent();
+    // Drill-down: make Findings-by-page interactive + build the page list.
+    // Non-fatal: any failure here must NOT take down the charts/AI render.
+    try { setupDrillDown(data); } catch (e) { console.error("[dashboard] drill-down setup failed (non-fatal):", e); }
   } catch (err) {
     // Fail closed: never present partial/broken content. Surface the empty
     // state (default message) and keep the console trail for diagnosis.
@@ -144,7 +147,7 @@ function showContent() {
 }
 
 // ---------------------------------------------------------------------------
-// Header meta (Req 1 — presentation).
+// Header meta (Req 1 â€” presentation).
 // ---------------------------------------------------------------------------
 
 /** Set the header meta line to the domain and the generated-at timestamp. */
@@ -156,7 +159,7 @@ function renderHeaderMeta(data) {
   const parts = [];
   if (domain) parts.push(domain);
   if (generatedAt) parts.push(`generated ${generatedAt}`);
-  el.textContent = parts.join(" · ");
+  el.textContent = parts.join(" Â· ");
 }
 
 /** Best-effort human timestamp; falls back to the raw string. */
@@ -212,10 +215,10 @@ function canvas(id) {
   return el;
 }
 
-/** #chart-run-health-trend — LINE of failedChecks over time, chronological. */
+/** #chart-run-health-trend â€” LINE of failedChecks over time, chronological. */
 function buildRunHealthTrend(data) {
   const trend = Array.isArray(data.runHealthTrend) ? data.runHealthTrend : [];
-  // data-source already returns chronological (oldest→newest); be defensive and
+  // data-source already returns chronological (oldestâ†’newest); be defensive and
   // keep input order as the authoritative chronological ordering.
   const labels = trend.map((p) =>
     p && typeof p.finishedAt === "string" && p.finishedAt
@@ -255,7 +258,7 @@ function buildRunHealthTrend(data) {
   );
 }
 
-/** #chart-findings-by-page — BAR of count per page. */
+/** #chart-findings-by-page â€” BAR of count per page. */
 function buildFindingsByPage(data) {
   const rows = Array.isArray(data.findingsByPage) ? data.findingsByPage : [];
   const labels = rows.map((r) => String((r && r.page) || "(unknown)"));
@@ -275,6 +278,12 @@ function buildFindingsByPage(data) {
         ],
       },
       options: baseOptions({
+        onClick: (_evt, elements) => {
+          if (elements && elements.length) {
+            const row = rows[elements[0].index];
+            if (row) openPageDetail(String(row.page || ""));
+          }
+        },
         scales: {
           x: { grid: { display: false } },
           y: {
@@ -288,7 +297,7 @@ function buildFindingsByPage(data) {
   );
 }
 
-/** #chart-findings-by-severity — DOUGHNUT of the severity partition. */
+/** #chart-findings-by-severity â€” DOUGHNUT of the severity partition. */
 function buildFindingsBySeverity(data) {
   const sev =
     data.findingsBySeverity && typeof data.findingsBySeverity === "object"
@@ -313,7 +322,7 @@ function buildFindingsBySeverity(data) {
   );
 }
 
-/** #chart-a11y-new-vs-recurring — STACKED BAR of new vs recurring. */
+/** #chart-a11y-new-vs-recurring â€” STACKED BAR of new vs recurring. */
 function buildA11yNewVsRecurring(data) {
   const nvr =
     data.a11yNewVsRecurring && typeof data.a11yNewVsRecurring === "object"
@@ -353,7 +362,7 @@ function buildA11yNewVsRecurring(data) {
 }
 
 // ---------------------------------------------------------------------------
-// AI-assisted analysis (Req 1.8, 1.9, 11.3) — fail closed.
+// AI-assisted analysis (Req 1.8, 1.9, 11.3) â€” fail closed.
 // ---------------------------------------------------------------------------
 
 /**
@@ -422,4 +431,256 @@ function assertAiLabelling() {
       );
     }
   }
+}
+
+
+// ===========================================================================
+// Page-detail drill-down (follow-up to task 4.6).
+//
+// The aggregate dashboard above is read-only summary. This module lets a user
+// click a page (via the Findings-by-page chart OR an accessible page-list
+// fallback) to open a drawer showing that page's deterministic outcomes and its
+// sanitized evidence screenshots, fetched from the already-published per-run
+// tree: ./data/index.json (newest run id) and ./data/runs/<id>/findings.json,
+// with screenshots at ./data/runs/<id>/screenshots/<slug>.<viewport>[.diff].png
+// (the exact published convention, confirmed from sanitizer.ts/published-data.ts
+// and real run output). All published strings are inserted via textContent, and
+// any AI content reuses the same .ai-assisted + "not a deterministic fact"
+// labelling as the aggregate AI panel — never presented as deterministic.
+// ===========================================================================
+
+const SEVERITY_KEYS = ["critical", "serious", "moderate", "minor"];
+let _latestRunId = null;        // resolved once from ./data/index.json
+let _findingsCache = null;      // findings.json for _latestRunId, fetched once
+
+/** Entry point called from init(): build the page list + resolve the run id. */
+function setupDrillDown(data) {
+  wireDetailClose();
+  renderPageList(data);
+  // Resolve the newest run id so detail fetches know where to look. Best-effort.
+  void resolveLatestRunId();
+}
+
+/** Fetch ./data/index.json once and remember runs[0].runId (newest). */
+async function resolveLatestRunId() {
+  if (_latestRunId) return _latestRunId;
+  try {
+    const res = await fetch("./data/index.json");
+    if (!res.ok) return null;
+    const idx = await res.json();
+    const runs = Array.isArray(idx) ? idx : (idx && Array.isArray(idx.runs) ? idx.runs : []);
+    const first = runs[0];
+    const id = first && (typeof first.runId === "string" ? first.runId : (typeof first.id === "string" ? first.id : null));
+    if (typeof id === "string" && id) _latestRunId = id;
+  } catch { /* drill-down simply unavailable; aggregate dashboard still works */ }
+  return _latestRunId;
+}
+
+/** Fetch + cache findings.json for the newest run. */
+async function loadFindings() {
+  if (_findingsCache) return _findingsCache;
+  const runId = await resolveLatestRunId();
+  if (!runId) return null;
+  try {
+    const res = await fetch(`./data/runs/${encodeURIComponent(runId)}/findings.json`);
+    if (!res.ok) return null;
+    _findingsCache = await res.json();
+    return _findingsCache;
+  } catch { return null; }
+}
+
+/** Render an accessible, keyboard-focusable list of pages under the chart. */
+function renderPageList(data) {
+  const rows = Array.isArray(data.findingsByPage) ? data.findingsByPage : [];
+  if (!rows.length) return;
+  // Find the Findings-by-page chart panel to host the list beneath its canvas.
+  const canvasEl = document.getElementById("chart-findings-by-page");
+  const panel = canvasEl ? canvasEl.closest(".chart-panel") : null;
+  if (!panel) return;
+  // Avoid duplicating on re-render.
+  const existing = panel.querySelector(".page-list");
+  if (existing) existing.remove();
+
+  const ul = document.createElement("ul");
+  ul.className = "page-list";
+  ul.setAttribute("aria-label", "Select a page to see its findings and screenshots");
+  for (const row of rows) {
+    const page = String((row && row.page) || "");
+    if (!page) continue;
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "page-list__btn";
+    btn.textContent = shortPage(page) + " (" + Number((row && row.count) || 0) + ")";
+    btn.title = page;
+    btn.addEventListener("click", () => openPageDetail(page));
+    li.appendChild(btn);
+    ul.appendChild(li);
+  }
+  panel.appendChild(ul);
+}
+
+/** Trim a URL to a compact label (path only when possible). */
+function shortPage(url) {
+  try { const u = new URL(url); return (u.pathname === "/" ? u.host : u.pathname); }
+  catch { return url; }
+}
+
+/** Open the drawer for a page URL: show its outcomes + screenshots. */
+async function openPageDetail(pageUrl) {
+  const panel = document.getElementById("page-detail");
+  const overlay = document.getElementById("page-detail-overlay");
+  const body = document.getElementById("detail-body");
+  const title = document.getElementById("detail-title");
+  if (!panel || !body || !title) return;
+
+  title.textContent = pageUrl;
+  body.textContent = "";
+  const loading = document.createElement("p");
+  loading.className = "detail-empty";
+  loading.textContent = "Loading findings…";
+  body.appendChild(loading);
+
+  if (overlay) overlay.hidden = false;
+  panel.hidden = false;
+  const closeBtn = document.getElementById("detail-close");
+  if (closeBtn) closeBtn.focus();
+
+  const findings = await loadFindings();
+  body.textContent = "";
+
+  const runId = _latestRunId;
+  const pages = findings && Array.isArray(findings.pages) ? findings.pages : [];
+  const match = pages.find((p) => p && (p.page === pageUrl || shortPage(String(p.page || "")) === shortPage(pageUrl)));
+
+  // Outcomes section
+  const outTitle = document.createElement("h3");
+  outTitle.className = "detail-section__title";
+  outTitle.textContent = "Findings";
+  body.appendChild(outTitle);
+
+  const outcomes = match && Array.isArray(match.outcomes) ? match.outcomes : [];
+  if (!outcomes.length) {
+    const none = document.createElement("p");
+    none.className = "detail-empty";
+    none.textContent = findings ? "No deterministic findings recorded for this page." : "Findings data is unavailable.";
+    body.appendChild(none);
+  } else {
+    for (const o of outcomes) body.appendChild(buildOutcome(o));
+  }
+
+  // AI items for this page (reuse the honesty labelling)
+  const aiItems = match && Array.isArray(match.aiItems) ? match.aiItems : [];
+  if (aiItems.length) {
+    const aiTitle = document.createElement("h3");
+    aiTitle.className = "detail-section__title";
+    aiTitle.textContent = "AI-assisted notes";
+    body.appendChild(aiTitle);
+    for (const it of aiItems) body.appendChild(buildAiElement(it));
+    // Keep the global fail-closed guarantee honest for these added nodes too.
+    assertAiLabelling();
+  }
+
+  // Screenshots section (derived URLs; onerror hides missing ones)
+  const shotTitle = document.createElement("h3");
+  shotTitle.className = "detail-section__title";
+  shotTitle.textContent = "Evidence screenshots";
+  body.appendChild(shotTitle);
+  const slug = match && typeof match.slug === "string" ? match.slug : null;
+  if (slug && runId) {
+    body.appendChild(buildScreenshots(runId, slug));
+  } else {
+    const none = document.createElement("p");
+    none.className = "detail-empty";
+    none.textContent = "No screenshots available for this page.";
+    body.appendChild(none);
+  }
+}
+
+/** Build one outcome card with an optional severity badge + kind tag. */
+function buildOutcome(o) {
+  const sev = severityOf(o);
+  const card = document.createElement("div");
+  card.className = "detail-outcome " + (sev ? `sev-${sev}-border` : "sev-none-border");
+
+  const meta = document.createElement("div");
+  meta.className = "detail-outcome__meta";
+  if (sev) {
+    const b = document.createElement("span");
+    b.className = `sev-badge sev-${sev}`;
+    b.textContent = sev;
+    meta.appendChild(b);
+  }
+  const kind = (o && (o.classification || o.kind)) || "finding";
+  const k = document.createElement("span");
+  k.className = "detail-kind";
+  k.textContent = String(kind);
+  meta.appendChild(k);
+  card.appendChild(meta);
+
+  const detail = document.createElement("p");
+  detail.className = "detail-outcome__detail";
+  detail.textContent = String((o && o.detail) || "");
+  card.appendChild(detail);
+  return card;
+}
+
+/** Normalise a severity/impact field to one of the known buckets, or null. */
+function severityOf(o) {
+  const raw = (o && (o.severity || o.impact) || "").toString().toLowerCase();
+  return SEVERITY_KEYS.includes(raw) ? raw : null;
+}
+
+/** Build the screenshots grid for a page slug (desktop/mobile, baseline+diff). */
+function buildScreenshots(runId, slug) {
+  const grid = document.createElement("div");
+  grid.className = "detail-shots";
+  const base = `./data/runs/${encodeURIComponent(runId)}/screenshots/`;
+  const variants = [
+    { label: "Desktop", file: `${slug}.desktop.png` },
+    { label: "Desktop (diff)", file: `${slug}.desktop.diff.png` },
+    { label: "Mobile", file: `${slug}.mobile.png` },
+    { label: "Mobile (diff)", file: `${slug}.mobile.diff.png` },
+  ];
+  for (const v of variants) {
+    const fig = document.createElement("div");
+    fig.className = "detail-shot";
+    const label = document.createElement("span");
+    label.className = "detail-shot__label";
+    label.textContent = v.label;
+    const a = document.createElement("a");
+    a.href = base + v.file;
+    a.target = "_blank";
+    a.rel = "noopener";
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.alt = v.label + " screenshot";
+    img.src = base + v.file;
+    // Hide the whole figure if this candidate 404s (not every variant exists).
+    img.addEventListener("error", () => { fig.remove(); });
+    a.appendChild(img);
+    fig.appendChild(label);
+    fig.appendChild(a);
+    grid.appendChild(fig);
+  }
+  return grid;
+}
+
+/** Wire the close button, overlay click, and Escape key (once). */
+let _detailWired = false;
+function wireDetailClose() {
+  if (_detailWired) return;
+  _detailWired = true;
+  const closeBtn = document.getElementById("detail-close");
+  const overlay = document.getElementById("page-detail-overlay");
+  if (closeBtn) closeBtn.addEventListener("click", closePageDetail);
+  if (overlay) overlay.addEventListener("click", closePageDetail);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closePageDetail(); });
+}
+
+function closePageDetail() {
+  const panel = document.getElementById("page-detail");
+  const overlay = document.getElementById("page-detail-overlay");
+  if (panel) panel.hidden = true;
+  if (overlay) overlay.hidden = true;
 }
