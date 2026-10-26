@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import type { GEvent } from "../useGuardianEvents.js";
 import { useLive, useReplay, useHistorical } from "../useGuardianEvents.js";
 import { createDeskManager, defaultDesks } from "./deskManager.js";
@@ -10,14 +10,14 @@ import { deriveOffice } from "./stateMachine.js";
 // This module cleanly separates TWO concerns:
 //
 //   1. WHERE events come from (the transport / mode):
-//        - live       → the read-only Event_Server SSE stream at :7788
-//        - replay     → a published, sanitized static JSON file (Pages site)
-//        - historical → the same static JSON, loaded all at once
+//        - live       â†’ the read-only Event_Server SSE stream at :7788
+//        - replay     â†’ a published, sanitized static JSON file (Pages site)
+//        - historical â†’ the same static JSON, loaded all at once
 //
 //   2. HOW office state is derived (the honesty pipeline):
 //        - the SAME `deriveOffice` reducer from ./stateMachine.js runs in every
 //          mode, so a character appears on screen ONLY because a genuine agent
-//          event backs it — whether those events arrived over SSE (live) or
+//          event backs it â€” whether those events arrived over SSE (live) or
 //          were read from published JSON (replay/historical).
 //
 // The point of the abstraction is that the office App (task 5.19) can consume
@@ -68,17 +68,17 @@ function readBuildMode(): string | undefined {
 /**
  * Resolve the office mode.
  *
- * Resolution order (build flag first — explicit and deterministic for the
+ * Resolution order (build flag first â€” explicit and deterministic for the
  * published Pages site):
- *   1. `import.meta.env.VITE_AWG_MODE === "replay"`     → "replay"
- *   2. `import.meta.env.VITE_AWG_MODE === "historical"` → "historical"
- *   3. `import.meta.env.VITE_AWG_MODE === "live"`       → "live"
- *   4. otherwise                                        → "live" (local dev default)
+ *   1. `import.meta.env.VITE_AWG_MODE === "replay"`     â†’ "replay"
+ *   2. `import.meta.env.VITE_AWG_MODE === "historical"` â†’ "historical"
+ *   3. `import.meta.env.VITE_AWG_MODE === "live"`       â†’ "live"
+ *   4. otherwise                                        â†’ "live" (local dev default)
  *
  * Design note (why flag-only, no runtime `/idle` probe): the existing `useLive`
  * hook already owns the loopback SSE connection and reports idle state, so the
  * office does not need a separate probe to decide the mode. A build flag is
- * explicit, synchronous, and — critically — guarantees the static Pages build
+ * explicit, synchronous, and â€” critically â€” guarantees the static Pages build
  * (`VITE_AWG_MODE=replay`) resolves to "replay" without ever touching the
  * network. Defaulting to "live" for local dev matches today's behavior, where
  * the Event_Server runs on :7788. (A runtime `/idle` probe remains a possible
@@ -94,7 +94,7 @@ export function resolveOfficeMode(): OfficeMode {
 }
 
 // ---------------------------------------------------------------------------
-// Static (published JSON) loader — replay / historical
+// Static (published JSON) loader â€” replay / historical
 // ---------------------------------------------------------------------------
 
 /**
@@ -120,7 +120,7 @@ function asEventArray(raw: unknown): GEvent[] {
 
 /**
  * Load a published run's events from the static, same-origin path. No SSE, no
- * loopback request — a single relative `fetch`. Resolves to `[]` on any error
+ * loopback request â€” a single relative `fetch`. Resolves to `[]` on any error
  * so the office degrades to honest idle rather than throwing.
  */
 export async function loadStaticRunEvents(
@@ -146,21 +146,34 @@ export async function loadStaticRunEvents(
  * back a completed run, historical = inspect it), and both feed the identical
  * reducer. Returns the ordered events plus a `loaded` flag.
  */
-export function useStaticRunEvents(runId: string | null): { events: GEvent[]; loaded: boolean } {
-  const [events, setEvents] = useState<GEvent[]>([]);
-  const [loaded, setLoaded] = useState(false);
+// How fast the static replay steps through a completed run (ms per event) and
+// how long it pauses on the full room before looping back to the start.
+const REPLAY_STEP_MS = 900;
+const REPLAY_LOOP_HOLD_MS = 4000;
 
+export function useStaticRunEvents(runId: string | null): { events: GEvent[]; loaded: boolean } {
+  // The FULL ordered event list for the run, loaded once from published JSON.
+  const [all, setAll] = useState<GEvent[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  // How many of `all` are currently "revealed". We step this up over time so a
+  // completed run PLAYS BACK (agents arrive, work, leave) instead of folding
+  // straight to the final all-completed state (which reads as idle). Honesty is
+  // preserved: we only ever reveal a prefix of GENUINE events, never invent any.
+  const [count, setCount] = useState(0);
+
+  // Load the full list once per runId.
   useEffect(() => {
     let cancelled = false;
-    setEvents([]);
+    setAll([]);
     setLoaded(false);
+    setCount(0);
     if (!runId) {
       setLoaded(true);
       return;
     }
     void loadStaticRunEvents(runId).then((evs) => {
       if (cancelled) return;
-      setEvents(evs);
+      setAll(evs);
       setLoaded(true);
     });
     return () => {
@@ -168,15 +181,39 @@ export function useStaticRunEvents(runId: string | null): { events: GEvent[]; lo
     };
   }, [runId]);
 
+  // Step the revealed prefix over time, then loop. A short run would otherwise
+  // flash to idle instantly; stepping makes the office feel alive and lets the
+  // viewer watch agents come and go, on repeat.
+  useEffect(() => {
+    if (!loaded || all.length === 0) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const tick = (next: number) => {
+      if (next <= all.length) {
+        setCount(next);
+        timer = setTimeout(() => tick(next + 1), REPLAY_STEP_MS);
+      } else {
+        // Reached the end: hold on the final state, then restart the playback.
+        timer = setTimeout(() => {
+          setCount(0);
+          tick(1);
+        }, REPLAY_LOOP_HOLD_MS);
+      }
+    };
+    tick(1);
+    return () => clearTimeout(timer);
+  }, [loaded, all]);
+
+  // Expose only the revealed prefix (deriveOffice folds exactly these events).
+  const events = useMemo(() => all.slice(0, count), [all, count]);
   return { events, loaded };
 }
 
 /**
  * Resolve the raw event stream for a mode. This is the single place that maps a
  * mode to a transport:
- *   - live       → `useLive` SSE (loopback Event_Server)
- *   - replay     → static published JSON (no SSE, no loopback)
- *   - historical → static published JSON, loaded at once (no SSE, no loopback)
+ *   - live       â†’ `useLive` SSE (loopback Event_Server)
+ *   - replay     â†’ static published JSON (no SSE, no loopback)
+ *   - historical â†’ static published JSON, loaded at once (no SSE, no loopback)
  *
  * `runId` is required for replay/historical and ignored for live.
  */
@@ -301,3 +338,4 @@ export function useLatestPublishedRunId(enabled: boolean): string | null {
 
   return runId;
 }
+
