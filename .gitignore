@@ -1,0 +1,111 @@
+# ==========================================================================
+# Assurity Web Guardian — root .gitignore
+#
+# Primary purpose (Requirement 8 "No Secrets In The Public Repository"):
+# keep tokens, keys, credentials, and local environment files out of the
+# public repository. Any value the Cloud_Runner needs is supplied only as a
+# GitHub Actions encrypted secret (Action_Secret) — never a committed file.
+#
+# NOTE: dist/ and artifacts/ are intentionally NOT ignored here. Their
+# handling is governed by other in-flight phase-2 work (e.g. raw run
+# artifacts move to the runs-data branch later). Do not add them without
+# coordinating with that work.
+# ==========================================================================
+
+# --- Secrets / credentials / environment (Req 8.1, 8.3, 8.4) --------------
+# Environment files
+.env
+.env.*
+!.env.example
+*.env
+
+# Generic secret / credential bundles
+*.secret
+secrets.*
+*.secrets
+credentials
+credentials.*
+*.credentials
+auth.json
+
+# Keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.cert
+*.crt
+*.der
+*.keystore
+*.jks
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+
+# Cloud / tool credential caches commonly found in a working tree
+.npmrc
+.netrc
+.aws/
+.gcloud/
+*.gpg
+*.asc
+
+# --- Dependencies ----------------------------------------------------------
+node_modules/
+
+# --- Logs & local scratch output ------------------------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+# Stray local scratch logs/notes seen in the working tree
+_*.log
+_*.txt
+
+# --- Generated publish bundle (task 13.1) ----------------------------------
+# The local published Pages bundle (Req 6.7) is build output assembled from
+# artifacts/runs + dashboard/ + the replay office build. It is generated on
+# every successful local run and must never be committed. Staging/backup
+# siblings created during the atomic swap are also transient.
+# NOTE: this narrowly ignores ONLY the generated bundle under artifacts/, not
+# artifacts/ as a whole (raw runs are handled by the runs-data branch work).
+artifacts/published/
+artifacts/published.staging/
+artifacts/published.prev-*/
+# CI Pages staging dir (assembled in the workflow, never committed)
+_site/
+# Virtual_Office Vite build output (replay bundle / local office build)
+virtual-office/dist/
+
+# --- Test / tooling runtime noise ------------------------------------------
+test-results/
+.playwright/
+playwright/.cache/
+.vitest/
+coverage/
+
+# --- Editor / OS files -----------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.local
+
+# --- Generated build + raw run artifacts (kept OFF main) -------------------
+# Phase 2 complete: raw per-run artifacts are published to the runs-data
+# branch by CI and the Pages site; they are large (hundreds of MB) and
+# regenerated each run, so they are NOT committed to main. dist/ is compiled
+# build output (reproducible via 'npm run build'). virtual-office-src/ is a
+# superseded copy of office sources now living under virtual-office/src/.
+dist/
+artifacts/
+virtual-office-src/

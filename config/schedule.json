@@ -1,0 +1,5 @@
+{
+  "enabled": true,
+  "intervalHours": 24,
+  "dailyAt": "09:00"
+}

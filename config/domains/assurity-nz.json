@@ -1,0 +1,9 @@
+{
+  "domain": "assurity.nz",
+  "baseUrl": "https://assurity.nz",
+  "approvedSchemes": ["https"],
+  "maxDiscoveryCount": 500,
+  "largeScopeThreshold": 25,
+  "requestSpacingMs": 1000,
+  "scopeFile": "config/scope/assurity-nz.approved.json"
+}

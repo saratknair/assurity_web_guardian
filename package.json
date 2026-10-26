@@ -1,0 +1,38 @@
+{
+  "name": "assurity-web-guardian",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Human-supervised website quality PoC for assurity.nz",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:property": "vitest run tests/property",
+    "check": "playwright test",
+    "run": "node dist/index.js run",
+    "build:office:replay": "node scripts/build-office-replay.mjs",
+    "approve": "node dist/index.js approve",
+    "list-pending": "node dist/index.js list-pending",
+    "report": "node dist/index.js report"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.48.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "pixelmatch": "^6.0.0",
+    "pngjs": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pngjs": "^6.0.5",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0",
+    "fast-check": "^3.22.0"
+  }
+}

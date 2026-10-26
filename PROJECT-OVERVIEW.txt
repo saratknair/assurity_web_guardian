@@ -1,0 +1,306 @@
+===========================================================================
+ ASSURITY WEB GUARDIAN - PROJECT EXPLAINED IN SIMPLE TERMS
+ A presentation-pack overview, from beginning to end
+===========================================================================
+
+---------------------------------------------------------------------------
+1. THE ONE-SENTENCE SUMMARY
+---------------------------------------------------------------------------
+Assurity Web Guardian is a software "robot" that checks the Assurity website
+(https://assurity.nz) for quality problems - broken pages, accessibility
+issues, visual changes - and reports them to a human, WITHOUT ever changing
+anything or making decisions on its own. A person always has the final say.
+
+
+---------------------------------------------------------------------------
+2. THE PROBLEM WE SET OUT TO SOLVE
+---------------------------------------------------------------------------
+Websites break in small ways all the time: a link loses its label, a button
+becomes unreadable to screen-readers, a page layout shifts, text changes.
+Checking all of this by hand, on many pages, again and again, is slow and
+easy to get wrong.
+
+We wanted a system that:
+  - Watches a set of approved pages automatically.
+  - Flags real problems with evidence (screenshots, logs).
+  - NEVER pretends, never guesses silently, never "fixes" things itself.
+  - Keeps a human in control of every important decision.
+
+
+---------------------------------------------------------------------------
+3. THE GOLDEN RULES (the principles everything is built on)
+---------------------------------------------------------------------------
+  a. HUMAN IN CONTROL. The robot proposes; a person approves. Nothing
+     becomes an official "baseline" (the expected correct state) without a
+     human saying yes.
+
+  b. FACTS vs OPINIONS ARE LABELLED. Anything measured by a test is a
+     "deterministic fact." Anything written by AI is clearly labelled
+     "AI-generated analysis - not a fact." You can always tell them apart.
+
+  c. NEVER FAKE ACTIVITY. The system only ever shows work that genuinely
+     happened. If nothing is running, it says "idle."
+
+  d. GENTLE ON THE WEBSITE. It visits pages slowly, one at a time, never
+     submits forms, never does load testing, never leaves the approved site.
+
+  e. EVERYTHING IS KEPT. Every run saves its evidence and a tamper-proof
+     log, so any result can be inspected later.
+
+  f. LOCAL AND LOW-COST. Runs on a normal computer. No paid cloud services,
+     no external data sharing.
+
+
+---------------------------------------------------------------------------
+4. HOW THE ROBOT THINKS - THE "TEAM OF SPECIALISTS"
+---------------------------------------------------------------------------
+We designed the system like a small office of specialists, each with one job.
+This is why the 3D "virtual office" visualisation makes sense - each desk is
+a real part of the system.
+
+  - DISCOVERY: finds which pages are in scope (from a human-approved list).
+  - INVENTORY: records what is on each page (title, structure).
+  - SPECIFICATION: writes a plain-language description of each page.
+  - TEST GENERATION: turns an approved description into automated checks.
+  - OBSERVATION RUNNER: actually visits the page (desktop AND mobile),
+    takes screenshots, checks the page loaded, checks accessibility.
+  - COMPARATOR: compares what it saw today against the approved "correct"
+    version, and decides what is a real problem vs a harmless change.
+  - QUALITY ANALYSIS (AI): writes a short human-readable opinion on impact.
+  - VISUAL EXPLANATION (AI): explains picture differences, when there are any.
+  - TRIAGE (AI): suggests what a human should look at first.
+  - SUPERVISOR / ORCHESTRATOR: runs the whole sequence in order.
+  - HUMAN REVIEW: where a person accepts or dismisses each finding.
+  - STORES (Evidence Archive, Completed Runs, Failed/Blocked): where results
+    are filed away.
+
+Key point: the AI specialists only ADD OPINIONS. The decisions about pass/fail
+come from deterministic tests, and the final call always comes from a human.
+
+---------------------------------------------------------------------------
+4b. THE AGENTS WE BUILT (the callout)
+---------------------------------------------------------------------------
+The system is made of named agents/components. Each one is a distinct worker
+with a single responsibility. They fall into four types:
+
+  [D] Deterministic  - produces hard FACTS from measurement/tests.
+  [AI] AI-assisted   - produces OPINIONS, always clearly labelled, never fact.
+  [C] Coordinator    - runs the sequence; makes no quality judgements.
+  [H] Human          - the person who approves or dismisses.
+
+----------------------------------------------------------------
+DETERMINISTIC AGENTS (facts - the backbone of every decision)
+----------------------------------------------------------------
+
+  [D] DISCOVERY CRAWLER
+      Confirms which pages are in scope, strictly from the human-approved
+      page list. Read-only and paced. Never wanders off the approved site.
+
+  [D] INVENTORY_AGENT
+      Records what each page contains - its title, headings, structure,
+      and the presence of forms/links (without ever submitting anything).
+
+  [D] TEST_GENERATOR
+      Turns an approved page description (baseline) into concrete automated
+      checks that can be re-run every time.
+
+  [D] OBSERVATION_RUNNER
+      The "field agent." Actually visits each page on BOTH desktop
+      (1440x900) and mobile (390x844), checks it loaded (HTTP OK), checks
+      the title/heading/navigation exist, captures screenshots, and runs
+      accessibility scans. This is where most of the real work happens.
+
+  [D] COMPARATOR
+      The "judge of facts." Compares today's observation against the
+      approved baseline and the visual reference images, then classifies
+      each result: a genuine failed check, a harmless observed change, or a
+      visual difference. This is deterministic - same input, same verdict.
+
+----------------------------------------------------------------
+AI-ASSISTED AGENTS (opinions - always labelled "not a fact")
+----------------------------------------------------------------
+
+  [AI] SPECIFICATION_AGENT
+       Drafts a plain-language description of each page so a human has
+       something readable to review and approve before it becomes a baseline.
+
+  [AI] QUALITY_ANALYSIS_AGENT
+       Reads a deterministic result and writes a short, human-readable note
+       on likely user impact (e.g. "this failing check may affect users;
+       recommend human review"). It NEVER changes the pass/fail verdict - it
+       only adds context, tagged "AI-generated analysis (not a fact)."
+
+  [AI] VISUAL_EXPLANATION_AGENT
+       When a screenshot differs from the approved image, it explains in
+       plain words what might have changed (layout vs content) and says a
+       human should confirm whether it was expected. Only speaks when there
+       is a visual difference to explain.
+
+  [AI] TRIAGE_AGENT
+       Looks across all of a run's findings and proposes what a human should
+       look at first (e.g. "prioritise the 3 failing checks before the
+       observed changes"). A recommendation only - not an instruction.
+
+----------------------------------------------------------------
+COORDINATOR AND HUMAN
+----------------------------------------------------------------
+
+  [C] ORCHESTRATOR / SUPERVISOR
+      Runs the whole pipeline in the correct order under one tracked run,
+      and ties every event together with a shared ID so the full story of a
+      run can be reconstructed. It coordinates - it makes no quality calls.
+
+  [H] HUMAN REVIEW
+      The person (e.g. the reviewer "Sarat" in our runs) who approves the
+      page list and baselines up front, and accepts or dismisses each
+      finding at the end. The system cannot promote a baseline or close a
+      finding without this step.
+
+----------------------------------------------------------------
+THE CRITICAL DESIGN CHOICE
+----------------------------------------------------------------
+Every pass/fail VERDICT comes from a deterministic agent (a measurable
+fact). The AI agents only ADD opinions, and every opinion is stored as a
+SEPARATE record, linked to the fact it refers to, and visibly labelled
+"not a deterministic fact." So AI can help a reviewer think, but it can
+never be mistaken for the truth, and it can never make the final call.
+
+
+---------------------------------------------------------------------------
+5. WHAT WE BUILT - THE JOURNEY, PHASE BY PHASE
+---------------------------------------------------------------------------
+
+=== MILESTONE 1: THE FOUNDATION ===
+First we built the core engine and proved it on ONE page (the homepage):
+  - The discovery-to-report pipeline described above.
+  - Conservative, polite visiting of the live site.
+  - Screenshots on desktop and mobile.
+  - Accessibility checks (using industry-standard rules).
+  - A tamper-proof activity log and saved evidence for every run.
+  - A simple static dashboard summarising results.
+  - Clear separation of "facts" from "AI opinions."
+  - Automated tests proving the safety rules hold.
+
+=== CONTINUATION PHASES 1-12: MAKING IT REAL AND COMPLETE ===
+
+PHASE 1 - MORE PAGES.
+  Expanded from 1 page to 10 approved pages across the site. A human (Sarat)
+  reviewed and approved the list and the "correct" baseline for each page.
+
+PHASE 2 - VISUAL BASELINES.
+  Captured approved reference screenshots (desktop + mobile) for every page,
+  so future runs can spot visual changes. A human approved all of them.
+
+PHASE 3 - ACCESSIBILITY MEMORY.
+  The system now remembers accessibility issues across runs and can tell
+  "new" problems from "recurring" ones.
+
+PHASE 4 - ANALYTICS.
+  Added the ability to crunch numbers across runs (how many issues, trends).
+
+PHASE 5 - DASHBOARDS.
+  A richer dashboard: an executive view (health at a glance) and an
+  operations view (details, filters, trends).
+
+PHASE 6 - REVIEW SCREEN.
+  A local web page where a human reviewer can see findings and decide.
+
+PHASE 7 - SCHEDULING.
+  The robot can run automatically on a daily schedule, and it refuses to run
+  two copies at once (no overlaps).
+
+PHASE 8 - FUTURE-PROOFING (OpenTelemetry).
+  Optional "industry-standard monitoring output," switched OFF by default and
+  kept entirely local. Nothing is sent anywhere unless explicitly enabled.
+
+PHASE 9 - RELIABILITY CHECK.
+  A formal checkpoint confirming the system behaves predictably and safely.
+
+PHASE 10 - EVENT ACCESS LAYER.
+  A small read-only local service that lets other tools (like the virtual
+  office) see what happened in a run, WITHOUT ever changing anything.
+
+PHASE 11 - THE VIRTUAL OFFICE (3D).
+  A navigable 3D office you can fly around or walk through. Each specialist
+  is a character at a desk. When the real system does work, the matching
+  desk lights up and the character "types." It shows ONLY genuine activity -
+  it is a window into the system, not a cartoon.
+
+PHASE 12 - FINAL PROOF.
+  Ran the whole workflow end-to-end twice, confirmed the results were
+  consistent, and checked all the safety rules automatically.
+
+
+---------------------------------------------------------------------------
+6. THE VIRTUAL OFFICE - WHAT YOU ACTUALLY SEE
+---------------------------------------------------------------------------
+A 3D room with desks grouped by team. Features:
+  - Fly-around (orbit) OR walk-through (first-person) camera.
+  - Each desk = one specialist. A glowing monitor + typing = working.
+  - A colour and label above each desk shows its status (Working, Completed,
+    Awaiting review, Failed, Idle, etc.).
+  - "Stores and boards" (archives, the review board) are shown as FURNITURE,
+    not people - because they are places, not workers.
+  - Three viewing modes:
+       LIVE        - watch a run happening now (or an honest "IDLE" sign).
+       HISTORICAL  - load a completed run and inspect it.
+       REPLAY      - play back a completed run like a movie, at chosen speed,
+                     clearly labelled "REPLAY - not live."
+  - Click any desk to see details: which component, its status, the run ID,
+    and a reminder that states come only from genuine events.
+
+
+---------------------------------------------------------------------------
+7. WHAT THE ROBOT ACTUALLY FOUND ON THE SITE
+---------------------------------------------------------------------------
+Across all 10 pages, the pages loaded fine (correct titles, headings,
+navigation). But EVERY page had real accessibility problems waiting for a
+human to review, for example:
+  - Links without proper labels (on every page).
+  - Buttons unreadable to screen-readers on mobile (on every page).
+  - Touch targets too small on some pages.
+  - Form fields without labels on the careers page.
+  - Low colour contrast on the contact page.
+
+Important: the robot did NOT "fix" or dismiss any of these. It flagged them
+all, with evidence, for a human to decide. That is the system working exactly
+as intended.
+
+
+---------------------------------------------------------------------------
+8. WHERE THINGS LIVE (for the demo)
+---------------------------------------------------------------------------
+  - The engine / all code:   the project folder.
+  - Saved runs + evidence:   artifacts/runs/<run-id>/
+  - The dashboard:           artifacts/dashboard.html  (open in a browser)
+  - The virtual office:      runs in a browser at http://localhost:5173
+  - The event service:       a local-only service on port 7788 that the
+                             office reads from.
+
+
+---------------------------------------------------------------------------
+9. THE HEADLINE RESULTS
+---------------------------------------------------------------------------
+  - 10 pages monitored (desktop + mobile).
+  - Two full end-to-end runs produced identical, repeatable results.
+  - All automated safety/behaviour checks passed.
+  - All code-quality tests passed.
+  - Every finding preserved and awaiting human review - none auto-dismissed.
+  - A navigable 3D virtual office that reflects only genuine activity.
+  - Zero paid services, zero external data sharing, no changes made to the
+    live website.
+
+
+---------------------------------------------------------------------------
+10. WHY THIS MATTERS (the elevator pitch)
+---------------------------------------------------------------------------
+Assurity Web Guardian shows how AI and automation can assist quality work
+WITHOUT taking humans out of the loop. It is fast and thorough like a machine,
+but honest and cautious by design: it separates fact from opinion, keeps
+proof of everything, never fakes progress, and always leaves the final
+judgement to a person. It is a trustworthy assistant, not an unaccountable
+black box.
+
+===========================================================================
+ END
+===========================================================================

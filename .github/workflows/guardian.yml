@@ -1,0 +1,228 @@
+# Guardian Cloud_Runner (guardian-phase2-overhaul: design -> GitHub Actions Cloud_Runner)
+# Requirements: 6.2, 6.3, 6.4, 6.5, 6.6, 6.8, 7.1, 7.2, 9.1-9.5, 14.1, 14.3
+#
+# Hardening summary:
+#   - top-level permissions default to read-only (least privilege, 9.2)
+#   - every third-party action pinned to a commit SHA with a version comment (9.1)
+#   - write scope is granted per-job and never to the run job (9.3):
+#       * publish job: pages:write / id-token:write (Pages deploy only)
+#       * commit-runs-data job: contents:write (additive push of one run dir to runs-data only)
+#   - raw run artifacts are committed ONLY to the runs-data branch, never to main (7.2)
+#   - fork-PR privileged execution blocked via the `if:` guard; no pull_request_target (9.4)
+#   - no untrusted ${{ github.event.* }} interpolation into any run: shell (9.5)
+#
+# NOTE: the pinned commit SHAs below should be re-verified by a human against the
+# upstream release tags before merging. The VERSION in each trailing comment is the
+# intended release; confirm the 40-char SHA resolves to that tag.
+name: guardian
+
+on:
+  schedule:
+    # 17:00 UTC daily — satisfies the >= once/24h independent guarantee (6.3, 6.4)
+    - cron: "0 17 * * *"
+  # manual on-demand dispatch (6.5)
+  workflow_dispatch: {}
+
+# Least-privilege default token for the whole workflow (9.2)
+permissions:
+  contents: read
+
+# No overlapping cloud runs; let an in-flight run finish rather than cancel it
+concurrency:
+  group: guardian
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    # Hard cap so a stuck run cannot hold the runner or replace published data (6.8)
+    timeout-minutes: 30
+    # Fork-PR guard (9.4): run on schedule / manual dispatch / same-repo push only;
+    # for a pull_request event, require the head repo to be this repository (never a fork).
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    # Read-only token for the run job — it never needs to write to the repo (9.2)
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Setup Node
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          # Node 22: pinned via the committed .nvmrc (project targets Node 22)
+          node-version-file: ".nvmrc"
+      - name: Install dependencies
+        # Deterministic install pinned by package-lock.json (12.1)
+        run: npm ci
+      - name: Install Playwright browser
+        # CI browser + OS deps install (6.2)
+        run: npx playwright install --with-deps chromium
+      - name: Build
+        # Compile TypeScript -> dist/
+        run: npm run build
+      - name: Run Guardian
+        # The real orchestrated run entry is scripts/run-guardian.mjs.
+        # (dist/index.js "run" only prints a Phase-12 pointer message.)
+        # AWG_RUN_ORIGIN=cloud marks published runs as cloud-origin (7.7, 14.x).
+        # AWG_SKIP_LOCAL_PUBLISH=1: CI assembles ./_site via its own pipeline
+        # (build-published-data + dashboard copy + replay office build), so the
+        # orchestrator's in-process local publish would be redundant here.
+        env:
+          AWG_RUN_ORIGIN: cloud
+          AWG_SKIP_LOCAL_PUBLISH: "1"
+        run: node scripts/run-guardian.mjs
+      - name: Build published data
+        # Sanitize raw artifacts -> Published_Data into ./_site/data
+        # (build-published-data reads the output dir from argv[2]).
+        run: node dist/publish/build-published-data.js ./_site
+      - name: Add static dashboard to site
+        # Copy the static dashboard app alongside the sanitized data.
+        run: cp -r dashboard/. ./_site/
+      - name: Build Virtual Office (replay mode) into site
+        # Build the Virtual_Office for the static Pages_Site in Replay_Mode so it
+        # resolves to replay (no live SSE, no loopback Event_Server, no manual
+        # trigger) per Req 6.10. VITE_AWG_MODE=replay is the build flag that
+        # resolveOfficeMode() keys off; the wrapper emits relative asset URLs
+        # (vite base "./") into ./_site/office so Pages serves the office at /office/
+        # alongside data/ and the dashboard. AWG_OFFICE_REQUIRED=1 makes a failed
+        # office build fail the run in CI (locally it is best-effort/non-fatal).
+        # No ${{ github.event.* }} is interpolated into this run: (9.5).
+        env:
+          VITE_AWG_MODE: replay
+          AWG_OFFICE_REQUIRED: "1"
+        run: |
+          npm --prefix virtual-office ci
+          node scripts/build-office-replay.mjs ./_site
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        with:
+          path: ./_site
+      - name: Upload raw run artifacts
+        # Jobs don't share a filesystem, so hand the FULL RAW per-run artifacts
+        # (artifacts/runs/<id>/) to the downstream commit-runs-data job as a
+        # workflow artifact. This keeps the run job read-only (9.2) while still
+        # letting a narrowly-scoped job push full fidelity to the runs-data branch.
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: raw-runs
+          path: artifacts/runs/
+          # No runs produced => nothing to commit later; don't fail the run.
+          if-no-files-found: warn
+          retention-days: 1
+
+  publish:
+    needs: run
+    runs-on: ubuntu-latest
+    # Write scope granted ONLY here, and ONLY what Pages deployment needs (9.3)
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+
+  # Dedicated job that commits the run's FULL RAW artifacts to the `runs-data`
+  # branch so the local machine can later pull full-fidelity cloud runs via
+  # Cloud_Sync (Req 7.1, 7.2). It is a separate job — not part of `run` — so the
+  # `run` job keeps its read-only token (9.2/9.3 hardening). This is the ONLY job
+  # (besides Pages publish) granted `contents: write`, and even here write is the
+  # single capability needed to push one new run directory.
+  #
+  # Filesystem flow between jobs (jobs don't share a workspace):
+  #   run  ──upload-artifact "raw-runs" (artifacts/runs/)──▶  commit-runs-data
+  #   commit-runs-data: checkout runs-data (additive) → download raw-runs →
+  #                     discover RUN_ID(s) → path-scoped add → commit → push.
+  commit-runs-data:
+    needs: run
+    runs-on: ubuntu-latest
+    # Only this job may write repo contents, and only to push one run dir (9.3).
+    permissions:
+      contents: write
+    # Fork-PR guard mirrors the run job: never push from an untrusted fork (9.4).
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      # Normal checkout (default branch). This always succeeds and gives us a
+      # working .git with the GITHUB_TOKEN persisted for the later push. We do NOT
+      # modify the default branch here — the next step switches onto runs-data (or
+      # creates it as an orphan) before anything is staged or committed, so no raw
+      # artifact is ever added to main.
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # Need all refs so an existing runs-data branch can be fetched/tracked.
+          fetch-depth: 0
+          # Persist the built-in GITHUB_TOKEN so the later `git push` authenticates
+          # without a PAT. GITHUB_TOKEN here carries only contents:write (see above).
+          persist-credentials: true
+
+      - name: Switch onto runs-data (fetch existing or create orphan)
+        # Land on the dedicated data branch WITHOUT carrying main's files:
+        #   - if runs-data already exists on the remote, track it (additive target);
+        #   - otherwise create it as an ORPHAN branch and clear the index so the
+        #     branch starts empty (no main content ever lands on runs-data).
+        # Never force-push, never rewrite existing runs-data history.
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin runs-data >/dev/null 2>&1; then
+            git fetch origin runs-data
+            git checkout -B runs-data origin/runs-data
+          else
+            git checkout --orphan runs-data
+            # Drop everything carried from the default branch so runs-data is empty.
+            git rm -rf --quiet . 2>/dev/null || true
+          fi
+
+      - name: Download raw run artifacts
+        # Pull the FULL RAW per-run dirs produced by the run job into
+        # artifacts/runs/ of the runs-data working tree. path is scoped so nothing
+        # else in the tree is disturbed.
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: raw-runs
+          path: artifacts/runs
+          # If the run produced no runs (nothing uploaded), tolerate the absence;
+          # the commit step below no-ops when there is nothing new to add.
+        continue-on-error: true
+
+      - name: Commit new run(s) to runs-data (additive)
+        # ADDITIVE ONLY: path-scope the add to artifacts/runs/<RUN_ID>/ for each run
+        # the run job just produced, commit, and push. No force, no rebase, no
+        # history rewrite — existing run dirs on runs-data are never touched, and
+        # raw artifacts are NEVER committed to main (this job only ever sits on the
+        # runs-data branch). RUN_ID(s) are discovered from the downloaded dirs.
+        run: |
+          set -euo pipefail
+          if [ ! -d artifacts/runs ] || [ -z "$(ls -A artifacts/runs 2>/dev/null || true)" ]; then
+            echo "No raw run artifacts to commit; nothing to push to runs-data."
+            exit 0
+          fi
+          # Stage ONLY the new run directories (path-scoped, one per RUN_ID).
+          committed=0
+          for dir in artifacts/runs/*/; do
+            [ -d "$dir" ] || continue
+            run_id="$(basename "$dir")"
+            git add -- "artifacts/runs/${run_id}/"
+            committed=1
+          done
+          if [ "$committed" -eq 0 ]; then
+            echo "No run directories found under artifacts/runs/; nothing to commit."
+            exit 0
+          fi
+          # Nothing staged (e.g. all runs already on the branch) => skip the commit.
+          if git diff --cached --quiet; then
+            echo "All produced runs already present on runs-data; nothing to commit."
+            exit 0
+          fi
+          git commit -m "runs-data: add raw run artifacts (origin=cloud)"
+          # Push additively to runs-data. Create upstream on first push; never -f.
+          git push origin HEAD:runs-data

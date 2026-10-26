@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Assurity Web Guardian — Dashboard</title>
+  <link rel="stylesheet" href="./style.css" />
+  <!--
+    Charting library is VENDORED (committed, offline, same-origin) — never a CDN.
+    See dashboard/vendor/ and DEPENDENCIES.md. Loaded before the app so that the
+    global `window.Chart` is available to app.js. If this file is still the
+    *.NEEDS_VENDORING placeholder, drop the real chart.umd.min.js in beside it.
+  -->
+  <script src="./vendor/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-header__titles">
+      <h1>Assurity Web Guardian</h1>
+      <p class="app-header__subtitle">Run health, trends, and findings</p>
+    </div>
+    <div class="app-header__meta" id="header-meta" aria-live="polite"></div>
+  </header>
+
+  <!--
+    Empty-state region (Req 1.7). Hidden by default; app.js (task 4.6) reveals it
+    when DashboardData.empty === true, when the data source yields no runs, or as a
+    fail-closed fallback when an AI element is mislabelled (Req 1.9). When visible,
+    the chart grid is hidden so there are no blank/broken chart containers.
+  -->
+  <section id="empty-state" class="empty-state" role="status" aria-live="polite" hidden>
+    <div class="empty-state__card">
+      <h2 class="empty-state__title">No run data available</h2>
+      <p class="empty-state__body">
+        There are no runs to display yet. Once a Guardian run completes and its
+        data is published, the charts will appear here.
+      </p>
+    </div>
+  </section>
+
+  <!--
+    Chart grid (Req 1.1). CSS grid gives the combined chart area >= 50% of the
+    1440x900 viewport. Each panel holds exactly one <canvas>; app.js (task 4.6)
+    binds a Chart.js chart to each canvas by id.
+  -->
+  <main id="chart-grid" class="chart-grid">
+    <section class="chart-panel deterministic" aria-labelledby="title-run-health">
+      <h2 class="chart-panel__title" id="title-run-health">Run health trend</h2>
+      <div class="chart-panel__canvas-wrap">
+        <canvas id="chart-run-health-trend" aria-label="Run health trend over time" role="img"></canvas>
+      </div>
+    </section>
+
+    <section class="chart-panel deterministic" aria-labelledby="title-findings-page">
+      <h2 class="chart-panel__title" id="title-findings-page">Findings by page</h2>
+      <div class="chart-panel__canvas-wrap">
+        <canvas id="chart-findings-by-page" aria-label="Findings by page" role="img"></canvas>
+      </div>
+    </section>
+
+    <section class="chart-panel deterministic" aria-labelledby="title-findings-severity">
+      <h2 class="chart-panel__title" id="title-findings-severity">Findings by severity</h2>
+      <div class="chart-panel__canvas-wrap">
+        <canvas id="chart-findings-by-severity" aria-label="Findings by severity" role="img"></canvas>
+      </div>
+    </section>
+
+    <section class="chart-panel deterministic" aria-labelledby="title-a11y-new-recurring">
+      <h2 class="chart-panel__title" id="title-a11y-new-recurring">Accessibility: new vs recurring</h2>
+      <div class="chart-panel__canvas-wrap">
+        <canvas id="chart-a11y-new-vs-recurring" aria-label="New versus recurring accessibility issues" role="img"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <!--
+    AI-assisted analysis (Req 1.8). app.js (task 4.6) populates this region with
+    .ai-assisted items, each carrying data-ai="true" and a visible
+    "not a deterministic fact" badge. Kept outside the chart grid so it never
+    counts toward the deterministic chart area.
+  -->
+  <aside id="ai-analysis" class="ai-analysis" aria-labelledby="title-ai-analysis">
+    <h2 class="ai-analysis__title" id="title-ai-analysis">AI-assisted analysis</h2>
+    <div id="ai-analysis-items" class="ai-analysis__items"></div>
+  </aside>
+
+  <!--
+    Rendering logic is added in task 4.5 (data-source.js) and task 4.6 (app.js).
+    Loaded as a module so later imports resolve cleanly. The current stub does
+    nothing but confirm the page loads without error.
+  -->
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

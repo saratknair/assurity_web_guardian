@@ -1,0 +1,252 @@
+/*
+ * Assurity Web Guardian — static dashboard styles.
+ *
+ * Layout goal (Req 1.1): on the Desktop_Viewport (1440x900) the combined chart
+ * area occupies >= 50% of the rendered page area. This is achieved with a
+ * page-level CSS grid whose middle row (the four-chart grid) is the dominant
+ * region, plus chart panels whose <canvas> wrappers fill their panels. At
+ * 1440x900 the chart grid alone is ~1380 x 560 css px of canvas area
+ * (~772,800 px^2) against a 1,296,000 px^2 page — comfortably over 50%.
+ *
+ * Visual treatments defined here for later use by app.js (task 4.6):
+ *   .deterministic  — deterministic test evidence (blue accent, matches builder)
+ *   .ai-assisted    — AI-assisted analysis (orange accent, matches builder STYLE)
+ *   .not-a-fact     — the visible "not a deterministic fact" badge
+ */
+
+:root {
+  --awg-navy: #1a365d;
+  --awg-ink: #1a202c;
+  --awg-muted: #718096;
+  --awg-page-bg: #f7f8fa;
+  --awg-panel-bg: #ffffff;
+  --awg-border: #e2e8f0;
+
+  /* Deterministic treatment (mirrors dashboard-builder .det). */
+  --awg-det-accent: #2b6cb0;
+
+  /* AI-assisted treatment (mirrors dashboard-builder .ai). */
+  --awg-ai-accent: #c05621;
+  --awg-ai-bg: #fffaf5;
+
+  --awg-gap: 16px;
+  --awg-radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: system-ui, "Segoe UI", Arial, sans-serif;
+  color: var(--awg-ink);
+  background: var(--awg-page-bg);
+
+  /*
+   * Page-level grid: header (auto), chart grid (dominant, 1fr with a tall
+   * minimum), then the AI analysis region (auto, capped). The chart row is the
+   * only row allowed to grow, so it keeps the dominant share of the page.
+   */
+  display: grid;
+  grid-template-rows: auto minmax(560px, 1fr) auto;
+  gap: var(--awg-gap);
+  padding: var(--awg-gap);
+}
+
+/* ---- Header -------------------------------------------------------------- */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--awg-gap);
+  padding: 14px 20px;
+  background: var(--awg-navy);
+  color: #fff;
+  border-radius: var(--awg-radius);
+}
+
+.app-header__titles h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.app-header__subtitle {
+  margin: 2px 0 0;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.app-header__meta {
+  font-size: 12px;
+  opacity: 0.9;
+  text-align: right;
+}
+
+/* ---- Chart grid (dominant region, Req 1.1) ------------------------------- */
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: var(--awg-gap);
+  min-height: 0; /* allow grid children to shrink and canvases to size */
+}
+
+.chart-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  background: var(--awg-panel-bg);
+  border: 1px solid var(--awg-border);
+  border-radius: var(--awg-radius);
+  padding: 12px 14px;
+}
+
+.chart-panel__title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--awg-muted);
+  font-weight: 600;
+}
+
+/* The canvas wrapper takes the remaining panel height so the drawn chart area
+   dominates each panel. app.js creates responsive Chart.js charts that fill it. */
+.chart-panel__canvas-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.chart-panel__canvas-wrap > canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ---- Deterministic treatment (mirrors builder .det) ---------------------- */
+
+.deterministic {
+  border-left: 6px solid var(--awg-det-accent);
+}
+
+/* ---- AI-assisted analysis region ----------------------------------------- */
+
+.ai-analysis {
+  background: var(--awg-panel-bg);
+  border: 1px solid var(--awg-border);
+  border-radius: var(--awg-radius);
+  padding: 14px 16px;
+  /* Capped so the chart grid stays the dominant region; scroll if it overflows. */
+  max-height: 180px;
+  overflow: auto;
+}
+
+.ai-analysis__title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--awg-muted);
+  font-weight: 600;
+}
+
+.ai-analysis__items {
+  display: grid;
+  gap: 10px;
+}
+
+/*
+ * .ai-assisted — persistent visual treatment applied to EVERY AI-assisted
+ * element and to no deterministic element (Req 1.8). Orange accent + warm
+ * background, matching the existing dashboard-builder `.ai` treatment.
+ */
+.ai-assisted {
+  border-left: 6px solid var(--awg-ai-accent);
+  background: var(--awg-ai-bg);
+  border-radius: var(--awg-radius);
+  padding: 10px 12px;
+}
+
+.ai-assisted__text {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.ai-assisted__agent {
+  font-size: 12px;
+  color: var(--awg-muted);
+}
+
+/*
+ * .not-a-fact — the visible "not a deterministic fact" badge that app.js places
+ * on every AI-assisted element (Req 1.8).
+ */
+.not-a-fact {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+  background: var(--awg-ai-accent);
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+/* ---- Empty state (Req 1.7) ----------------------------------------------- */
+
+/* Hidden by default via the [hidden] attribute; app.js toggles it. */
+.empty-state[hidden] {
+  display: none;
+}
+
+/*
+ * When the empty state is shown, app.js also hides the chart grid and AI region
+ * so there are no blank/broken chart containers. The empty state spans the whole
+ * page grid and centers its message.
+ */
+.empty-state {
+  grid-row: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.empty-state__card {
+  max-width: 480px;
+  text-align: center;
+  background: var(--awg-panel-bg);
+  border: 1px solid var(--awg-border);
+  border-radius: var(--awg-radius);
+  padding: 28px 32px;
+}
+
+.empty-state__title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: var(--awg-ink);
+}
+
+.empty-state__body {
+  margin: 0;
+  font-size: 14px;
+  color: var(--awg-muted);
+  line-height: 1.5;
+}
+
+/*
+ * Utility used by app.js to collapse the main regions when the empty state is
+ * active, keeping the DOM free of broken chart containers.
+ */
+.is-hidden {
+  display: none !important;
+}

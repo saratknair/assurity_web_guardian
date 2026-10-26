@@ -1,0 +1,1 @@
+const fs=require('fs');const path=require('path');const manifestPath=process.argv[2];const m=JSON.parse(fs.readFileSync(manifestPath,'utf8'));let n=0;for(const e of m){const d=path.dirname(e.path);if(d)fs.mkdirSync(d,{recursive:true});fs.writeFileSync(e.path,Buffer.from(e.b64,'base64'));n++;}console.log('wrote',n,'files');

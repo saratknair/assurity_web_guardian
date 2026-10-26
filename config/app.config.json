@@ -1,0 +1,32 @@
+{
+  "approvedDomain": "assurity.nz",
+  "baseUrl": "https://assurity.nz",
+  "domain": "assurity-nz",
+  "seedFilePath": "config/page-seed.json",
+  "limits": {
+    "pages": 10,
+    "crawlDepth": 2,
+    "concurrency": 1,
+    "requestSpacingMs": 1000,
+    "retries": 2,
+    "navTimeoutMs": 30000,
+    "runTimeoutMs": 600000,
+    "maxApprovedPages": 500,
+    "maxDiscoveryCount": 500,
+    "largeScopeThreshold": 25
+  },
+  "retention": {
+    "maxRuns": 50,
+    "maxAgeDays": 30
+  },
+  "viewports": {
+    "desktop": {
+      "width": 1440,
+      "height": 900
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844
+    }
+  }
+}
