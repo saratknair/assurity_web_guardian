@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-10-27T09:40:44.722Z",
+  "testSuiteVersion": "milestone-1",
+  "tests": [
+    {
+      "slug": "assurity-nz",
+      "baselineVersion": 2,
+      "specPath": "tests/generated/assurity-nz.baseline-v2.spec.ts"
+    },
+    {
+      "slug": "assurity-nz-software-quality-services",
+      "baselineVersion": 3,
+      "specPath": "tests/generated/assurity-nz-software-quality-services.baseline-v3.spec.ts"
+    },
+    {
+      "slug": "assurity-nz-performance-testing",
+      "baselineVersion": 2,
+      "specPath": "tests/generated/assurity-nz-performance-testing.baseline-v2.spec.ts"
+    },
+    {
+      "slug": "assurity-nz-business-analysis",
+      "baselineVersion": 2,
+      "specPath": "tests/generated/assurity-nz-business-analysis.baseline-v2.spec.ts"
+    },
+    {
+      "slug": "assurity-nz-case-studies",
+      "baselineVersion": 1,
+      "specPath": "tests/generated/assurity-nz-case-studies.baseline-v1.spec.ts"
+    },
+    {
+      "slug": "assurity-nz-careers",
+      "baselineVersion": 1,
+      "specPath": "tests/generated/assurity-nz-careers.baseline-v1.spec.ts"
+    },
+    {
+      "slug": "assurity-nz-contact",
+      "baselineVersion": 1,
+      "specPath": "tests/generated/assurity-nz-contact.baseline-v1.spec.ts"
+    },
+    {
+      "slug": "assurity-nz-engagement-models",
+      "baselineVersion": 1,
+      "specPath": "tests/generated/assurity-nz-engagement-models.baseline-v1.spec.ts"
+    },
+    {
+      "slug": "assurity-nz-capability-software-quality-services-test-automation-engineering",
+      "baselineVersion": 1,
+      "specPath": "tests/generated/assurity-nz-capability-software-quality-services-test-automation-engineering.baseline-v1.spec.ts"
+    },
+    {
+      "slug": "assurity-nz-capability-software-quality-accelerators-exmonitoring",
+      "baselineVersion": 1,
+      "specPath": "tests/generated/assurity-nz-capability-software-quality-accelerators-exmonitoring.baseline-v1.spec.ts"
+    }
+  ]
+}
