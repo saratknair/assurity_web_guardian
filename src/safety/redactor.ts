@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Redactor removes tokens, credentials, personal data and secrets before any
  * telemetry/log/report write (Req 20.13, 22.1, 22.2). Pure function over the
  * record; deep-clones and replaces matched values with a placeholder.
@@ -12,7 +12,7 @@ const SENSITIVE_KEY = /(password|passwd|secret|token|api[_-]?key|authorization|a
 const SENSITIVE_VALUE: RegExp[] = [
   /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/,          // email
   /\bBearer\s+[A-Za-z0-9._-]+\b/i,                             // bearer token
-  /\b[A-Za-z0-9_-]{32,}\b/,                                    // long opaque token
+  /\b[A-Za-z0-9_]{32,}\b/,                                     // long opaque token (no hyphens: avoids matching human-readable kebab-case slugs/URLs)
   /\b\d{13,19}\b/,                                             // card-ish
 ];
 

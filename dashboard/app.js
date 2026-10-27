@@ -193,7 +193,7 @@ function byPageChart(data) {
     type: "bar",
     data: { labels, datasets: [{ label: "Findings", data: vals, backgroundColor: C.accent, borderRadius: 4 }] },
     options: baseOpts({
-      onClick: (_e, els) => { if (els && els.length) { const r = rows[els[0].index]; if (r) openDetail(String(r.page || "")); } },
+      onClick: (_e, els) => { if (els && els.length) { const i = els[0].index; const r = rows[i]; if (r) openDetail(String(r.page || ""), i); } },
       scales: { x: { grid: { display: false }, ticks: { color: C.tick, maxRotation: 60, minRotation: 30 } }, y: { beginAtZero: true, ticks: { precision: 0, color: C.tick }, grid: { color: C.grid } } },
     }),
   }));
@@ -204,7 +204,8 @@ function renderPageList(data) {
   const ul = document.getElementById("page-list");
   if (!ul) return;
   ul.textContent = "";
-  for (const r of _pageRows) {
+  for (let i = 0; i < _pageRows.length; i++) {
+    const r = _pageRows[i];
     const page = String((r && r.page) || "");
     if (!page) continue;
     const count = Number((r && r.count) || 0);
@@ -220,7 +221,8 @@ function renderPageList(data) {
     chip.textContent = count > 0 ? (count + " findings") : "clean";
     btn.appendChild(url);
     btn.appendChild(chip);
-    btn.addEventListener("click", () => openDetail(page));
+    const idx = i;
+    btn.addEventListener("click", () => openDetail(page, idx));
     li.appendChild(btn);
     ul.appendChild(li);
   }
@@ -255,7 +257,7 @@ async function loadFindings() {
   } catch { return null; }
 }
 
-async function openDetail(pageUrl) {
+async function openDetail(pageUrl, pageIndex) {
   const panel = document.getElementById("page-detail");
   const overlay = document.getElementById("page-detail-overlay");
   const body = document.getElementById("detail-body");
@@ -277,7 +279,13 @@ async function openDetail(pageUrl) {
   body.textContent = "";
 
   const pages = findings && Array.isArray(findings.pages) ? findings.pages : [];
-  const match = pages.find((p) => p && (p.page === pageUrl || shortPage(String(p.page || "")) === shortPage(pageUrl)));
+  // Match by URL first; fall back to positional index because the published
+  // findings.json pages are built from the same ordered scope as findingsByPage
+  // (and a sanitized page URL may not string-match the dashboard URL).
+  let match = pages.find((p) => p && (p.page === pageUrl || shortPage(String(p.page || "")) === shortPage(pageUrl)));
+  if (!match && typeof pageIndex === "number" && pageIndex >= 0 && pageIndex < pages.length) {
+    match = pages[pageIndex];
+  }
 
   const h1 = document.createElement("h3");
   h1.className = "detail-section__title";

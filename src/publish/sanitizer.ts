@@ -39,10 +39,13 @@ const PATH_REMOVED = "[path removed]";
 const ABSOLUTE_PATH_PATTERNS: RegExp[] = [
   // UNC path: \\host\share\... (double backslash prefix)
   /\\\\[^\s"'\\/][^\s"']*/g,
-  // Windows drive path with backslashes: C:\Users\... (one or more segments)
-  /[A-Za-z]:\\[^\s"']*/g,
-  // Windows drive path with forward slashes: C:/Users/...
-  /[A-Za-z]:\/[^\s"']*/g,
+  // Windows drive path with backslashes: C:\Users\... The drive letter must not
+  // be preceded by another letter, so URL schemes (e.g. the "s" in "https:")
+  // are never mistaken for a drive letter.
+  /(?<![A-Za-z])[A-Za-z]:\\[^\s"']*/g,
+  // Windows drive path with forward slashes: C:/Users/... Same boundary guard
+  // as above so "https:/" / "file:/" URL schemes are not matched.
+  /(?<![A-Za-z])[A-Za-z]:\/(?![\/])[^\s"']*/g,
   // POSIX internal home paths: /Users/... or /home/...
   /\/(?:Users|home)\/[^\s"']*/g,
 ];
