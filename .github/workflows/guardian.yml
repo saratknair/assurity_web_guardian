@@ -73,9 +73,32 @@ jobs:
           AWG_RUN_ORIGIN: cloud
           AWG_SKIP_LOCAL_PUBLISH: "1"
         run: node scripts/run-guardian.mjs
+      - name: Restore run history from runs-data
+        # Each CI run checks out a fresh tree, so artifacts/runs/ holds ONLY the
+        # run that just executed. The Run_Health_Trend (and the runs index) must
+        # accumulate across runs, so we pull the prior runs that the
+        # commit-runs-data job has been pushing to the `runs-data` branch and
+        # merge them in ADDITIVELY (never overwriting the run we just produced).
+        # Read-only w.r.t. the branch; no push here (the run job stays
+        # contents:read). First-ever run (no runs-data branch yet) is a no-op.
+        run: |
+          set -e
+          git fetch origin runs-data --depth=1 || { echo "no runs-data branch yet; skipping history restore"; exit 0; }
+          rm -rf .history-runs
+          git worktree add --detach .history-runs origin/runs-data || { echo "could not materialise runs-data; skipping"; exit 0; }
+          if [ -d .history-runs/artifacts/runs ]; then
+            mkdir -p artifacts/runs
+            # Copy prior run dirs in, but DO NOT clobber the run just produced.
+            cp -rn .history-runs/artifacts/runs/. artifacts/runs/ || true
+            echo "Restored historical runs:"; ls -1 artifacts/runs | sed 's/^/  /'
+          else
+            echo "runs-data has no artifacts/runs yet; nothing to restore"
+          fi
+          git worktree remove --force .history-runs || rm -rf .history-runs
       - name: Build published data
         # Sanitize raw artifacts -> Published_Data into ./_site/data
-        # (build-published-data reads the output dir from argv[2]).
+        # (build-published-data reads the output dir from argv[2]). With history
+        # restored above, this now emits the full runs index + accumulating trend.
         run: node dist/publish/build-published-data.js ./_site
       - name: Add static dashboard to site
         # Copy the static dashboard app alongside the sanitized data.
