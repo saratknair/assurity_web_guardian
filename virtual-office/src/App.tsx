@@ -3,6 +3,7 @@ import {
   useOfficeModel,
   resolveOfficeMode,
   useLatestPublishedRunId,
+  dataUrl,
 } from "./office/dataSource";
 import type { OfficeCharacter } from "./office/stateMachine";
 import { useRunFindings, SEVERITY_ORDER, type Severity } from "./office/findingsData";
@@ -24,7 +25,7 @@ function usePublishedRuns(enabled: boolean): PublishedRun[] {
     if (!enabled) { setRuns([]); return; }
     void (async () => {
       try {
-        const res = await fetch("./data/index.json");
+        const res = await fetch(dataUrl("index.json"));
         if (!res.ok) return;
         const raw: unknown = await res.json();
         const list = Array.isArray(raw)

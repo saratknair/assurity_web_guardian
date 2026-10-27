@@ -13,6 +13,7 @@
 // Same-origin relative fetch only; empty/degraded on any error (no throw).
 
 import { useEffect, useState } from "react";
+import { dataUrl } from "./dataSource";
 
 export type Severity = "critical" | "serious" | "moderate" | "minor";
 export const SEVERITY_ORDER: Severity[] = ["critical", "serious", "moderate", "minor"];
@@ -58,7 +59,7 @@ export function severityOf(detail: string): Severity {
 }
 
 function shotUrls(runId: string, slug: string): { label: string; url: string }[] {
-  const base = "./data/runs/" + encodeURIComponent(runId) + "/screenshots/";
+  const base = dataUrl("runs/" + encodeURIComponent(runId) + "/screenshots/");
   return [
     { label: "Desktop", url: base + slug + ".desktop.png" },
     { label: "Desktop (diff)", url: base + slug + ".desktop.diff.png" },
@@ -84,7 +85,7 @@ export function useRunFindings(runId: string | null): RunFindings {
     }
     void (async () => {
       try {
-        const res = await fetch("./data/runs/" + encodeURIComponent(runId) + "/findings.json");
+        const res = await fetch(dataUrl("runs/" + encodeURIComponent(runId) + "/findings.json"));
         if (!res.ok) throw new Error("findings " + res.status);
         const raw: unknown = await res.json();
         const rawPages = raw && typeof raw === "object" && Array.isArray((raw as { pages?: unknown }).pages)

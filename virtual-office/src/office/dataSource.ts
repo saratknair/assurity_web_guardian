@@ -90,7 +90,19 @@ export function resolveOfficeMode(): OfficeMode {
   if (flag === "replay") return "replay";
   if (flag === "historical") return "historical";
   if (flag === "live") return "live";
-  return "live";
+
+  // No explicit build flag. Decide by host so the published Pages site never
+  // ends up in live mode (which would try to reach a local Event_Server that
+  // does not exist in production, leaving the office empty). Only genuine local
+  // development on localhost/127.0.0.1 defaults to live; anything else (a
+  // deployed static site) defaults to replay so it loads the published run.
+  try {
+    const host = window.location.hostname;
+    const isLocal = host === "localhost" || host === "127.0.0.1" || host === "";
+    return isLocal ? "live" : "replay";
+  } catch {
+    return "replay";
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -103,8 +115,33 @@ export function resolveOfficeMode(): OfficeMode {
  * app's base URL, so the request never leaves the origin and never targets
  * `127.0.0.1:7788`.
  */
+/**
+ * Resolve a Published_Data path to a same-origin URL that works whether the app
+ * is served at the site root (local dev, "/") OR at a subpath ("/office/" on
+ * the Pages site). The dashboard lives at the root and the office lives under
+ * "/office/", but the published data tree is ALWAYS at the site root ("/data").
+ *
+ * We therefore anchor every data request to the directory ABOVE the app base.
+ * `import.meta.env.BASE_URL` is Vite''s configured base ("/office/" for the
+ * office build, "./" or "/" otherwise); resolving "../data/<path>" against the
+ * document origin yields the site-root data dir in every case. Falls back to a
+ * relative "./data/<path>" if URL resolution is unavailable.
+ */
+export function dataUrl(path: string): string {
+  const clean = path.replace(/^\/+/, "");
+  try {
+    const base = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? "./";
+    // Absolute base ("/office/") -> origin-anchored; relative base -> doc-anchored.
+    const appBase = new URL(base, window.location.href);
+    // Go up one level from the app base to reach the site root, then into data.
+    return new URL("../data/" + clean, appBase).toString();
+  } catch {
+    return "./data/" + clean;
+  }
+}
+
 export function staticEventsPath(runId: string): string {
-  return `./data/runs/${encodeURIComponent(runId)}/events.json`;
+  return dataUrl(`runs/${encodeURIComponent(runId)}/events.json`);
 }
 
 function asEventArray(raw: unknown): GEvent[] {
@@ -315,7 +352,7 @@ export function useLatestPublishedRunId(enabled: boolean): string | null {
     }
     void (async () => {
       try {
-        const res = await fetch("./data/index.json");
+        const res = await fetch(dataUrl("index.json"));
         if (!res.ok) return;
         const raw: unknown = await res.json();
         // Accept `{ runs: [...] }`; tolerate a bare array; ignore anything else.
