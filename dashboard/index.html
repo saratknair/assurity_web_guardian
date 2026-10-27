@@ -30,6 +30,18 @@
     <main id="dashboard" class="dashboard is-hidden">
       <section class="kpi-row" id="kpi-row" aria-label="Key metrics"></section>
 
+      <section class="card findings-explorer">
+        <div class="explorer-head">
+          <div>
+            <h2 class="card__title">Pages and findings</h2>
+            <p class="card__hint">Select any page to inspect its deterministic findings, AI notes, and before/after evidence screenshots.</p>
+          </div>
+          <span class="explorer-badge">Interactive</span>
+        </div>
+        <ul id="page-list" class="page-list" aria-label="Select a page to see its findings and screenshots"></ul>
+        <div class="card__canvas card__canvas--short"><canvas id="chart-findings-by-page"></canvas></div>
+      </section>
+
       <section class="charts">
         <article class="card card--wide">
           <h2 class="card__title">Run health trend</h2>
@@ -43,17 +55,8 @@
           <h2 class="card__title">Accessibility: new vs recurring</h2>
           <div class="card__canvas"><canvas id="chart-a11y-new-vs-recurring"></canvas></div>
         </article>
-        <article class="card card--wide">
-          <h2 class="card__title">Findings by page</h2>
-          <p class="card__hint">Click a bar or a page below to see its findings and screenshots.</p>
-          <div class="card__canvas"><canvas id="chart-findings-by-page"></canvas></div>
-        </article>
       </section>
 
-      <section class="card findings-explorer">
-        <h2 class="card__title">Pages</h2>
-        <ul id="page-list" class="page-list" aria-label="Select a page to see its findings and screenshots"></ul>
-      </section>
 
       <aside id="ai-analysis" class="card ai-analysis" aria-labelledby="title-ai">
         <h2 class="card__title" id="title-ai">AI-assisted analysis</h2>

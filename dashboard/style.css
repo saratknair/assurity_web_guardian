@@ -165,3 +165,12 @@ body {
   .topbar { flex-direction: column; align-items: flex-start; }
   .topbar__meta { text-align: left; }
 }
+/* Pages-and-findings explorer (the primary interactive section) */
+.findings-explorer { border: 1px solid #2a3a56; }
+.explorer-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.explorer-badge { flex: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #06121a; background: var(--accent-2); padding: 3px 10px; border-radius: 999px; }
+.card__canvas--short { height: 220px; margin-top: 16px; }
+.card__canvas--short canvas { max-height: 220px; }
+.page-row__go { flex: none; font-size: 12px; font-weight: 600; color: var(--accent-2); }
+.page-row { position: relative; }
+.page-row::after { content: ""; }

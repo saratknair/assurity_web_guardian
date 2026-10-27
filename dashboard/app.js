@@ -219,8 +219,12 @@ function renderPageList(data) {
     const chip = document.createElement("span");
     chip.className = "page-row__chip " + (count > 0 ? "chip-find" : "chip-clean");
     chip.textContent = count > 0 ? (count + " findings") : "clean";
+    const go = document.createElement("span");
+    go.className = "page-row__go";
+    go.textContent = "Inspect >";
     btn.appendChild(url);
     btn.appendChild(chip);
+    btn.appendChild(go);
     const idx = i;
     btn.addEventListener("click", () => openDetail(page, idx));
     li.appendChild(btn);
