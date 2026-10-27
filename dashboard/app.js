@@ -112,7 +112,7 @@ function renderKpis(data) {
   const healthClass = health === "healthy" ? "good" : health === "attention" ? "warn" : health === "failing" ? "bad" : "";
   kpi(host, "Latest health", cap(health), healthClass, latest && latest.finishedAt ? fmtTs(latest.finishedAt) : "");
   kpi(host, "Runs tracked", String(trend.length), "", "chronological");
-  kpi(host, "Failed checks (latest)", String(latest ? latest.failedChecks : 0), (latest && latest.failedChecks > 0) ? "warn" : "good", "in most recent run");
+  kpi(host, "Issues found (latest)", String(latest ? latest.failedChecks : 0), (latest && latest.failedChecks > 0) ? "warn" : "good", "on the site in the latest run");
   kpi(host, "Critical findings", String(Number(sev.critical || 0)), Number(sev.critical || 0) > 0 ? "bad" : "good", "highest severity");
   kpi(host, "Total findings", String(totalFindings), "", "across scanned pages");
   kpi(host, "Pages scanned", String((data.findingsByPage || []).length), "", "approved scope");
@@ -159,7 +159,7 @@ function trendChart(data) {
   const vals = t.map((p) => Number((p && p.failedChecks) || 0));
   charts.push(new Chart(cv(CANVAS.trend), {
     type: "line",
-    data: { labels, datasets: [{ label: "Failed checks", data: vals, borderColor: C.accent, backgroundColor: C.accentFill, fill: true, tension: 0.3, pointRadius: 3, pointBackgroundColor: C.accent }] },
+    data: { labels, datasets: [{ label: "Issues found", data: vals, borderColor: C.accent, backgroundColor: C.accentFill, fill: true, tension: 0.3, pointRadius: 3, pointBackgroundColor: C.accent }] },
     options: baseOpts({ scales: axis() }),
   }));
 }
