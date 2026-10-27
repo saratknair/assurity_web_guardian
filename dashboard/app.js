@@ -15,7 +15,6 @@ import { resolveDataSource } from "./data-source.js";
 
 const CANVAS = {
   trend: "chart-run-health-trend",
-  byPage: "chart-findings-by-page",
   bySeverity: "chart-findings-by-severity",
   a11y: "chart-a11y-new-vs-recurring",
 };
@@ -141,7 +140,6 @@ function renderCharts(data) {
   trendChart(data);
   severityChart(data);
   a11yChart(data);
-  byPageChart(data);
 }
 function disposeCharts() { while (charts.length) { try { charts.pop().destroy(); } catch {} } }
 function cv(id) {
@@ -185,19 +183,7 @@ function a11yChart(data) {
     options: baseOpts({ plugins: { legend: { display: true, position: "bottom", labels: { color: C.tick } } }, scales: { x: { stacked: true, grid: { display: false }, ticks: { color: C.tick } }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0, color: C.tick }, grid: { color: C.grid } } } }),
   }));
 }
-function byPageChart(data) {
-  const rows = Array.isArray(data.findingsByPage) ? data.findingsByPage : [];
-  const labels = rows.map((r) => shortPage(String((r && r.page) || "")));
-  const vals = rows.map((r) => Number((r && r.count) || 0));
-  charts.push(new Chart(cv(CANVAS.byPage), {
-    type: "bar",
-    data: { labels, datasets: [{ label: "Findings", data: vals, backgroundColor: C.accent, borderRadius: 4 }] },
-    options: baseOpts({
-      onClick: (_e, els) => { if (els && els.length) { const i = els[0].index; const r = rows[i]; if (r) openDetail(String(r.page || ""), i); } },
-      scales: { x: { grid: { display: false }, ticks: { color: C.tick, maxRotation: 60, minRotation: 30 } }, y: { beginAtZero: true, ticks: { precision: 0, color: C.tick }, grid: { color: C.grid } } },
-    }),
-  }));
-}
+
 
 function renderPageList(data) {
   _pageRows = Array.isArray(data.findingsByPage) ? data.findingsByPage : [];

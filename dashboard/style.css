@@ -73,7 +73,7 @@ body {
 
 .page-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
 .page-row {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  display: grid; grid-template-columns: 1fr auto 96px; align-items: center; gap: 16px;
   width: 100%; text-align: left; cursor: pointer;
   background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
   padding: 11px 14px; color: var(--text); font: inherit; font-size: 13.5px;
@@ -84,7 +84,7 @@ body {
 .page-row__url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .page-row__count { flex: none; font-size: 12px; color: var(--muted); }
 .page-row__chip {
-  flex: none; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+  justify-self: end; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
   color: #0b0f17;
 }
 .chip-clean { background: var(--ok); }
@@ -171,6 +171,6 @@ body {
 .explorer-badge { flex: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #06121a; background: var(--accent-2); padding: 3px 10px; border-radius: 999px; }
 .card__canvas--short { height: 220px; margin-top: 16px; }
 .card__canvas--short canvas { max-height: 220px; }
-.page-row__go { flex: none; font-size: 12px; font-weight: 600; color: var(--accent-2); }
+.page-row__go { font-size: 12px; font-weight: 600; color: var(--accent-2); text-align: right; }
 .page-row { position: relative; }
 .page-row::after { content: ""; }
