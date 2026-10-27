@@ -1,6 +1,10 @@
-﻿import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { useOfficeModel, resolveOfficeMode, useLatestPublishedRunId } from "./office/dataSource";
+import {
+  useOfficeModel,
+  resolveOfficeMode,
+  useLatestPublishedRunId,
+} from "./office/dataSource";
 import { defaultDesks } from "./office/deskManager";
 import type { OfficeCharacter } from "./office/stateMachine";
 import { CommandCenter, SPAWN_CAMERA_POSITION } from "./office3d/CommandCenter";
@@ -10,44 +14,61 @@ import { IntroCinematic } from "./office3d/IntroCinematic";
 import { Controls, type CameraMode } from "./office3d/Controls";
 import "./office.css";
 
-// Number of desks in the command-center room (matches defaultDesks default and
-// the model's deskCount so desk ids line up between the reducer and the scene).
 const DESK_COUNT = 12;
-
-// Door / spawn point at the top-back corner of the room. Characters that are
-// entering or waiting (no desk assigned yet) are placed here so they read as
-// "arriving from the door at the back" before a free desk seats them.
 const DOOR_POSITION: [number, number, number] = [-10, 0, -8];
 
-/**
- * Office App tree (task 5.19).
- *
- * Composition: a single `<Canvas>` whose camera spawns at
- * `SPAWN_CAMERA_POSITION` (the top-back corner framing the whole room, Req
- * 2.9). The `IntroCinematic` (clouds over NZ, Req 3.1) plays first and hands
- * off via `onReveal`; the `CommandCenter` scene (Req 2.1) renders the office
- * and one `Human` + `BillboardLabel` per character.
- *
- * HONESTY (Req 2.11): characters are rendered ONLY from `model.characters`,
- * which `useOfficeModel` derives from genuine Guardian events via `deriveOffice`.
- * Nothing here invents a character. When the office is idle/empty no characters
- * render, and an honest idle indicator is shown.
- */
+interface PublishedRun {
+  runId: string;
+  finishedAt?: string;
+  status?: string;
+  health?: string;
+}
+
+// Load the published runs index (newest-first) for the run selector. Static,
+// same-origin, relative fetch only; empty list on any error.
+function usePublishedRuns(enabled: boolean): PublishedRun[] {
+  const [runs, setRuns] = useState<PublishedRun[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    if (!enabled) { setRuns([]); return; }
+    void (async () => {
+      try {
+        const res = await fetch("./data/index.json");
+        if (!res.ok) return;
+        const raw: unknown = await res.json();
+        const list = Array.isArray(raw)
+          ? raw
+          : raw && typeof raw === "object" && Array.isArray((raw as { runs?: unknown }).runs)
+            ? ((raw as { runs: unknown[] }).runs)
+            : [];
+        if (!cancelled) setRuns(list as PublishedRun[]);
+      } catch { /* selector stays empty */ }
+    })();
+    return () => { cancelled = true; };
+  }, [enabled]);
+  return runs;
+}
+
 export default function App() {
   const [revealed, setRevealed] = useState(false);
   const [cam, setCam] = useState<CameraMode>("orbit");
 
-  // Mode is resolved at build/runtime: the published Pages site is built with
-  // VITE_AWG_MODE=replay -> "replay"; local dev defaults to "live" (SSE against
-  // the read-only Event_Server :7788). In replay/historical we fetch the most
-  // recent published run from ./data/index.json and play it back; in live we
-  // pass no runId. Hooks are always called (gated by the `enabled` arg) to
-  // respect the Rules of Hooks.
-  const mode = resolveOfficeMode();
-  const latestRunId = useLatestPublishedRunId(mode !== "live");
-  const model = useOfficeModel(mode, mode === "live" ? null : latestRunId, DESK_COUNT);
+  // Resolved build mode ("replay" on the published site, "live" in local dev).
+  const buildMode = resolveOfficeMode();
+  const isStatic = buildMode !== "live";
 
-  // Desk placements, looked up by a character's assigned deskId to seat them.
+  // Published run list (for the selector) and the chosen run. Defaults to the
+  // latest published run; the user can pick any historical run to replay.
+  const runs = usePublishedRuns(isStatic);
+  const latestRunId = useLatestPublishedRunId(isStatic);
+  const [selectedRun, setSelectedRun] = useState<string | null>(null);
+  const activeRun = selectedRun ?? latestRunId;
+
+  // On a static site both "replay" and "historical" read the same published
+  // JSON; the mode here is purely a UI label. Live mode streams from the local
+  // Event_Server. We always derive the office model honestly from events.
+  const model = useOfficeModel(buildMode, isStatic ? activeRun : null, DESK_COUNT);
+
   const desks = useMemo(() => defaultDesks(DESK_COUNT), []);
   const deskPos = useMemo(() => {
     const map = new Map<string, [number, number, number]>();
@@ -55,11 +76,8 @@ export default function App() {
     return map;
   }, [desks]);
 
-  // Scene phase shown on the command-center screen wall â€” derived only from the
-  // honest model, never invented. Reflects whether any present character works.
   const scenePhase = useMemo(() => derivePhase(model.characters, model.idle), [model.characters, model.idle]);
 
-  // World position for a character: at its desk when seated, else at the door.
   const positionFor = (c: OfficeCharacter): [number, number, number] => {
     if (c.deskId) {
       const p = deskPos.get(c.deskId);
@@ -68,18 +86,14 @@ export default function App() {
     return DOOR_POSITION;
   };
 
+  const modeLabel = isStatic ? "REPLAY" : "LIVE";
+
   return (
     <div className="office3d-root">
-      <Canvas shadows camera={{ position: SPAWN_CAMERA_POSITION, fov: 50 }}>
-        {/* Intro cinematic plays first; it unmounts itself on reveal/skip and
-            sets no agent/run state. The office renders underneath from the
-            start so the reveal hands straight off to the spawn-framed room. */}
+      <Canvas shadows camera={{ position: SPAWN_CAMERA_POSITION, fov: 55 }}>
         {!revealed && <IntroCinematic onReveal={() => setRevealed(true)} />}
 
-        <CommandCenter runId={model.runId} phase={scenePhase}>
-          {/* One Human per genuine character. The BillboardLabel is mounted
-              INSIDE the same positioned group so the name floats above that
-              specific agent's head and faces the active camera (Req 2.7/2.8). */}
+        <CommandCenter runId={model.runId ?? activeRun ?? undefined} phase={scenePhase}>
           {model.characters.map((c) => (
             <group key={c.id} position={positionFor(c)}>
               <Human appearance={c.appearance} phase={c.phase} />
@@ -88,14 +102,13 @@ export default function App() {
           ))}
         </CommandCenter>
 
-        {/* Retain orbit + first-person walk controls (Req 2.10). */}
         <Controls mode={cam} />
       </Canvas>
 
-      {/* Minimal HUD: camera toggle + honest idle indicator. */}
       <div className="hud-top">
-        <h1>Assurity Web Guardian â€” Virtual Office</h1>
+        <h1>Assurity Web Guardian - Virtual Office</h1>
         <div className="modes">
+          <span className="mode-badge">{modeLabel}</span>
           <span className="cam-toggle">
             <button className={cam === "orbit" ? "active" : ""} onClick={() => setCam("orbit")}>Orbit</button>
             <button className={cam === "walk" ? "active" : ""} onClick={() => setCam("walk")}>Walk</button>
@@ -103,29 +116,50 @@ export default function App() {
         </div>
       </div>
 
+      {isStatic && (
+        <div className="hud-runbar">
+          <label>
+            Run:
+            <select
+              value={activeRun ?? ""}
+              onChange={(e) => setSelectedRun(e.target.value || null)}
+            >
+              {runs.length === 0 && <option value="">(no published runs)</option>}
+              {runs.map((r) => (
+                <option key={r.runId} value={r.runId}>
+                  {runLabel(r)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <span className="replay-badge">REPLAY - not live</span>
+        </div>
+      )}
+
       <div className="hud-runcontrol">
         <strong>Run Control Board</strong>{" "}
         {model.idle ? (
-          <span className="idle-badge">IDLE â€” no Guardian run is active</span>
+          <span className="idle-badge">IDLE - no agent activity in this frame</span>
         ) : (
           <span>
-            run {model.runId ?? "â€”"} â€” phase {scenePhase} â€” agents present: {model.characters.length}
+            run {model.runId ?? activeRun ?? "-"} - phase {scenePhase} - agents present: {model.characters.length}
           </span>
         )}
       </div>
 
       {cam === "walk" && (
-        <div className="hud-help">Click the scene to look around (Esc to release) â€” W A S D to move</div>
+        <div className="hud-help">Click the scene to look around (Esc to release) - W A S D to move</div>
       )}
     </div>
   );
 }
 
-/**
- * Derive the scene phase label from the honest model only. Never fabricates
- * activity: "idle" when nothing is present, otherwise reflects the busiest
- * present phase so the screen wall tells the truth about the run.
- */
+function runLabel(r: PublishedRun): string {
+  const when = r.finishedAt ? new Date(r.finishedAt).toLocaleString() : r.runId;
+  const status = r.status ? " - " + r.status : "";
+  return when + status;
+}
+
 function derivePhase(characters: OfficeCharacter[], idle: boolean): string {
   if (idle) return "idle";
   if (characters.some((c) => c.phase === "working")) return "working";
@@ -134,4 +168,3 @@ function derivePhase(characters: OfficeCharacter[], idle: boolean): string {
   if (characters.some((c) => c.phase === "entering")) return "entering";
   return "idle";
 }
-

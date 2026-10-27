@@ -66,3 +66,4 @@ body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; ov
 }
 .hud-legend .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #334155; }
 .hud-legend .chip i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.mode-badge { background: #22d3ee; color: #06121a; font-weight: 700; font-size: 11px; padding: 3px 10px; border-radius: 6px; letter-spacing: 0.04em; }

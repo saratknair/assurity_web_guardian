@@ -1,414 +1,165 @@
-/*
- * Assurity Web Guardian — static dashboard styles.
- *
- * Layout goal (Req 1.1): on the Desktop_Viewport (1440x900) the combined chart
- * area occupies >= 50% of the rendered page area. This is achieved with a
- * page-level CSS grid whose middle row (the four-chart grid) is the dominant
- * region, plus chart panels whose <canvas> wrappers fill their panels. At
- * 1440x900 the chart grid alone is ~1380 x 560 css px of canvas area
- * (~772,800 px^2) against a 1,296,000 px^2 page — comfortably over 50%.
- *
- * Visual treatments defined here for later use by app.js (task 4.6):
- *   .deterministic  — deterministic test evidence (blue accent, matches builder)
- *   .ai-assisted    — AI-assisted analysis (orange accent, matches builder STYLE)
- *   .not-a-fact     — the visible "not a deterministic fact" badge
- */
-
 :root {
-  --awg-navy: #1a365d;
-  --awg-ink: #1a202c;
-  --awg-muted: #718096;
-  --awg-page-bg: #f7f8fa;
-  --awg-panel-bg: #ffffff;
-  --awg-border: #e2e8f0;
-
-  /* Deterministic treatment (mirrors dashboard-builder .det). */
-  --awg-det-accent: #2b6cb0;
-
-  /* AI-assisted treatment (mirrors dashboard-builder .ai). */
-  --awg-ai-accent: #c05621;
-  --awg-ai-bg: #fffaf5;
-
-  --awg-gap: 16px;
-  --awg-radius: 8px;
+  --bg: #0b0f17;
+  --surface: #141b27;
+  --surface-2: #1b2433;
+  --border: #243044;
+  --text: #e6edf6;
+  --muted: #90a0b7;
+  --accent: #3b82f6;
+  --accent-2: #22d3ee;
+  --critical: #ef4444;
+  --serious: #f97316;
+  --moderate: #eab308;
+  --minor: #64748b;
+  --ok: #22c55e;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.25);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
-
-* {
-  box-sizing: border-box;
-}
-
-html,
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
 body {
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  min-height: 100vh;
-  font-family: system-ui, "Segoe UI", Arial, sans-serif;
-  color: var(--awg-ink);
-  background: var(--awg-page-bg);
-
-  /*
-   * Page-level grid: header (auto), chart grid (dominant, 1fr with a tall
-   * minimum), then the AI analysis region (auto, capped). The chart row is the
-   * only row allowed to grow, so it keeps the dominant share of the page.
-   */
-  display: grid;
-  grid-template-rows: auto minmax(560px, 1fr) auto;
-  gap: var(--awg-gap);
-  padding: var(--awg-gap);
-}
-
-/* ---- Header -------------------------------------------------------------- */
-
-.app-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--awg-gap);
-  padding: 14px 20px;
-  background: var(--awg-navy);
-  color: #fff;
-  border-radius: var(--awg-radius);
-}
-
-.app-header__titles h1 {
-  margin: 0;
-  font-size: 20px;
-}
-
-.app-header__subtitle {
-  margin: 2px 0 0;
-  font-size: 13px;
-  opacity: 0.85;
-}
-
-.app-header__meta {
-  font-size: 12px;
-  opacity: 0.9;
-  text-align: right;
-}
-
-/* ---- Chart grid (dominant region, Req 1.1) ------------------------------- */
-
-.chart-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: var(--awg-gap);
-  min-height: 0; /* allow grid children to shrink and canvases to size */
-}
-
-.chart-panel {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  min-width: 0;
-  background: var(--awg-panel-bg);
-  border: 1px solid var(--awg-border);
-  border-radius: var(--awg-radius);
-  padding: 12px 14px;
-}
-
-.chart-panel__title {
-  margin: 0 0 8px;
-  font-size: 14px;
-  color: var(--awg-muted);
-  font-weight: 600;
-}
-
-/* The canvas wrapper takes the remaining panel height so the drawn chart area
-   dominates each panel. app.js creates responsive Chart.js charts that fill it. */
-.chart-panel__canvas-wrap {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-.chart-panel__canvas-wrap > canvas {
-  position: absolute;
-  inset: 0;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-/* ---- Deterministic treatment (mirrors builder .det) ---------------------- */
-
-.deterministic {
-  border-left: 6px solid var(--awg-det-accent);
-}
-
-/* ---- AI-assisted analysis region ----------------------------------------- */
-
-.ai-analysis {
-  background: var(--awg-panel-bg);
-  border: 1px solid var(--awg-border);
-  border-radius: var(--awg-radius);
-  padding: 14px 16px;
-  /* Capped so the chart grid stays the dominant region; scroll if it overflows. */
-  max-height: 180px;
-  overflow: auto;
-}
-
-.ai-analysis__title {
-  margin: 0 0 10px;
-  font-size: 14px;
-  color: var(--awg-muted);
-  font-weight: 600;
-}
-
-.ai-analysis__items {
-  display: grid;
-  gap: 10px;
-}
-
-/*
- * .ai-assisted — persistent visual treatment applied to EVERY AI-assisted
- * element and to no deterministic element (Req 1.8). Orange accent + warm
- * background, matching the existing dashboard-builder `.ai` treatment.
- */
-.ai-assisted {
-  border-left: 6px solid var(--awg-ai-accent);
-  background: var(--awg-ai-bg);
-  border-radius: var(--awg-radius);
-  padding: 10px 12px;
-}
-
-.ai-assisted__text {
-  margin: 6px 0 0;
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.ai-assisted__agent {
-  font-size: 12px;
-  color: var(--awg-muted);
-}
-
-/*
- * .not-a-fact — the visible "not a deterministic fact" badge that app.js places
- * on every AI-assisted element (Req 1.8).
- */
-.not-a-fact {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1;
-  color: #fff;
-  background: var(--awg-ai-accent);
-  padding: 3px 8px;
-  border-radius: 10px;
-}
-
-/* ---- Empty state (Req 1.7) ----------------------------------------------- */
-
-/* Hidden by default via the [hidden] attribute; app.js toggles it. */
-.empty-state[hidden] {
-  display: none;
-}
-
-/*
- * When the empty state is shown, app.js also hides the chart grid and AI region
- * so there are no blank/broken chart containers. The empty state spans the whole
- * page grid and centers its message.
- */
-.empty-state {
-  grid-row: 1 / -1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-}
-
-.empty-state__card {
-  max-width: 480px;
-  text-align: center;
-  background: var(--awg-panel-bg);
-  border: 1px solid var(--awg-border);
-  border-radius: var(--awg-radius);
-  padding: 28px 32px;
-}
-
-.empty-state__title {
-  margin: 0 0 8px;
-  font-size: 18px;
-  color: var(--awg-ink);
-}
-
-.empty-state__body {
-  margin: 0;
-  font-size: 14px;
-  color: var(--awg-muted);
+  background: radial-gradient(1200px 600px at 70% -10%, #16213350, transparent), var(--bg);
+  color: var(--text);
+  font-family: var(--font);
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+.is-hidden { display: none !important; }
+.page { max-width: 1320px; margin: 0 auto; padding: 24px 24px 80px; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 18px 0 22px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+}
+.topbar__brand { display: flex; align-items: center; gap: 14px; }
+.topbar__dot {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 0 1px #ffffff14, 0 6px 18px #3b82f655;
+}
+.topbar__title { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+.topbar__subtitle { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+.topbar__meta { font-size: 13px; color: var(--muted); text-align: right; }
+
+.kpi-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px; margin-bottom: 22px;
+}
+.kpi {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--shadow);
+}
+.kpi__label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.kpi__value { font-size: 30px; font-weight: 700; margin-top: 6px; letter-spacing: -0.02em; }
+.kpi__sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.kpi__value.good { color: var(--ok); }
+.kpi__value.warn { color: var(--moderate); }
+.kpi__value.bad { color: var(--critical); }
+
+.charts {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 16px;
+}
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px; box-shadow: var(--shadow); margin-bottom: 16px;
+}
+.card--wide { grid-column: 1 / -1; }
+.card__title { margin: 0 0 4px; font-size: 15px; font-weight: 650; }
+.card__hint { margin: 0 0 12px; font-size: 12.5px; color: var(--muted); }
+.card__canvas { position: relative; height: 300px; }
+.card__canvas canvas { max-height: 300px; }
+
+.page-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+.page-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; text-align: left; cursor: pointer;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 11px 14px; color: var(--text); font: inherit; font-size: 13.5px;
+  transition: border-color 0.15s, transform 0.05s;
+}
+.page-row:hover { border-color: var(--accent); }
+.page-row:active { transform: translateY(1px); }
+.page-row__url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.page-row__count { flex: none; font-size: 12px; color: var(--muted); }
+.page-row__chip {
+  flex: none; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+  color: #0b0f17;
+}
+.chip-clean { background: var(--ok); }
+.chip-find { background: var(--serious); }
+
+.ai-analysis__items { display: grid; gap: 10px; }
+.ai-assisted {
+  border: 1px solid #f9731633; border-left: 3px solid var(--serious);
+  background: #f973160d; border-radius: 10px; padding: 12px 14px;
+}
+.ai-assisted__agent { font-size: 13px; font-weight: 650; margin-top: 6px; }
+.ai-assisted__text { margin: 4px 0 0; font-size: 13.5px; color: #d7e0ec; }
+.not-a-fact {
+  display: inline-block; font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; color: #0b0f17; background: var(--moderate);
+  padding: 2px 8px; border-radius: 999px;
 }
 
-/*
- * Utility used by app.js to collapse the main regions when the empty state is
- * active, keeping the DOM free of broken chart containers.
- */
-.is-hidden {
-  display: none !important;
+.empty-state { display: grid; place-items: center; padding: 80px 20px; }
+.empty-state__card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 32px 40px; text-align: center; max-width: 440px;
 }
+.empty-state__title { margin: 0 0 8px; font-size: 18px; }
+.empty-state__body { margin: 0; color: var(--muted); font-size: 14px; }
 
-/* ========================================================================
-   Page-detail drill-down drawer (follow-up to task 4.6)
-   ======================================================================== */
-
-.detail-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.45);
-  z-index: 40;
-}
+.detail-overlay { position: fixed; inset: 0; background: rgba(2,6,14,0.6); z-index: 40; }
 .detail-overlay[hidden] { display: none; }
-
 .detail-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100vh;
-  width: min(560px, 100vw);
-  background: #ffffff;
-  box-shadow: -8px 0 28px rgba(15, 23, 42, 0.25);
-  z-index: 41;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  position: fixed; top: 0; right: 0; height: 100vh; width: min(620px, 100vw);
+  background: var(--surface); border-left: 1px solid var(--border);
+  box-shadow: -10px 0 40px rgba(0,0,0,0.5); z-index: 41; display: flex; flex-direction: column;
 }
 .detail-panel[hidden] { display: none; }
-
 .detail-panel__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  background: #1a365d;
-  color: #fff;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--surface-2);
 }
-.detail-panel__title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  word-break: break-all;
-}
+.detail-panel__title { margin: 0; font-size: 14px; font-weight: 600; word-break: break-all; }
 .detail-panel__close {
-  background: transparent;
-  border: 0;
-  color: #fff;
-  font-size: 1.5rem;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0.1rem 0.4rem;
-  border-radius: 4px;
+  flex: none; background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 12px; cursor: pointer; font: inherit; font-size: 13px;
 }
-.detail-panel__close:hover,
-.detail-panel__close:focus { background: rgba(255, 255, 255, 0.15); outline: none; }
-
-.detail-panel__body {
-  padding: 1.25rem;
-  overflow-y: auto;
-  flex: 1 1 auto;
-}
+.detail-panel__close:hover { border-color: var(--accent); }
+.detail-panel__body { padding: 18px 20px; overflow-y: auto; flex: 1 1 auto; }
 
 .detail-section__title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #475569;
-  margin: 1.25rem 0 0.5rem;
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--muted); margin: 20px 0 10px;
 }
 .detail-section__title:first-child { margin-top: 0; }
 
-/* Outcomes list */
-.detail-outcome {
-  border: 1px solid #e2e8f0;
-  border-left-width: 4px;
-  border-radius: 6px;
-  padding: 0.6rem 0.75rem;
-  margin-bottom: 0.5rem;
-  background: #f8fafc;
+.outcome {
+  border: 1px solid var(--border); border-left-width: 4px; border-radius: 10px;
+  padding: 10px 12px; margin-bottom: 8px; background: var(--surface-2);
 }
-.detail-outcome__meta {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.25rem;
-}
-.detail-outcome__detail { margin: 0; font-size: 0.9rem; color: #1e293b; }
+.outcome__meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.outcome__detail { margin: 0; font-size: 13px; color: #d7e0ec; }
+.sev-badge { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; padding: 2px 8px; border-radius: 999px; color: #0b0f17; }
+.sev-critical { background: var(--critical); } .b-critical { border-left-color: var(--critical); }
+.sev-serious { background: var(--serious); } .b-serious { border-left-color: var(--serious); }
+.sev-moderate { background: var(--moderate); } .b-moderate { border-left-color: var(--moderate); }
+.sev-minor { background: var(--minor); } .b-minor { border-left-color: var(--minor); }
+.b-none { border-left-color: var(--accent); }
+.kind-tag { font-size: 11px; font-weight: 600; color: var(--muted); background: var(--surface); border: 1px solid var(--border); padding: 2px 7px; border-radius: 6px; }
 
-/* Severity badges reuse the chart palette */
-.sev-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  padding: 0.12rem 0.45rem;
-  border-radius: 999px;
-  color: #fff;
-}
-.sev-critical { background: #c53030; }
-.sev-serious  { background: #dd6b20; }
-.sev-moderate { background: #d69e2e; }
-.sev-minor    { background: #718096; }
-.detail-outcome.sev-critical-border { border-left-color: #c53030; }
-.detail-outcome.sev-serious-border  { border-left-color: #dd6b20; }
-.detail-outcome.sev-moderate-border { border-left-color: #d69e2e; }
-.detail-outcome.sev-minor-border    { border-left-color: #718096; }
-.detail-outcome.sev-none-border     { border-left-color: #2b6cb0; }
+.shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.shot { display: flex; flex-direction: column; gap: 4px; }
+.shot__label { font-size: 11px; color: var(--muted); }
+.shot img { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px; display: block; background: var(--surface-2); }
+.detail-empty { color: var(--muted); font-size: 13px; font-style: italic; }
 
-.detail-kind {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #475569;
-  background: #e2e8f0;
-  padding: 0.1rem 0.4rem;
-  border-radius: 4px;
+@media (max-width: 860px) {
+  .charts { grid-template-columns: 1fr; }
+  .card--wide { grid-column: auto; }
+  .topbar { flex-direction: column; align-items: flex-start; }
+  .topbar__meta { text-align: left; }
 }
-
-/* Screenshots grid */
-.detail-shots {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.75rem;
-}
-.detail-shot { display: flex; flex-direction: column; gap: 0.25rem; }
-.detail-shot__label { font-size: 0.72rem; color: #64748b; }
-.detail-shot img {
-  width: 100%;
-  height: auto;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  display: block;
-  background: #f1f5f9;
-}
-
-/* Accessible page-list fallback below the Findings-by-page chart */
-.page-list {
-  list-style: none;
-  margin: 0.5rem 0 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-}
-.page-list__btn {
-  font-size: 0.75rem;
-  color: #1a365d;
-  background: #edf2f7;
-  border: 1px solid #cbd5e1;
-  border-radius: 999px;
-  padding: 0.2rem 0.6rem;
-  cursor: pointer;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.page-list__btn:hover,
-.page-list__btn:focus { background: #e2e8f0; outline: 2px solid #2b6cb0; outline-offset: 1px; }
-
-.detail-empty { color: #64748b; font-size: 0.9rem; font-style: italic; }
