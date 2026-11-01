@@ -1,0 +1,1 @@
+{"ts":"2026-11-01T21:04:52.565Z","correlationId":"cor_mvybgspb92bbbcec0ed9","runId":"run_mvybgspb0e45ebf39ed8","type":"migration","reason":"test-manifest.specPath is now repo-relative (Req 8.2, 11.8)","detail":"Phase 2: absolute specPath no longer written; legacy manifests sanitized at publish."}
