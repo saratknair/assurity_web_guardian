@@ -22,7 +22,7 @@ import { buildPublishedData, type RunsIndex } from "./published-data.js";
  *      live `outDir`), so a failed/partial build cannot corrupt the previously
  *      published site.
  *   2. Copy the static dashboard app (`dashboard/index.html`, `style.css`,
- *      `app.js`, `data-source.js`, `vendor/`) into the staging bundle so the
+ *      `app.js`, `data-source.js`, `lib/`, `views/`, `vendor/`, ...) into the staging bundle so the
  *      Pages site is self-contained.
  *   3. Only once staging is fully built, swap it into `outDir` (move the old
  *      bundle aside, move staging into place, then drop the old bundle). If the
@@ -53,11 +53,6 @@ export interface PublishResult {
   /** Human-readable reason when `ok` is false. */
   reason?: string;
 }
-
-/** Static dashboard asset file names copied into the Pages bundle. */
-const DASHBOARD_FILES = ["index.html", "style.css", "app.js", "data-source.js"] as const;
-/** Static dashboard asset directory names copied recursively. */
-const DASHBOARD_DIRS = ["vendor"] as const;
 
 function ensureDir(dir: string): void {
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
@@ -95,14 +90,9 @@ function copyStaticDashboard(stagingDir: string): void {
   const srcDir = dashboardSourceDir();
   if (!existsSync(srcDir)) return;
   ensureDir(stagingDir);
-  for (const name of DASHBOARD_FILES) {
-    const src = join(srcDir, name);
-    if (existsSync(src)) cpSync(src, join(stagingDir, name));
-  }
-  for (const name of DASHBOARD_DIRS) {
-    const src = join(srcDir, name);
-    if (existsSync(src)) cpSync(src, join(stagingDir, name), { recursive: true });
-  }
+  // Copy the whole dashboard folder (index.html, app.js, lib/, views/, vendor/,
+  // rule-catalogue.js, ...) so a local publish matches CI's `cp -r dashboard/. ./_site/`.
+  cpSync(srcDir, stagingDir, { recursive: true });
 }
 
 /** Read the newest-first index written by `buildPublishedData` from staging. */

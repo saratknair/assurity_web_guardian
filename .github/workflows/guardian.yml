@@ -62,6 +62,31 @@ jobs:
       - name: Build
         # Compile TypeScript -> dist/
         run: npm run build
+      - name: Restore a11y history
+        # Pull artifacts/a11y-history.json from the runs-data branch BEFORE the run so
+        # the Guardian can merge this run into it. Writes a status marker
+        # (restored | first-run | unavailable) next to it; the marker is never committed.
+        # Read-only w.r.t. the branch. Must stay before "Run Guardian"; the run-history
+        # restore below stays AFTER the run (applyRetention would delete restored dirs).
+        run: |
+          set -u
+          mkdir -p artifacts
+          status="first-run"
+          if git fetch origin runs-data --depth=1 2>/dev/null; then
+            if git cat-file -e FETCH_HEAD:artifacts/a11y-history.json 2>/dev/null; then
+              if git show FETCH_HEAD:artifacts/a11y-history.json > artifacts/a11y-history.json; then
+                status="restored"
+              else
+                rm -f artifacts/a11y-history.json; status="unavailable"
+              fi
+            fi
+          else
+            git ls-remote --exit-code --heads origin runs-data >/dev/null 2>&1
+            rc=$?
+            if [ "$rc" -eq 2 ]; then status="first-run"; else status="unavailable"; fi
+          fi
+          printf '{"status":"%s"}\n' "$status" > artifacts/a11y-history.status.json
+          echo "a11y history status: $status"
       - name: Run Guardian
         # The real orchestrated run entry is scripts/run-guardian.mjs.
         # (dist/index.js "run" only prints a Phase-12 pointer message.)
@@ -72,6 +97,8 @@ jobs:
         env:
           AWG_RUN_ORIGIN: cloud
           AWG_SKIP_LOCAL_PUBLISH: "1"
+          # GitHub-controlled enum (schedule | workflow_dispatch | ...), not payload data.
+          AWG_RUN_TRIGGER: ${{ github.event_name }}
         run: node scripts/run-guardian.mjs
       - name: Restore run history from runs-data
         # Each CI run checks out a fresh tree, so artifacts/runs/ holds ONLY the
@@ -102,7 +129,17 @@ jobs:
         run: node dist/publish/build-published-data.js ./_site
       - name: Add static dashboard to site
         # Copy the static dashboard app alongside the sanitized data.
-        run: cp -r dashboard/. ./_site/
+        # config.js selects static mode so the published site never probes the
+        # loopback Event_Server (local dev keeps the shipped no-op config.js).
+        run: |
+          cp -r dashboard/. ./_site/
+          printf 'window.AWG_MODE = "static";\n' > ./_site/config.js
+      - name: Self-scan dashboard
+        # Non-blocking automated axe check of the built Dashboard (loopback only,
+        # not routed through the SiteGateway). Writes _site/data/self-scan.json and
+        # a table to the step summary. Not a conformance claim.
+        continue-on-error: true
+        run: node scripts/scan-dashboard.mjs ./_site
       - name: Build Virtual Office (replay mode) into site
         # Build the Virtual_Office for the static Pages_Site in Replay_Mode so it
         # resolves to replay (no live SSE, no loopback Event_Server, no manual
@@ -132,6 +169,16 @@ jobs:
           name: raw-runs
           path: artifacts/runs/
           # No runs produced => nothing to commit later; don't fail the run.
+          if-no-files-found: warn
+          retention-days: 1
+      - name: Upload a11y history
+        # Hand the merged a11y history (+ status marker) to commit-runs-data.
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: a11y-history
+          path: |
+            artifacts/a11y-history.json
+            artifacts/a11y-history.status.json
           if-no-files-found: warn
           retention-days: 1
 
@@ -217,6 +264,14 @@ jobs:
           # the commit step below no-ops when there is nothing new to add.
         continue-on-error: true
 
+      - name: Download a11y history
+        # Merged a11y history + status marker from the run job. Tolerate absence.
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: a11y-history
+          path: artifacts
+        continue-on-error: true
+
       - name: Commit new run(s) to runs-data (additive)
         # ADDITIVE ONLY: path-scope the add to artifacts/runs/<RUN_ID>/ for each run
         # the run job just produced, commit, and push. No force, no rebase, no
@@ -225,25 +280,26 @@ jobs:
         # runs-data branch). RUN_ID(s) are discovered from the downloaded dirs.
         run: |
           set -euo pipefail
-          if [ ! -d artifacts/runs ] || [ -z "$(ls -A artifacts/runs 2>/dev/null || true)" ]; then
-            echo "No raw run artifacts to commit; nothing to push to runs-data."
-            exit 0
-          fi
+          # No early exit when there are no raw runs: a history-only change must
+          # still be committed. The staged-diff check below decides whether to commit.
           # Stage ONLY the new run directories (path-scoped, one per RUN_ID).
-          committed=0
-          for dir in artifacts/runs/*/; do
-            [ -d "$dir" ] || continue
-            run_id="$(basename "$dir")"
-            git add -- "artifacts/runs/${run_id}/"
-            committed=1
-          done
-          if [ "$committed" -eq 0 ]; then
-            echo "No run directories found under artifacts/runs/; nothing to commit."
-            exit 0
+          if [ -d artifacts/runs ]; then
+            for dir in artifacts/runs/*/; do
+              [ -d "$dir" ] || continue
+              run_id="$(basename "$dir")"
+              git add -- "artifacts/runs/${run_id}/"
+            done
+          else
+            echo "No raw run artifacts found under artifacts/runs/."
+          fi
+          # Stage the a11y history unless it could not be restored (status unavailable).
+          # The status marker itself is never committed.
+          if [ -f artifacts/a11y-history.json ] && ! grep -q '"status":"unavailable"' artifacts/a11y-history.status.json 2>/dev/null; then
+            git add -- artifacts/a11y-history.json
           fi
           # Nothing staged (e.g. all runs already on the branch) => skip the commit.
           if git diff --cached --quiet; then
-            echo "All produced runs already present on runs-data; nothing to commit."
+            echo "Nothing new to commit to runs-data (runs and a11y history unchanged)."
             exit 0
           fi
           git commit -m "runs-data: add raw run artifacts (origin=cloud)"

@@ -1,4 +1,4 @@
-// Assurity Web Guardian — dashboard data source resolver (task 4.5).
+// Assurity Web Guardian - dashboard data source resolver (task 4.5).
 //
 // Plain browser ES module (NO TypeScript, NO build step). The dashboard/ app is
 // static HTML + JS + CSS served same-origin. This module decides WHERE the
@@ -6,7 +6,7 @@
 //
 //   { mode: "static" | "live", load: async () => DashboardData }
 //
-// Resolution order (design.md → Dashboard data source; Req 1.5, 1.6, 6.10):
+// Resolution order (design.md -> Dashboard data source; Req 1.5, 1.6, 6.10):
 //
 //   1. BUILD / DEPLOY FLAG FIRST. The page may set a global `window.AWG_MODE`
 //      (the GitHub Pages deploy injects `window.AWG_MODE = "static"` via a
@@ -17,11 +17,11 @@
 //
 //   2. PROBE FALLBACK (only when the flag is absent). Probe the local read-only
 //      Event_Server at GET http://127.0.0.1:7788/idle with a short timeout
-//      (1500 ms, AbortController). A response → live; error/timeout → static.
+//      (1500 ms, AbortController). A response -> live; error/timeout -> static.
 //
 // CRITICAL no-network guarantee (Req 1.5): in STATIC mode, NO request to
 // 127.0.0.1 or any absolute URL is ever issued. The probe runs ONLY when the
-// flag is absent — the moment `window.AWG_MODE` is "static"/"replay" we skip the
+// flag is absent - the moment `window.AWG_MODE` is "static"/"replay" we skip the
 // probe entirely and the only network call the module ever makes is the
 // RELATIVE, same-origin `./data/dashboard.json` fetch inside the static loader.
 //
@@ -45,7 +45,7 @@ const SEVERITY_BUCKETS = ["critical", "serious", "moderate", "minor"];
  *
  * Returns "static" | "live" | null. We read `window.AWG_MODE` (what the Pages
  * deploy / local config sets). "static" and "replay" both mean static for the
- * dashboard; "live" means live. Anything else (undefined, "", unknown) → null,
+ * dashboard; "live" means live. Anything else (undefined, "", unknown) -> null,
  * which triggers the probe fallback.
  *
  * @returns {"static"|"live"|null}
@@ -64,8 +64,8 @@ export function readModeFlag() {
  * Probe the local Event_Server's /idle endpoint with a short timeout.
  *
  * ONLY called when the build flag is absent. A successful (non-network-error)
- * response means a local server is up → live mode. Any error, non-OK status, or
- * timeout → static mode (fail safe to the no-network static path).
+ * response means a local server is up -> live mode. Any error, non-OK status, or
+ * timeout -> static mode (fail safe to the no-network static path).
  *
  * @returns {Promise<boolean>} true if the local server responded, else false.
  */
@@ -80,7 +80,7 @@ export async function probeEventServer() {
     });
     return res.ok;
   } catch {
-    // Network error / abort / timeout / CORS failure → treat as "no server".
+    // Network error / abort / timeout / CORS failure -> treat as "no server".
     return false;
   } finally {
     clearTimeout(timer);
@@ -92,7 +92,7 @@ export async function probeEventServer() {
  *
  * Flag first, probe only when the flag is absent. Returns a handle whose
  * `load()` fetches and returns a `DashboardData`-shaped object. The resolver
- * itself never fetches application data — it only (optionally) probes /idle
+ * itself never fetches application data - it only (optionally) probes /idle
  * when no flag is set, and never probes when the flag selects static.
  *
  * @returns {Promise<{ mode: "static"|"live", load: () => Promise<object> }>}
@@ -108,7 +108,7 @@ export async function resolveDataSource() {
     return { mode: "live", load: loadLive };
   }
 
-  // No explicit flag → probe the local server once. Success → live, else static.
+  // No explicit flag -> probe the local server once. Success -> live, else static.
   const serverUp = await probeEventServer();
   return serverUp
     ? { mode: "live", load: loadLive }
@@ -116,7 +116,7 @@ export async function resolveDataSource() {
 }
 
 // ---------------------------------------------------------------------------
-// STATIC loader — relative, same-origin fetch ONLY. No absolute/127.0.0.1 URL.
+// STATIC loader - relative, same-origin fetch ONLY. No absolute/127.0.0.1 URL.
 // ---------------------------------------------------------------------------
 
 /**
@@ -136,8 +136,43 @@ export async function loadStatic() {
   return /** @type {object} */ (await res.json());
 }
 
+/**
+ * Load one published JSON file by its path relative to the `./data/` folder
+ * (for example "index.json" or "runs/<runId>/run-findings.json").
+ *
+ * RELATIVE URLs only: the URL is always "./data/" plus the encoded path. The
+ * path must not start with "/", contain a backslash, empty, "." or ".."
+ * segments. Each segment is URI-encoded, so callers pass raw ids and slugs.
+ * Errors always name the failing file.
+ *
+ * @param {string} relPath
+ * @returns {Promise<any>} the parsed JSON.
+ */
+export async function loadPublished(relPath) {
+  const p = typeof relPath === "string" ? relPath : "";
+  const segs = p.split("/");
+  const bad =
+    !p ||
+    p.includes("\\") ||
+    segs.some((s) => s === "" || s === "." || s === "..");
+  if (bad) throw new Error(`Invalid published data path: ${p || "(empty)"}`);
+  const url = "./data/" + segs.map(encodeURIComponent).join("/");
+  let res;
+  try {
+    res = await fetch(url, { cache: "no-store" });
+  } catch (err) {
+    throw new Error(`Could not load ${p}: network error`);
+  }
+  if (!res.ok) throw new Error(`Could not load ${p}: HTTP ${res.status}`);
+  try {
+    return await res.json();
+  } catch (err) {
+    throw new Error(`Could not load ${p}: the file is not valid JSON`);
+  }
+}
+
 // ---------------------------------------------------------------------------
-// LIVE loader — assembles DashboardData from the local Event_Server (:7788).
+// LIVE loader - assembles DashboardData from the local Event_Server (:7788).
 // Only reachable when the flag is "live" or the /idle probe succeeded.
 // Mirrors the field names and pure-helper logic of
 // src/reporting/dashboard-data.ts so live and static render the same shape.
@@ -165,7 +200,7 @@ export async function loadLive() {
   }
 
   // The Event_Server returns /runs newest-first; reverse to chronological
-  // (oldest→newest) so the trend reads left-to-right like the static builder.
+  // (oldest->newest) so the trend reads left-to-right like the static builder.
   const chrono = [...runList].reverse();
 
   // Build the health trend from each run's events (finishedAt + health, with a
@@ -197,7 +232,7 @@ export async function loadLive() {
   };
 }
 
-/** A DashboardData with no runs (live source reports zero runs → empty state). */
+/** A DashboardData with no runs (live source reports zero runs -> empty state). */
 function emptyDashboardData() {
   return {
     generatedAt: new Date().toISOString(),
@@ -283,7 +318,7 @@ async function newVsRecurringFromEvents(runId) {
 }
 
 // ---------------------------------------------------------------------------
-// Pure assembly helpers — ports of src/reporting/dashboard-data.ts so the live
+// Pure assembly helpers - ports of src/reporting/dashboard-data.ts so the live
 // shape matches the static one exactly. No network, no absolute paths.
 // ---------------------------------------------------------------------------
 
@@ -309,7 +344,7 @@ function buildFindingsByPage(pages) {
 /**
  * Map a failed-check `detail` string to a severity bucket. Axe a11y checks are
  * emitted as e.g. "desktop:a11y-critical-serious: link-name"; we pick the
- * highest-severity token present. Unknown/missing → "minor", so every outcome
+ * highest-severity token present. Unknown/missing -> "minor", so every outcome
  * lands in exactly one bucket (partition total == outcome total).
  */
 function severityBucketOf(detail) {
@@ -364,7 +399,7 @@ function deriveDomain(pages) {
 }
 
 /**
- * Fetch JSON from an absolute Event_Server URL. LIVE MODE ONLY — never called
+ * Fetch JSON from an absolute Event_Server URL. LIVE MODE ONLY - never called
  * from the static path. Throws on non-OK responses.
  *
  * @param {string} url absolute http://127.0.0.1:7788/... URL

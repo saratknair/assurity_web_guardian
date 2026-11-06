@@ -1,5 +1,5 @@
-﻿import type { TrackedFinding } from "../agents/a11y-history.js";
-import { loadA11yHistory } from "../agents/a11y-history-store.js";
+import type { TrackedFinding } from "../agents/a11y-history.js";
+import { readHistoryFindings } from "../agents/a11y-history-store.js";
 
 /**
  * Bounded historical context for agents (Phase 4, Req 4-series). Agents receive
@@ -31,7 +31,7 @@ export function contextForFinding(
   historyPath = "artifacts/a11y-history.json",
   maxItems = 5,
 ): BoundedContext {
-  const history = loadA11yHistory(historyPath);
+  const history = readHistoryFindings(historyPath);
   const items: ContextItem[] = [];
 
   const match = Object.values(history).find(

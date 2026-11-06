@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Assurity Web Guardian - Dashboard</title>
   <link rel="stylesheet" href="./style.css" />
-  <script src="./vendor/chart.umd.min.js"></script>
+  <script src="./config.js"></script>
+  <script src="./vendor/chart.umd.min.js" defer></script>
 </head>
 <body>
+  <a class="skip-link" href="#view">Skip to main content</a>
   <div class="page">
     <header class="topbar">
       <div class="topbar__brand">
@@ -17,63 +19,32 @@
           <p class="topbar__subtitle">Website quality monitoring</p>
         </div>
       </div>
-      <div class="topbar__meta" id="header-meta" aria-live="polite"></div>
+      <div class="topbar__meta" id="header-meta"></div>
     </header>
 
-    <section id="empty-state" class="empty-state" role="status" hidden>
-      <div class="empty-state__card">
-        <h2 class="empty-state__title">No run data yet</h2>
-        <p class="empty-state__body">Once a Guardian run completes and publishes, its charts and findings will appear here.</p>
-      </div>
-    </section>
+    <nav aria-label="Primary" class="row" id="primary-nav">
+      <a class="btn btn--ghost" href="#/" data-nav="overview">Overview</a>
+      <a class="btn btn--ghost" href="#/findings" data-nav="findings">Findings</a>
+    </nav>
 
-    <main id="dashboard" class="dashboard is-hidden">
-      <section class="kpi-row" id="kpi-row" aria-label="Key metrics"></section>
-
-      <section class="card findings-explorer">
-        <div class="explorer-head">
-          <div>
-            <h2 class="card__title">Pages and findings</h2>
-            <p class="card__hint">Select any page to inspect its deterministic findings, AI notes, and before/after evidence screenshots.</p>
-          </div>
-          <span class="explorer-badge">Interactive</span>
-        </div>
-        <ul id="page-list" class="page-list" aria-label="Select a page to see its findings and screenshots"></ul>
-      </section>
-
-      <section class="charts">
-        <article class="card card--wide">
-          <h2 class="card__title">Issues found per run</h2>
-          <div class="card__canvas"><canvas id="chart-run-health-trend"></canvas></div>
-        </article>
-        <article class="card">
-          <h2 class="card__title">Findings by severity</h2>
-          <div class="card__canvas"><canvas id="chart-findings-by-severity"></canvas></div>
-        </article>
-        <article class="card">
-          <h2 class="card__title">Accessibility: new vs recurring</h2>
-          <div class="card__canvas"><canvas id="chart-a11y-new-vs-recurring"></canvas></div>
-        </article>
-      </section>
-
-
-      <aside id="ai-analysis" class="card ai-analysis" aria-labelledby="title-ai">
-        <h2 class="card__title" id="title-ai">AI-assisted analysis</h2>
-        <p class="card__hint">Large-language-model commentary. Not deterministic fact; for review only.</p>
-        <div id="ai-analysis-items" class="ai-analysis__items"></div>
-      </aside>
+    <main id="view" class="view" tabindex="-1">
+      <p class="loading">Loading dashboard...</p>
     </main>
+
+    <footer class="footer muted">
+      <p>Accessibility is a goal for this Dashboard (WCAG 2.2 AA). Automated checks cannot confirm conformance; manual testing with assistive technologies is still required.</p>
+    </footer>
   </div>
 
-  <div id="page-detail-overlay" class="detail-overlay" hidden></div>
-  <aside id="page-detail" class="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detail-title" hidden>
-    <div class="detail-panel__head">
-      <h2 id="detail-title" class="detail-panel__title">Page detail</h2>
-      <button type="button" id="detail-close" class="detail-panel__close" aria-label="Close page detail">Close</button>
-    </div>
-    <div id="detail-body" class="detail-panel__body"></div>
-  </aside>
+  <div id="sr-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div id="sr-alert" class="sr-only" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+  <dialog id="lightbox" aria-label="Image viewer"></dialog>
 
   <script type="module" src="./app.js"></script>
+  <script type="module">
+    import { renderSelfScanNotice } from "./views/self-scan-notice.js";
+    renderSelfScanNotice(document.querySelector("footer.footer"));
+  </script>
 </body>
 </html>

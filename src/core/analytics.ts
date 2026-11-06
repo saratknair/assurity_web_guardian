@@ -1,6 +1,6 @@
-﻿import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve, join } from "node:path";
-import type { TrackedFinding } from "../agents/a11y-history.js";
+import { readHistoryFindings } from "../agents/a11y-history-store.js";
 
 /**
  * Historical analytics (Phase 4, Req 4-series). DETERMINISTIC calculation over
@@ -60,7 +60,7 @@ export function computeAnalytics(runsRoot = "artifacts/runs", historyPath = "art
     });
   }
 
-  const history = readJson<Record<string, TrackedFinding>>(resolve(historyPath)) ?? {};
+  const history = readHistoryFindings(historyPath);
   const a11yBySeverity: Record<string, number> = {};
   const lifecycle = { new: 0, recurring: 0, resolved: 0, reopened: 0, dismissedReappeared: 0, existingUnresolved: 0 };
   for (const f of Object.values(history)) {

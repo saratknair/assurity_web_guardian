@@ -105,7 +105,7 @@ const ABSOLUTE_PATH_SCAN = new RegExp(
  * `[path removed]` and `[REDACTED]` placeholders contain no path pattern, so a
  * hit here means scrubbing was incomplete and the file must be withheld.
  */
-function hasResidualPath(value: unknown): boolean {
+export function hasResidualPath(value: unknown): boolean {
   if (typeof value === "string") return ABSOLUTE_PATH_SCAN.test(value);
   if (Array.isArray(value)) return value.some((v) => hasResidualPath(v));
   if (value && typeof value === "object") {

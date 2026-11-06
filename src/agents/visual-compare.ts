@@ -1,4 +1,5 @@
-﻿import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve, join, dirname } from "node:path";
 import { PNG } from "pngjs";
 import pixelmatch from "pixelmatch";
@@ -21,6 +22,10 @@ export interface VisualResult {
   totalPixels: number;
   diffRatio: number;
   note: string;
+  /** First 16 hex chars of sha256 of the baseline PNG; null when no baseline. */
+  baselineHash: string | null;
+  /** True when baseline and current dimensions differ (no pixel diff produced). */
+  dimensionsChanged: boolean;
 }
 
 const SCREENSHOT_BASELINE_ROOT = "baselines-visual";
@@ -47,6 +52,8 @@ export function compareScreenshot(
     totalPixels: 0,
     diffRatio: 0,
     note: "",
+    baselineHash: null,
+    dimensionsChanged: false,
   };
 
   if (!existsSync(baselinePath)) {
@@ -61,12 +68,15 @@ export function compareScreenshot(
   }
 
   result.baselinePath = baselinePath;
-  const baseImg = PNG.sync.read(readFileSync(baselinePath));
+  const baseBytes = readFileSync(baselinePath);
+  result.baselineHash = createHash("sha256").update(baseBytes).digest("hex").slice(0, 16);
+  const baseImg = PNG.sync.read(baseBytes);
   const curImg = PNG.sync.read(readFileSync(currentPath));
 
   // If dimensions differ, that itself is a visual difference requiring review.
   if (baseImg.width !== curImg.width || baseImg.height !== curImg.height) {
     result.differs = true;
+    result.dimensionsChanged = true;
     result.note = `Dimensions changed: baseline ${baseImg.width}x${baseImg.height} vs current ${curImg.width}x${curImg.height}.`;
     return result;
   }

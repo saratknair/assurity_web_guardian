@@ -2,6 +2,7 @@
 import AxeBuilderModule from "@axe-core/playwright";
 const AxeBuilder = ((AxeBuilderModule as unknown as { default?: unknown }).default ?? AxeBuilderModule) as unknown as (new (opts: { page: unknown }) => { withTags(tags: string[]): { analyze(): Promise<{ violations: { id: string; impact: string | null; help?: string; helpUrl?: string; nodes?: { target?: string[] }[] }[] }> } });
 import { resolve, join } from "node:path";
+import { writeFileSync } from "node:fs";
 import { resolveApprovedUrls, type AppConfig } from "../config/app-config.js";
 import { newRunIds } from "./ids.js";
 import { EvidenceStore, applyRetention } from "./evidence-store.js";
@@ -17,8 +18,7 @@ import { compareScreenshot, type VisualResult } from "../agents/visual-compare.j
 import { writeReport, writeDashboard, type ReportModel, type PageReport } from "../reporting/report.js";
 import { buildDashboard } from "../reporting/dashboard-builder.js";
 import { LocalOtelExporter } from "../telemetry/otel-adapter.js";
-import { mergeRunIntoHistory } from "../agents/a11y-history-store.js";
-import type { A11yViolationInput } from "../agents/a11y-history.js";
+import { computeLifecycleForRun } from "./run-lifecycle.js";
 import { publish } from "../publish/publisher.js";
 
 /**
@@ -28,6 +28,33 @@ import { publish } from "../publish/publisher.js";
  * office replay build (`build:office:replay`) and the publisher agree on it.
  */
 export const LOCAL_PUBLISHED_DIR = "artifacts/published";
+
+/** Persisted (path-free) subset of VisualResult for findings.json pages[].visual. */
+export function sanitizeVisual(
+  visual: Record<string, VisualResult> | undefined,
+): Record<string, {
+  differs: boolean;
+  diffPixels: number;
+  totalPixels: number;
+  diffRatio: number;
+  dimensionsChanged: boolean;
+  baselineHash: string | null;
+  note: string;
+}> {
+  const out: Record<string, { differs: boolean; diffPixels: number; totalPixels: number; diffRatio: number; dimensionsChanged: boolean; baselineHash: string | null; note: string }> = {};
+  for (const [vp, v] of Object.entries(visual ?? {})) {
+    out[vp] = {
+      differs: v.differs,
+      diffPixels: v.diffPixels,
+      totalPixels: v.totalPixels,
+      diffRatio: v.diffRatio,
+      dimensionsChanged: v.dimensionsChanged,
+      baselineHash: v.baselineHash,
+      note: v.note,
+    };
+  }
+  return out;
+}
 
 export interface RunTrigger {
   readonly kind: "manual" | "scheduled";
@@ -86,7 +113,7 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
   const pageReports: PageReport[] = [];
   const generated: GeneratedTest[] = [];
   let totalFailedChecks = 0;
-  const a11yViolations: A11yViolationInput[] = [];
+  const scannedPairs: { pageUrl: string; viewport: string }[] = [];
 
   const browser = await chromium.launch();
   try {
@@ -120,6 +147,8 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
         gateway.guardUrl(url); // domain boundary (Req 13)
         const resp = await page.goto(url, { waitUntil: "load", timeout: cfg.limits.navTimeoutMs }).catch(() => null);
         const status = resp?.status() ?? 0;
+        // Only pages actually reached count as scanned (a failed navigation is not evidence of a fix).
+        if (resp) scannedPairs.push({ pageUrl: url, viewport: vp.name });
         const title = (await page.title()).trim();
         const h1Visible = await page.locator("h1").first().isVisible().catch(() => false);
         const navCount = await page.locator("nav").count();
@@ -138,9 +167,6 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
 
         const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag22aa"]).analyze();
         const cs = axe.violations.filter((v: { impact: string | null }) => v.impact === "critical" || v.impact === "serious");
-        for (const v of axe.violations) {
-          a11yViolations.push({ ruleId: v.id, pageUrl: url, viewport: vp.name, impact: v.impact, help: v.help, helpUrl: v.helpUrl, targets: (v.nodes ?? []).flatMap((n) => n.target ?? []).slice(0, 5), summary: v.help });
-        }
         store.writeJson(join("accessibility", `${slug}.${vp.name}.json`), { url, viewport: vp.name, violations: axe.violations });
 
         pageChecks.push(
@@ -218,8 +244,21 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
     runId,
     correlationId,
     awaitingReview,
-    pages: pageReports.map((p) => ({ page: p.page, slug: p.slug, outcomes: p.outcomes, aiItems: p.aiItems })),
+    pages: pageReports.map((p) => ({
+      page: p.page,
+      slug: p.slug,
+      outcomes: p.outcomes,
+      aiItems: p.aiItems,
+      visual: sanitizeVisual(p.visual),
+    })),
   });
+
+  // Run trigger marker (one-line text file, like the `origin` marker). Only a
+  // short [a-z_]+ token is written; anything else is omitted.
+  const triggerEnv = (process.env.AWG_RUN_TRIGGER ?? "").trim();
+  if (/^[a-z_]{1,32}$/.test(triggerEnv)) {
+    writeFileSync(join(store.runDir, "trigger"), triggerEnv, "utf8");
+  }
 
   tel.runRecord({
     runId,
@@ -236,9 +275,17 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
     evidenceRefs: store.listEvidence().map((e) => e.evidenceId),
   });
 
-  const a11yHist = mergeRunIntoHistory(a11yViolations, runId, new Date().toISOString());
-  store.writeJson("a11y-history-summary.json", a11yHist.summary);
-  tel.event("a11y.history", { data: a11yHist.summary });
+  const lifecycle = computeLifecycleForRun(
+    store.runDir,
+    runId,
+    new Date().toISOString(),
+    scannedPairs,
+    resolve("artifacts", "a11y-history.json"),
+    resolve("artifacts", "a11y-history.status.json"),
+    tel,
+  );
+  store.writeJson("a11y-history-summary.json", lifecycle.summary);
+  tel.event("a11y.history", { data: lifecycle.summary });
 
   const health: ReportModel["websiteHealth"] = totalFailedChecks > 0 ? "attention" : "healthy";
   const model: ReportModel = {

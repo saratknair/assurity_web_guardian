@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { computeAnalytics, type Analytics } from "../core/analytics.js";
-import type { TrackedFinding } from "../agents/a11y-history.js";
+import { readHistoryFindings } from "../agents/a11y-history-store.js";
 
 /**
  * Dashboard data contract (Phase 2, Req 1.2, 1.3, 1.7, 1.8, 11.8).
@@ -258,7 +258,7 @@ export function buildDashboardData(
 
   // Severity buckets come from the tracked a11y history (impact), consistent
   // with computeAnalytics().a11yBySeverity and partitioning every a11y finding.
-  const history = readJson<Record<string, TrackedFinding>>(resolve(historyPath)) ?? {};
+  const history = readHistoryFindings(historyPath);
   const findingsBySeverity = buildFindingsBySeverity(Object.values(history).map((f) => ({ impact: f.impact })));
 
   const a11yNewVsRecurring = {

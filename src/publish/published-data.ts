@@ -7,13 +7,40 @@ import {
   statSync,
   writeFileSync,
 } from "node:fs";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { buildDashboardData } from "../reporting/dashboard-data.js";
 import {
+  hasResidualPath,
   listRunScreenshots,
+  sanitizeJson,
   sanitizeRun,
   sanitizeScreenshotName,
 } from "./sanitizer.js";
+import { DEFAULT_CAPS } from "./evidence.js";
+import {
+  buildRunFindings,
+  loadRawRunInputs,
+  type BuiltRun,
+  type Omission,
+  type PublishedFinding,
+} from "./run-findings.js";
+import {
+  applyDroppedImages,
+  buildVisualItems,
+  type RecordedVisual,
+} from "./visual.js";
+import { buildGuidance } from "./guidance.js";
+import {
+  imageRetentionRuns,
+  runsWithImages,
+  selectWithinBudget,
+  type Candidate,
+} from "./size-budget.js";
+import {
+  buildDashboardAggregates,
+  buildLatestPages,
+  buildPageHistory,
+} from "./pages.js";
 
 /**
  * Published-data contract builder (Phase 2, Req 6.6, 6.7, 7.7, 11.8).
@@ -58,19 +85,30 @@ export interface PublishedRunSummary {
   pendingReview: boolean;
   /** Where the run executed (Req 7.7); defaults "local". */
   origin: "local" | "cloud";
+  /** Additive (schema v2) fields; absent on older published data. */
+  detailLevel?: "rule" | "legacy";
+  hasRunData?: boolean;
+  trigger?: string | null;
+  hasImages?: boolean;
 }
 
 /** RunsIndex, newest-first (design → Data Models → RunsIndex). */
 export interface RunsIndex {
+  schemaVersion?: 2;
   generatedAt: string;
   domain: string;
+  imageRetentionRuns?: number;
   runs: PublishedRunSummary[];
 }
 
 /** Per-run summary.json (design → Data Models → RunSummary). */
 export interface RunSummary extends PublishedRunSummary {
+  schemaVersion?: 2;
+  historyStatus?: string;
   /** Output-relative names of files the sanitizer withheld (fail-closed). */
   withheld: string[];
+  omissions?: Omission[];
+  totals?: unknown;
 }
 
 function readJson<T>(p: string): T | null {
@@ -226,18 +264,233 @@ export function readRunsNewestFirst(runsRoot: string, envOrigin?: string): RunFa
   });
 }
 
-/** Copy a run's sanitized screenshots into `<outRunDir>/screenshots/`. */
-function copyScreenshots(runDir: string, outRunDir: string): void {
-  const names = listRunScreenshots(runDir);
-  if (names.length === 0) return;
+
+/** Read the optional one-line `trigger` marker (schedule, workflow_dispatch, manual, local). */
+function readTrigger(runDir: string): string | null {
+  const p = join(runDir, "trigger");
+  if (!existsSync(p)) return null;
+  try {
+    const raw = readFileSync(p, "utf8").trim();
+    return /^[A-Za-z0-9_-]{1,40}$/.test(raw) ? raw : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Serialize a published structure: sanitize, then re-scan for residual paths.
+ * Returns null when the structure cannot be confirmed clean (fail closed).
+ */
+function serializeSafe(value: unknown): { text: string } | { reason: "residual-path" | "sanitize-error" } {
+  try {
+    const clean = sanitizeJson(value);
+    if (hasResidualPath(clean)) return { reason: "residual-path" };
+    return { text: JSON.stringify(clean, null, 2) };
+  } catch {
+    return { reason: "sanitize-error" };
+  }
+}
+
+function writeText(path: string, text: string): void {
+  ensureDir(dirname(path));
+  writeFileSync(path, text, "utf8");
+}
+
+/** Bytes of the files directly inside `dir` (the legacy sanitized JSON a run already carries). */
+function topLevelFileBytes(dir: string): number {
+  let total = 0;
+  try {
+    for (const n of readdirSync(dir)) {
+      const st = statSync(join(dir, n));
+      if (st.isFile()) total += st.size;
+    }
+  } catch {
+    /* ignore */
+  }
+  return total;
+}
+
+const SEV_PRIORITY: Record<string, number> = {
+  critical: 0,
+  serious: 1,
+  moderate: 2,
+  minor: 3,
+  unrated: 4,
+  "not-recorded": 5,
+};
+
+const SLUG_OK = /^[A-Za-z0-9._-]+$/;
+
+interface PendingImage {
+  src: string;
+  dest: string;
+  role: "baseline" | "current" | "diff";
+  bytes: number;
+}
+
+interface RunOutcome {
+  facts: RunFacts;
+  trigger: string | null;
+  built: BuiltRun;
+  summary: RunSummary;
+  hasImages: boolean;
+}
+
+/**
+ * Per-run rich publish: findings, evidence, visual, guidance, budgeted images.
+ * Every JSON object passes sanitizeJson and a residual-path re-scan; anything
+ * that cannot be confirmed clean is omitted and the reason recorded.
+ */
+function publishRunDetail(args: {
+  runDir: string;
+  outRunDir: string;
+  facts: RunFacts;
+  retained: boolean;
+  legacyBytes: number;
+  built: BuiltRun;
+  withheld: string[];
+}): void {
+  const { runDir, outRunDir, facts, retained, built } = args;
+  const caps = DEFAULT_CAPS;
+  const rf = built.runFindings;
+  const omissions: Omission[] = rf.omissions;
+
+  // ---- visual items ----
+  const findingsDoc = readJson<{ pages?: unknown[] }>(join(runDir, "findings.json"));
+  const findingsVisual: Record<string, Record<string, RecordedVisual>> = {};
+  for (const p of Array.isArray(findingsDoc?.pages) ? findingsDoc!.pages! : []) {
+    const pg = p as { slug?: unknown; visual?: unknown };
+    if (typeof pg.slug === "string" && pg.visual && typeof pg.visual === "object") {
+      findingsVisual[pg.slug] = pg.visual as Record<string, RecordedVisual>;
+    }
+  }
+  const suppressedBy: Record<string, string[]> = {};
+  for (const f of rf.findings as PublishedFinding[]) {
+    if (f.kind === "visual" && Array.isArray(f.suppressedBy) && f.suppressedBy.length > 0) {
+      suppressedBy[`${f.slug}.${f.viewport}`] = f.suppressedBy as string[];
+    }
+  }
+  const vis = buildVisualItems({ runDir, runId: facts.runId, findingsVisual, suppressedBy, images: retained });
+  const guidance = buildGuidance(built, vis.items, caps);
+
+  // ---- image candidates (visual copies + remaining screenshots) ----
+  const images: PendingImage[] = vis.copies.map((c) => ({
+    src: c.src,
+    dest: c.dest,
+    role: c.role,
+    bytes: c.bytes,
+  }));
+  const taken = new Set(images.map((i) => i.dest));
+  const slugsWithFindings = new Set((rf.findings as PublishedFinding[]).map((f) => f.slug));
+  const priorityOf = new Map<string, number>();
+  for (const i of images) priorityOf.set(i.dest, i.role === "diff" ? 0 : i.role === "baseline" ? 1 : 2);
   const srcDir = join(runDir, "screenshots");
-  const destDir = join(outRunDir, "screenshots");
-  ensureDir(destDir);
-  for (const name of names) {
-    const safeName = sanitizeScreenshotName(name);
-    if (!safeName) continue;
+  for (const name of listRunScreenshots(runDir)) {
+    const safe = sanitizeScreenshotName(name);
+    if (!safe) continue;
+    const dest = `screenshots/${safe}`;
+    if (taken.has(dest)) continue;
+    taken.add(dest);
+    let bytes = 0;
     try {
-      copyFileSync(join(srcDir, name), join(destDir, safeName));
+      bytes = statSync(join(srcDir, name)).size;
+    } catch {
+      continue;
+    }
+    const isDiff = /\.diff\.png$/i.test(safe);
+    const slug = safe.replace(/\.(desktop|mobile)(\.diff)?\.[A-Za-z0-9]+$/, "");
+    images.push({ src: join(srcDir, name), dest, role: isDiff ? "diff" : "current", bytes });
+    priorityOf.set(dest, isDiff ? 0 : slugsWithFindings.has(slug) ? 3 : 4);
+  }
+
+  // ---- JSON serialization (fail closed) ----
+  interface JsonOut {
+    rel: string;
+    role: "json" | "evidence";
+    priority: number;
+    text: string;
+    force: boolean;
+  }
+  const outs: JsonOut[] = [];
+  const addJson = (rel: string, role: "json" | "evidence", priority: number, value: unknown, force: boolean): void => {
+    const r = serializeSafe(value);
+    if ("text" in r) outs.push({ rel, role, priority, text: r.text, force });
+    else {
+      omissions.push({ path: rel, role, reason: r.reason });
+      if (force) args.withheld.push(`${facts.runId}/${rel}`);
+    }
+  };
+  // run-findings is serialized again after omissions are known; this is a size estimate.
+  addJson("run-findings.json", "json", 0, rf, true);
+  addJson("visual.json", "json", 0, { schemaVersion: 2, runId: facts.runId, items: vis.items }, true);
+  addJson(
+    "guidance.json",
+    "json",
+    0,
+    { schemaVersion: 2, runId: facts.runId, omitted: guidance.omitted, items: guidance.items },
+    true,
+  );
+  for (const rel of Object.keys(built.evidence).sort()) {
+    const ev = built.evidence[rel];
+    const worst = Math.min(...ev.violations.map((v) => SEV_PRIORITY[v.severity] ?? 5), 5);
+    addJson(rel, "evidence", worst, ev, false);
+  }
+
+  // ---- retention, then budget ----
+  const cands: Candidate[] = [];
+  for (const o of outs) cands.push({ path: o.rel, bytes: Buffer.byteLength(o.text, "utf8"), role: o.role, priority: o.priority });
+  for (const i of images) {
+    cands.push({
+      path: i.dest,
+      bytes: i.bytes,
+      role: i.role,
+      priority: priorityOf.get(i.dest) ?? 4,
+      retained,
+    });
+  }
+  const { keep, dropped } = selectWithinBudget(cands, {
+    maxRunBytes: Math.max(0, caps.maxRunBytes - args.legacyBytes),
+    maxImageBytes: caps.maxImageBytes,
+  });
+  const keepPaths = new Set(keep.map((k) => k.path));
+  const forced = new Set(outs.filter((o) => o.force).map((o) => o.rel));
+  const imageDrops: { dest: string; reason: "image-cap" | "run-cap" | "image-retention" }[] = [];
+  for (const d of dropped) {
+    if (forced.has(d.path)) continue; // core JSON is never dropped
+    omissions.push({ path: d.path, role: d.role, reason: d.reason });
+    if (d.role === "diff" || d.role === "baseline" || d.role === "current") {
+      imageDrops.push({ dest: d.path, reason: d.reason });
+    }
+  }
+
+  // ---- final visual.json with dropped images nulled ----
+  const finalItems = applyDroppedImages(vis.items, imageDrops);
+  const writeFinal = (rel: string, value: unknown): void => {
+    const r = serializeSafe(value);
+    if ("text" in r) writeText(join(outRunDir, rel), r.text);
+    else {
+      omissions.push({ path: rel, role: "json", reason: r.reason });
+      args.withheld.push(`${facts.runId}/${rel}`);
+    }
+  };
+  writeFinal("visual.json", { schemaVersion: 2, runId: facts.runId, items: finalItems });
+  writeFinal("guidance.json", {
+    schemaVersion: 2,
+    runId: facts.runId,
+    omitted: guidance.omitted,
+    items: guidance.items,
+  });
+  for (const o of outs) {
+    if (o.role === "evidence" && keepPaths.has(o.rel)) writeText(join(outRunDir, o.rel), o.text);
+  }
+  writeFinal("run-findings.json", rf);
+
+  // ---- copy kept images ----
+  for (const i of images) {
+    if (!keepPaths.has(i.dest)) continue;
+    try {
+      ensureDir(dirname(join(outRunDir, i.dest)));
+      copyFileSync(i.src, join(outRunDir, i.dest));
     } catch {
       /* skip unreadable image; JSON sanitation already governs fail-closed */
     }
@@ -247,10 +500,12 @@ function copyScreenshots(runDir: string, outRunDir: string): void {
 /**
  * Build the static `Published_Data` tree from the raw run store.
  *
- * Writes `<outDir>/data/index.json`, `<outDir>/data/dashboard.json`, and per
- * run `<outDir>/data/runs/<id>/{summary.json, events.json, findings.json}` plus
- * sanitized screenshots. Returns the published run ids and a per-run map of any
- * withheld file names (fail-closed: a withheld file does not abort publishing).
+ * Writes `<outDir>/data/index.json`, `<outDir>/data/dashboard.json`,
+ * `<outDir>/data/pages/<slug>.json`, and per run
+ * `<outDir>/data/runs/<id>/{summary,events,findings,run-findings,visual,guidance}.json`,
+ * `evidence/*.json` plus budgeted screenshots. Returns the published run ids
+ * and a per-run map of any withheld file names (fail-closed: a withheld file
+ * does not abort publishing).
  */
 export async function buildPublishedData(opts: {
   runsRoot?: string;
@@ -262,6 +517,7 @@ export async function buildPublishedData(opts: {
   const historyPath = opts.historyPath ?? "artifacts/a11y-history.json";
   const domain = opts.domain ?? "assurity.nz";
   const envOrigin = process.env.AWG_RUN_ORIGIN;
+  const retention = imageRetentionRuns();
 
   const dataDir = join(opts.outDir, "data");
   const runsOutDir = join(dataDir, "runs");
@@ -270,27 +526,51 @@ export async function buildPublishedData(opts: {
   const root = resolve(runsRoot);
   const dirNames = listRunDirs(runsRoot);
 
-  // Gather facts + sanitize each run.
-  const summaries: RunSummary[] = [];
+  // ---- pass 1: facts and findings for every run (needed for image retention) ----
+  const prepared = dirNames.map((dirName) => {
+    const runDir = join(root, dirName);
+    const facts = readRunFacts(runDir, dirName, envOrigin);
+    const inputs = loadRawRunInputs(runDir);
+    inputs.runId = facts.runId;
+    inputs.finishedAt = facts.finishedAt ?? null;
+    const built = buildRunFindings(inputs, { caps: DEFAULT_CAPS });
+    return { runDir, facts, built, trigger: readTrigger(runDir) };
+  });
+  const withImages = runsWithImages(
+    prepared.map((p) => ({ runId: p.facts.runId, finishedAt: p.facts.finishedAt ?? null })),
+    retention,
+  );
+
+  // ---- pass 2: write each run ----
+  const outcomes: RunOutcome[] = [];
   const withheld: Record<string, string[]> = {};
   const runsPublished: string[] = [];
 
-  for (const dirName of dirNames) {
-    const runDir = join(root, dirName);
-    const facts = readRunFacts(runDir, dirName, envOrigin);
+  for (const { runDir, facts, built, trigger } of prepared) {
     const outRunDir = join(runsOutDir, facts.runId);
     ensureDir(outRunDir);
 
-    // Sanitize publishable JSON/JSONL (writes findings.json, events.json, ...).
+    // Sanitize publishable legacy JSON/JSONL (writes findings.json, events.json, ...).
     const report = sanitizeRun(runDir, outRunDir);
-    if (!report.ok && report.withheld.length > 0) {
-      withheld[facts.runId] = report.withheld;
-    }
+    const withheldNames = [...report.withheld];
+    const extraWithheld: string[] = [];
 
-    // Copy sanitized screenshots after the metadata/JSON pass.
-    copyScreenshots(runDir, outRunDir);
+    const retained = withImages.has(facts.runId);
+    publishRunDetail({
+      runDir,
+      outRunDir,
+      facts,
+      retained,
+      legacyBytes: topLevelFileBytes(outRunDir),
+      built,
+      withheld: extraWithheld,
+    });
+    for (const w of extraWithheld) withheldNames.push(w.slice(facts.runId.length + 1));
+    if (withheldNames.length > 0) withheld[facts.runId] = withheldNames;
 
+    const rf = built.runFindings;
     const summary: RunSummary = {
+      schemaVersion: 2,
       runId: facts.runId,
       finishedAt: facts.finishedAt,
       status: facts.status,
@@ -299,18 +579,24 @@ export async function buildPublishedData(opts: {
       failedChecks: facts.failedChecks,
       pendingReview: facts.pendingReview,
       origin: facts.origin,
-      withheld: report.withheld,
+      detailLevel: rf.detailLevel,
+      hasRunData: true,
+      trigger,
+      hasImages: retained,
+      historyStatus: rf.historyStatus,
+      withheld: withheldNames,
+      omissions: rf.omissions,
+      totals: rf.totals,
     };
-    writeFileSync(join(outRunDir, "summary.json"), JSON.stringify(summary, null, 2), "utf8");
+    writeText(join(outRunDir, "summary.json"), JSON.stringify(summary, null, 2));
 
-    summaries.push(summary);
+    outcomes.push({ facts, trigger, built, summary, hasImages: retained });
     runsPublished.push(facts.runId);
   }
 
   // RunsIndex, newest-first: by finishedAt desc when present, else dir mtime desc.
   const mtimeOf = (runId: string): number => {
     try {
-      // Prefer the raw run dir mtime; fall back to the published run dir.
       const dirName = dirNames.find(
         (n) => (readJson<{ runId?: string }>(join(root, n, "findings.json"))?.runId ?? n) === runId,
       );
@@ -320,17 +606,21 @@ export async function buildPublishedData(opts: {
     }
     return 0;
   };
-  const indexRuns = [...summaries].sort((a, b) => {
-    if (a.finishedAt && b.finishedAt) return b.finishedAt.localeCompare(a.finishedAt);
-    if (a.finishedAt) return -1;
-    if (b.finishedAt) return 1;
-    return mtimeOf(b.runId) - mtimeOf(a.runId);
+  const indexRuns = [...outcomes].sort((a, b) => {
+    const fa = a.summary.finishedAt;
+    const fb = b.summary.finishedAt;
+    if (fa && fb) return fb.localeCompare(fa);
+    if (fa) return -1;
+    if (fb) return 1;
+    return mtimeOf(b.summary.runId) - mtimeOf(a.summary.runId);
   });
 
   const index: RunsIndex = {
+    schemaVersion: 2,
     generatedAt: new Date().toISOString(),
     domain,
-    runs: indexRuns.map((r) => ({
+    imageRetentionRuns: retention,
+    runs: indexRuns.map(({ summary: r }) => ({
       runId: r.runId,
       finishedAt: r.finishedAt,
       status: r.status,
@@ -339,13 +629,58 @@ export async function buildPublishedData(opts: {
       failedChecks: r.failedChecks,
       pendingReview: r.pendingReview,
       origin: r.origin,
+      detailLevel: r.detailLevel,
+      hasRunData: r.hasRunData,
+      trigger: r.trigger,
+      hasImages: r.hasImages,
     })),
   };
-  writeFileSync(join(dataDir, "index.json"), JSON.stringify(index, null, 2), "utf8");
+  const indexOut = serializeSafe(index);
+  if (!("text" in indexOut)) throw new Error(`index.json failed the path safety check: ${indexOut.reason}`);
+  writeText(join(dataDir, "index.json"), indexOut.text);
 
-  // Dashboard contract (reuse the existing deterministic builder).
-  const dashboard = buildDashboardData(runsRoot, historyPath, domain);
-  writeFileSync(join(dataDir, "dashboard.json"), JSON.stringify(dashboard, null, 2), "utf8");
+  // Per-page history.
+  const allBuilt = outcomes.map((o) => o.built);
+  const slugs = new Set<string>();
+  for (const b of allBuilt) for (const p of b.runFindings.pages) slugs.add(p.slug);
+  for (const slug of [...slugs].sort()) {
+    if (!SLUG_OK.test(slug) || slug === "." || slug === "..") continue;
+    const r = serializeSafe(buildPageHistory(slug, allBuilt));
+    if ("text" in r) writeText(join(dataDir, "pages", `${slug}.json`), r.text);
+  }
+
+  // Dashboard contract: legacy fields (corrected from the latest run's Active_Findings) + runs[] + latest.
+  const base = buildDashboardData(runsRoot, historyPath, domain);
+  const byId = new Map(outcomes.map((o) => [o.summary.runId, o]));
+  const aggregates = buildDashboardAggregates(allBuilt).map((a) => {
+    const o = byId.get(a.runId);
+    return { ...a, origin: o?.facts.origin ?? a.origin, trigger: o?.trigger ?? null, hasImages: o?.hasImages ?? false };
+  });
+  const latestOutcome = indexRuns[0] ? byId.get(indexRuns[0].summary.runId) : undefined;
+  const dashboard: Record<string, unknown> = { ...base };
+  dashboard.schemaVersion = 2;
+  dashboard.aiItems = [];
+  if (latestOutcome) {
+    const t = latestOutcome.built.runFindings.totals;
+    const latestPages = buildLatestPages(latestOutcome.built);
+    dashboard.findingsBySeverity = {
+      critical: t.bySeverity.critical,
+      serious: t.bySeverity.serious,
+      moderate: t.bySeverity.moderate,
+      minor: t.bySeverity.minor,
+      unrated: t.bySeverity.unrated,
+      notRecorded: t.bySeverity.notRecorded,
+    };
+    dashboard.a11yNewVsRecurring = { new: t.byLifecycle.new, recurring: t.byLifecycle.recurring };
+    dashboard.findingsByPage = latestPages.map((p) => ({ page: p.url, count: p.counts.total }));
+    dashboard.latest = { runId: latestOutcome.summary.runId, pages: latestPages };
+  } else {
+    dashboard.latest = null;
+  }
+  dashboard.runs = aggregates;
+  const dashOut = serializeSafe(dashboard);
+  if (!("text" in dashOut)) throw new Error(`dashboard.json failed the path safety check: ${dashOut.reason}`);
+  writeText(join(dataDir, "dashboard.json"), dashOut.text);
 
   return { runsPublished, withheld };
 }
