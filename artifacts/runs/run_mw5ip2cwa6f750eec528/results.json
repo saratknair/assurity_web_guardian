@@ -1,0 +1,564 @@
+{
+  "pages": [
+    {
+      "page": "https://assurity.nz/",
+      "slug": "assurity-nz",
+      "checks": [
+        {
+          "name": "desktop:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "desktop:title",
+          "passed": true,
+          "detail": "Smarter Quality Assurance and Software Testing. Safer digital delivery."
+        },
+        {
+          "name": "desktop:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "desktop:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "desktop:a11y-critical-serious",
+          "passed": false,
+          "detail": "link-name, nested-interactive"
+        },
+        {
+          "name": "mobile:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "mobile:title",
+          "passed": true,
+          "detail": "Smarter Quality Assurance and Software Testing. Safer digital delivery."
+        },
+        {
+          "name": "mobile:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "mobile:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "mobile:a11y-critical-serious",
+          "passed": false,
+          "detail": "button-name, color-contrast, link-name, nested-interactive"
+        }
+      ]
+    },
+    {
+      "page": "https://assurity.nz/software-quality-services/",
+      "slug": "assurity-nz-software-quality-services",
+      "checks": [
+        {
+          "name": "desktop:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "desktop:title",
+          "passed": true,
+          "detail": "Software Quality Services - Assurity"
+        },
+        {
+          "name": "desktop:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "desktop:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "desktop:a11y-critical-serious",
+          "passed": false,
+          "detail": "link-name"
+        },
+        {
+          "name": "mobile:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "mobile:title",
+          "passed": true,
+          "detail": "Software Quality Services - Assurity"
+        },
+        {
+          "name": "mobile:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "mobile:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "mobile:a11y-critical-serious",
+          "passed": false,
+          "detail": "button-name, link-name"
+        }
+      ]
+    },
+    {
+      "page": "https://assurity.nz/performance-testing/",
+      "slug": "assurity-nz-performance-testing",
+      "checks": [
+        {
+          "name": "desktop:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "desktop:title",
+          "passed": true,
+          "detail": "Performance Testing - Assurity"
+        },
+        {
+          "name": "desktop:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "desktop:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "desktop:a11y-critical-serious",
+          "passed": false,
+          "detail": "link-name, target-size"
+        },
+        {
+          "name": "mobile:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "mobile:title",
+          "passed": true,
+          "detail": "Performance Testing - Assurity"
+        },
+        {
+          "name": "mobile:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "mobile:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "mobile:a11y-critical-serious",
+          "passed": false,
+          "detail": "button-name, link-name, target-size"
+        }
+      ]
+    },
+    {
+      "page": "https://assurity.nz/business-analysis/",
+      "slug": "assurity-nz-business-analysis",
+      "checks": [
+        {
+          "name": "desktop:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "desktop:title",
+          "passed": true,
+          "detail": "Business Analysis that drive clarity, confidence and impact"
+        },
+        {
+          "name": "desktop:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "desktop:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "desktop:a11y-critical-serious",
+          "passed": false,
+          "detail": "link-name, target-size"
+        },
+        {
+          "name": "mobile:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "mobile:title",
+          "passed": true,
+          "detail": "Business Analysis that drive clarity, confidence and impact"
+        },
+        {
+          "name": "mobile:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "mobile:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "mobile:a11y-critical-serious",
+          "passed": false,
+          "detail": "button-name, link-name, target-size"
+        }
+      ]
+    },
+    {
+      "page": "https://assurity.nz/case-studies/",
+      "slug": "assurity-nz-case-studies",
+      "checks": [
+        {
+          "name": "desktop:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "desktop:title",
+          "passed": true,
+          "detail": "Case Studies - Assurity"
+        },
+        {
+          "name": "desktop:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "desktop:nav",
+          "passed": true,
+          "detail": "3 nav"
+        },
+        {
+          "name": "desktop:a11y-critical-serious",
+          "passed": false,
+          "detail": "link-name"
+        },
+        {
+          "name": "mobile:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "mobile:title",
+          "passed": true,
+          "detail": "Case Studies - Assurity"
+        },
+        {
+          "name": "mobile:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "mobile:nav",
+          "passed": true,
+          "detail": "3 nav"
+        },
+        {
+          "name": "mobile:a11y-critical-serious",
+          "passed": false,
+          "detail": "button-name, link-name"
+        }
+      ]
+    },
+    {
+      "page": "https://assurity.nz/careers/",
+      "slug": "assurity-nz-careers",
+      "checks": [
+        {
+          "name": "desktop:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "desktop:title",
+          "passed": true,
+          "detail": "Careers - Assurity"
+        },
+        {
+          "name": "desktop:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "desktop:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "desktop:a11y-critical-serious",
+          "passed": false,
+          "detail": "label, link-name, select-name"
+        },
+        {
+          "name": "mobile:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "mobile:title",
+          "passed": true,
+          "detail": "Careers - Assurity"
+        },
+        {
+          "name": "mobile:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "mobile:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "mobile:a11y-critical-serious",
+          "passed": false,
+          "detail": "button-name, label, link-name, select-name"
+        }
+      ]
+    },
+    {
+      "page": "https://assurity.nz/contact/",
+      "slug": "assurity-nz-contact",
+      "checks": [
+        {
+          "name": "desktop:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "desktop:title",
+          "passed": true,
+          "detail": "Contact - Assurity"
+        },
+        {
+          "name": "desktop:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "desktop:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "desktop:a11y-critical-serious",
+          "passed": false,
+          "detail": "color-contrast, link-name"
+        },
+        {
+          "name": "mobile:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "mobile:title",
+          "passed": true,
+          "detail": "Contact - Assurity"
+        },
+        {
+          "name": "mobile:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "mobile:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "mobile:a11y-critical-serious",
+          "passed": false,
+          "detail": "button-name, color-contrast, link-name"
+        }
+      ]
+    },
+    {
+      "page": "https://assurity.nz/engagement-models/",
+      "slug": "assurity-nz-engagement-models",
+      "checks": [
+        {
+          "name": "desktop:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "desktop:title",
+          "passed": true,
+          "detail": "Engagement Models - Assurity"
+        },
+        {
+          "name": "desktop:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "desktop:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "desktop:a11y-critical-serious",
+          "passed": false,
+          "detail": "link-name, target-size"
+        },
+        {
+          "name": "mobile:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "mobile:title",
+          "passed": true,
+          "detail": "Engagement Models - Assurity"
+        },
+        {
+          "name": "mobile:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "mobile:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "mobile:a11y-critical-serious",
+          "passed": false,
+          "detail": "button-name, link-name, target-size"
+        }
+      ]
+    },
+    {
+      "page": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "slug": "assurity-nz-capability-software-quality-services-test-automation-engineering",
+      "checks": [
+        {
+          "name": "desktop:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "desktop:title",
+          "passed": true,
+          "detail": "Test Automation Engineering - Assurity"
+        },
+        {
+          "name": "desktop:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "desktop:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "desktop:a11y-critical-serious",
+          "passed": false,
+          "detail": "link-name"
+        },
+        {
+          "name": "mobile:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "mobile:title",
+          "passed": true,
+          "detail": "Test Automation Engineering - Assurity"
+        },
+        {
+          "name": "mobile:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "mobile:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "mobile:a11y-critical-serious",
+          "passed": false,
+          "detail": "button-name, link-name"
+        }
+      ]
+    },
+    {
+      "page": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "slug": "assurity-nz-capability-software-quality-accelerators-exmonitoring",
+      "checks": [
+        {
+          "name": "desktop:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "desktop:title",
+          "passed": true,
+          "detail": "ExMonitoring - Assurity"
+        },
+        {
+          "name": "desktop:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "desktop:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "desktop:a11y-critical-serious",
+          "passed": false,
+          "detail": "link-name"
+        },
+        {
+          "name": "mobile:http",
+          "passed": true,
+          "detail": "HTTP 200"
+        },
+        {
+          "name": "mobile:title",
+          "passed": true,
+          "detail": "ExMonitoring - Assurity"
+        },
+        {
+          "name": "mobile:h1",
+          "passed": true,
+          "detail": "visible"
+        },
+        {
+          "name": "mobile:nav",
+          "passed": true,
+          "detail": "2 nav"
+        },
+        {
+          "name": "mobile:a11y-critical-serious",
+          "passed": false,
+          "detail": "button-name, link-name"
+        }
+      ]
+    }
+  ]
+}
