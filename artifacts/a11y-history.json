@@ -1,0 +1,858 @@
+{
+  "schemaVersion": 2,
+  "runs": [
+    "run_mw5jpa783ab13fb2feeb"
+  ],
+  "findings": {
+    "https://assurity.nz/business-analysis/|desktop|link-name": {
+      "fingerprint": "https://assurity.nz/business-analysis/|desktop|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/business-analysis/|desktop|target-size": {
+      "fingerprint": "https://assurity.nz/business-analysis/|desktop|target-size",
+      "ruleId": "target-size",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/business-analysis/|mobile|button-name": {
+      "fingerprint": "https://assurity.nz/business-analysis/|mobile|button-name",
+      "ruleId": "button-name",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "mobile",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/business-analysis/|mobile|link-name": {
+      "fingerprint": "https://assurity.nz/business-analysis/|mobile|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/business-analysis/|mobile|target-size": {
+      "fingerprint": "https://assurity.nz/business-analysis/|mobile|target-size",
+      "ruleId": "target-size",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|link-name": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|button-name": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|button-name",
+      "ruleId": "button-name",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "mobile",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|link-name": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|link-name": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|button-name": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|button-name",
+      "ruleId": "button-name",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "mobile",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|link-name": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|desktop|label": {
+      "fingerprint": "https://assurity.nz/careers/|desktop|label",
+      "ruleId": "label",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "desktop",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|desktop|link-name": {
+      "fingerprint": "https://assurity.nz/careers/|desktop|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|desktop|select-name": {
+      "fingerprint": "https://assurity.nz/careers/|desktop|select-name",
+      "ruleId": "select-name",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "desktop",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|mobile|button-name": {
+      "fingerprint": "https://assurity.nz/careers/|mobile|button-name",
+      "ruleId": "button-name",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "mobile",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|mobile|label": {
+      "fingerprint": "https://assurity.nz/careers/|mobile|label",
+      "ruleId": "label",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "mobile",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|mobile|link-name": {
+      "fingerprint": "https://assurity.nz/careers/|mobile|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|mobile|select-name": {
+      "fingerprint": "https://assurity.nz/careers/|mobile|select-name",
+      "ruleId": "select-name",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "mobile",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/case-studies/|desktop|link-name": {
+      "fingerprint": "https://assurity.nz/case-studies/|desktop|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/case-studies/|mobile|button-name": {
+      "fingerprint": "https://assurity.nz/case-studies/|mobile|button-name",
+      "ruleId": "button-name",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "mobile",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/case-studies/|mobile|link-name": {
+      "fingerprint": "https://assurity.nz/case-studies/|mobile|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/contact/|desktop|color-contrast": {
+      "fingerprint": "https://assurity.nz/contact/|desktop|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/contact/|desktop|link-name": {
+      "fingerprint": "https://assurity.nz/contact/|desktop|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/contact/|mobile|button-name": {
+      "fingerprint": "https://assurity.nz/contact/|mobile|button-name",
+      "ruleId": "button-name",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "mobile",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/contact/|mobile|color-contrast": {
+      "fingerprint": "https://assurity.nz/contact/|mobile|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/contact/|mobile|link-name": {
+      "fingerprint": "https://assurity.nz/contact/|mobile|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/engagement-models/|desktop|link-name": {
+      "fingerprint": "https://assurity.nz/engagement-models/|desktop|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/engagement-models/|desktop|target-size": {
+      "fingerprint": "https://assurity.nz/engagement-models/|desktop|target-size",
+      "ruleId": "target-size",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/engagement-models/|mobile|button-name": {
+      "fingerprint": "https://assurity.nz/engagement-models/|mobile|button-name",
+      "ruleId": "button-name",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "mobile",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/engagement-models/|mobile|link-name": {
+      "fingerprint": "https://assurity.nz/engagement-models/|mobile|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/engagement-models/|mobile|target-size": {
+      "fingerprint": "https://assurity.nz/engagement-models/|mobile|target-size",
+      "ruleId": "target-size",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/performance-testing/|desktop|link-name": {
+      "fingerprint": "https://assurity.nz/performance-testing/|desktop|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/performance-testing/|desktop|target-size": {
+      "fingerprint": "https://assurity.nz/performance-testing/|desktop|target-size",
+      "ruleId": "target-size",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/performance-testing/|mobile|button-name": {
+      "fingerprint": "https://assurity.nz/performance-testing/|mobile|button-name",
+      "ruleId": "button-name",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "mobile",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/performance-testing/|mobile|link-name": {
+      "fingerprint": "https://assurity.nz/performance-testing/|mobile|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/performance-testing/|mobile|target-size": {
+      "fingerprint": "https://assurity.nz/performance-testing/|mobile|target-size",
+      "ruleId": "target-size",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/software-quality-services/|desktop|link-name": {
+      "fingerprint": "https://assurity.nz/software-quality-services/|desktop|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/software-quality-services/|mobile|button-name": {
+      "fingerprint": "https://assurity.nz/software-quality-services/|mobile|button-name",
+      "ruleId": "button-name",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "mobile",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/software-quality-services/|mobile|link-name": {
+      "fingerprint": "https://assurity.nz/software-quality-services/|mobile|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/|desktop|link-name": {
+      "fingerprint": "https://assurity.nz/|desktop|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/|desktop|nested-interactive": {
+      "fingerprint": "https://assurity.nz/|desktop|nested-interactive",
+      "ruleId": "nested-interactive",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/|mobile|button-name": {
+      "fingerprint": "https://assurity.nz/|mobile|button-name",
+      "ruleId": "button-name",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "mobile",
+      "impact": "critical",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/|mobile|color-contrast": {
+      "fingerprint": "https://assurity.nz/|mobile|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/|mobile|link-name": {
+      "fingerprint": "https://assurity.nz/|mobile|link-name",
+      "ruleId": "link-name",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/|mobile|nested-interactive": {
+      "fingerprint": "https://assurity.nz/|mobile|nested-interactive",
+      "ruleId": "nested-interactive",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/business-analysis/|desktop|visual-diff": {
+      "fingerprint": "https://assurity.nz/business-analysis/|desktop|visual-diff",
+      "ruleId": "visual-diff",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|visual-diff": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|visual-diff",
+      "ruleId": "visual-diff",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|desktop|visual-diff": {
+      "fingerprint": "https://assurity.nz/careers/|desktop|visual-diff",
+      "ruleId": "visual-diff",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/case-studies/|desktop|visual-diff": {
+      "fingerprint": "https://assurity.nz/case-studies/|desktop|visual-diff",
+      "ruleId": "visual-diff",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/|desktop|visual-diff": {
+      "fingerprint": "https://assurity.nz/|desktop|visual-diff",
+      "ruleId": "visual-diff",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-06T22:29:23.562Z",
+      "lastSeen": "2026-11-06T22:29:23.562Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mw5jpa783ab13fb2feeb"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mw5jpa783ab13fb2feeb",
+      "resolvedRun": null,
+      "resolutionDate": null
+    }
+  }
+}
