@@ -20,6 +20,7 @@ import { buildDashboard } from "../reporting/dashboard-builder.js";
 import { LocalOtelExporter } from "../telemetry/otel-adapter.js";
 import { computeLifecycleForRun } from "./run-lifecycle.js";
 import { publish } from "../publish/publisher.js";
+import { runOriginMarker } from "../publish/published-data.js";
 
 /**
  * Conventional local Pages output directory for the published bundle (Req 6.7).
@@ -259,6 +260,9 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
   if (/^[a-z_]{1,32}$/.test(triggerEnv)) {
     writeFileSync(join(store.runDir, "trigger"), triggerEnv, "utf8");
   }
+
+  // Run origin marker: "cloud" only when AWG_RUN_ORIGIN is exactly "cloud", else "local".
+  writeFileSync(join(store.runDir, "origin"), runOriginMarker(process.env.AWG_RUN_ORIGIN), "utf8");
 
   tel.runRecord({
     runId,

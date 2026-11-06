@@ -145,6 +145,11 @@ export interface RunFacts {
   origin: "local" | "cloud";
 }
 
+/** Value of the persisted `origin` marker written at run time: "cloud" only for exactly "cloud". */
+export function runOriginMarker(envOrigin?: string): "cloud" | "local" {
+  return (envOrigin ?? "").trim() === "cloud" ? "cloud" : "local";
+}
+
 /**
  * Derive a run's origin. Precedence (kept simple and documented):
  *   1. A persisted marker file `artifacts/runs/<id>/origin` whose trimmed

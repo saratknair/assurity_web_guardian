@@ -126,6 +126,10 @@ jobs:
         # Sanitize raw artifacts -> Published_Data into ./_site/data
         # (build-published-data reads the output dir from argv[2]). With history
         # restored above, this now emits the full runs index + accumulating trend.
+        # AWG_RUN_ORIGIN=cloud is the fallback for runs without a persisted
+        # `origin` marker (per-run marker keeps precedence).
+        env:
+          AWG_RUN_ORIGIN: cloud
         run: node dist/publish/build-published-data.js ./_site
       - name: Add static dashboard to site
         # Copy the static dashboard app alongside the sanitized data.

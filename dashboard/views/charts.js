@@ -416,7 +416,7 @@ function scaffold(host, o) {
   if (o.hint) card.appendChild(el("p", "chart-card__hint", o.hint));
   const summary = el("p", "chart-summary", o.summary);
   card.appendChild(summary);
-  const canvasWrap = el("div", "chart-card__canvas");
+  const canvasWrap = el("div", "chart-card__canvas" + (o.tall ? " chart-card__canvas--tall" : ""));
   const canvas = el("canvas");
   canvas.setAttribute("role", "img");
   canvas.setAttribute("aria-label", o.title + ". " + o.summary);
@@ -577,6 +577,7 @@ export function renderSeverityChart(host, counts, ctx, opts) {
     title: "Findings by severity",
     hint: "Select a segment to list those findings.",
     summary,
+    tall: true,
   });
   const styles = rows.map((r) => seriesStyle(r.key, SEV_COLOR_VAR[r.key]));
   const legend = legendList(ctx, rows.map((r, i) => ({ label: r.symbol + " " + r.label, count: r.count, route: r.route, style: styles[i] })));
@@ -606,7 +607,8 @@ export function renderSeverityChart(host, counts, ctx, opts) {
       }],
     },
     options: {
-      cutout: "55%",
+      layout: { padding: 4 },
+      cutout: "50%",
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -637,6 +639,7 @@ export function renderLifecycleChart(host, lifecycle, ctx, opts) {
     title: "New versus recurring",
     hint: "Select a bar to list those findings. Resolved issues are shown separately and are not part of the total.",
     summary,
+    tall: true,
   });
   const styles = rows.map((r) => seriesStyle(r.key, LC_COLOR_VAR[r.key]));
   const legend = legendList(ctx, rows.map((r, i) => ({ label: r.label, count: r.count, route: r.route, style: styles[i] })));
@@ -651,39 +654,43 @@ export function renderLifecycleChart(host, lifecycle, ctx, opts) {
   );
   const details = finishCard(parts.card, legend, "Show data table", table);
   const ax = axisColors();
-  const cats = ["Active findings", "Resolved in this run"];
+  // One bar per state with a solid fill: each bar is named on the
+  // category axis and in the legend, so colour is not the only cue, and small or
+  // single-state data stays clearly visible (patterns made it look empty).
   const config = {
     type: "bar",
     data: {
-      labels: cats,
-      datasets: rows.map((r, i) => ({
-        label: r.label,
-        data: r.present ? [r.count, 0] : [0, r.count],
-        backgroundColor: styles[i].fill,
-        borderColor: styles[i].color,
-        borderWidth: 2,
-        stack: "lifecycle",
-      })),
+      // Short axis label for Resolved; the legend and table keep the full wording.
+      labels: rows.map((r) => (r.present ? r.label : "Resolved (not in total)")),
+      datasets: [{
+        label: "Findings",
+        data: rows.map((r) => r.count),
+        backgroundColor: styles.map((s) => s.color),
+        borderColor: axisColors().fg,
+        borderWidth: 1,
+        barPercentage: 0.8,
+        categoryPercentage: 0.85,
+      }],
     },
     options: {
+      // Horizontal bars keep the state names readable on narrow screens.
       indexAxis: "y",
       scales: {
-        x: { stacked: true, beginAtZero: true, ticks: { color: ax.text, precision: 0 }, grid: { color: ax.grid } },
-        y: { stacked: true, ticks: { color: ax.text }, grid: { color: ax.grid } },
+        x: { beginAtZero: true, ticks: { color: ax.text, precision: 0 }, grid: { color: ax.grid }, title: { display: true, text: "Findings", color: ax.text } },
+        y: { ticks: { color: ax.text, autoSkip: false }, grid: { display: false } },
       },
       plugins: {
         legend: { display: false },
         tooltip: {
-          filter: (item) => item.raw > 0,
-          callbacks: { label: (item) => rows[item.datasetIndex].label + ": " + rows[item.datasetIndex].count },
+          callbacks: { label: (item) => rows[item.dataIndex].label + ": " + rows[item.dataIndex].count },
         },
       },
     },
   };
   return mount(host, parts, details, config, {
-    clickable: (e) => !!rows[e.datasetIndex].route,
+    clickable: (e) => !!rows[e.index].route,
     click: (e) => {
-      const r = rows[e.datasetIndex];
+      const r = rows[e.index];
       if (r.route) ctx.navigate(r.route);
     },
   });

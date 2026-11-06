@@ -320,7 +320,7 @@ function visualSection(f, run, runId, ctx, retentionRuns, item) {
       s.appendChild(el("p", "", MEASURE_NOT_RECORDED_TEXT));
     }
     if (item.dimensionsChanged === true) {
-      s.appendChild(el("p", "", "The image size changed compared with the baseline, so no pixel comparison is available."));
+      s.appendChild(el("p", "", "The screenshot size changed compared with the approved baseline (for example the page got longer), so a pixel comparison is not possible. A new baseline may need to be approved."));
     }
     const base = isObj(item.baseline) ? item.baseline : {};
     const approved = str(base.approvedAt) ? formatDateTime(base.approvedAt) : "not recorded";

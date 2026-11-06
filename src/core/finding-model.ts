@@ -45,6 +45,32 @@ function isObj(v: unknown): v is Record<string, unknown> {
 }
 
 /**
+ * Shared visual Finding rule: a page+viewport is a visual Finding when a
+ * `.diff.png` exists OR findings.json records `visual[viewport].differs === true`
+ * (for example a screenshot size change with no diff image). Only slugs present
+ * in `knownSlugs` count. Returns Map<`${slug}.${viewport}`, {slug, viewport}>.
+ */
+export function collectVisualViews(
+  knownSlugs: { has(slug: string): boolean },
+  diffFiles: { slug: string; viewport: string }[],
+  findingPages: unknown[],
+): Map<string, { slug: string; viewport: "desktop" | "mobile" }> {
+  const out = new Map<string, { slug: string; viewport: "desktop" | "mobile" }>();
+  for (const f of diffFiles) {
+    const vp = asViewport(f.viewport);
+    if (vp && knownSlugs.has(f.slug)) out.set(`${f.slug}.${vp}`, { slug: f.slug, viewport: vp });
+  }
+  for (const p of findingPages) {
+    if (!isObj(p) || typeof p.slug !== "string" || !p.slug || !knownSlugs.has(p.slug) || !isObj(p.visual)) continue;
+    for (const vp of ["desktop", "mobile"] as const) {
+      const v = (p.visual as Record<string, unknown>)[vp];
+      if (isObj(v) && v.differs === true) out.set(`${p.slug}.${vp}`, { slug: p.slug, viewport: vp });
+    }
+  }
+  return out;
+}
+
+/**
  * Light key set for a run, read from raw files only: axe violations
  * (accessibility/*.json), failed checks (results.json) and visual diff flags
  * (screenshots/*.diff.png). Returns Map<key, kind>. Unreadable inputs are skipped.
@@ -91,14 +117,24 @@ export function buildRunFindingSet(runDir: string): Map<string, FindingKind> {
     }
   }
 
+  const findingsDoc = readJson(join(runDir, "findings.json"));
+  const findingPages = isObj(findingsDoc) && Array.isArray(findingsDoc.pages) ? findingsDoc.pages : [];
+  for (const p of findingPages) {
+    if (isObj(p) && typeof p.slug === "string" && p.slug && typeof p.page === "string" && p.page && !urlBySlug.has(p.slug)) {
+      urlBySlug.set(p.slug, p.page);
+    }
+  }
+
+  const diffFiles: { slug: string; viewport: string }[] = [];
   const shotDir = join(runDir, "screenshots");
   if (existsSync(shotDir)) {
     for (const file of readdirSync(shotDir).sort()) {
       const m = /^(.*)\.(desktop|mobile)\.diff\.png$/.exec(file);
-      const pageUrl = m ? urlBySlug.get(m[1]) : undefined;
-      if (!m || !pageUrl) continue;
-      out.set(findingKey({ pageUrl, viewport: m[2] as "desktop" | "mobile", ruleId: "visual-diff" }), "visual");
+      if (m) diffFiles.push({ slug: m[1], viewport: m[2] });
     }
+  }
+  for (const { slug, viewport } of collectVisualViews(urlBySlug, diffFiles, findingPages).values()) {
+    out.set(findingKey({ pageUrl: urlBySlug.get(slug)!, viewport, ruleId: "visual-diff" }), "visual");
   }
   return out;
 }

@@ -61,7 +61,7 @@ export async function render(container, ctx) {
   const facts = el("div", "notice");
   facts.appendChild(el("p", "", "Run date: " + (isObj(run) && run.finishedAt ? formatDateTime(run.finishedAt) : "Run not recorded")));
   if (item.dimensionsChanged) {
-    facts.appendChild(el("p", "", "The screenshot size changed since the approved baseline, so pixels cannot be compared one to one."));
+    facts.appendChild(el("p", "", "The screenshot size changed compared with the approved baseline (for example the page got longer), so a pixel comparison is not possible. A new baseline may need to be approved."));
   }
   facts.appendChild(el("p", "", mt || "Difference measure not recorded for this run"));
   if (isObj(item.measure) && item.measure.source === "derived-from-diff-image") {

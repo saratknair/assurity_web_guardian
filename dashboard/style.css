@@ -243,6 +243,8 @@ label { font-size: 0.875rem; color: var(--muted); }
 .chart-card__hint, .card__hint { margin: 0 0 12px; font-size: 0.8125rem; color: var(--muted); }
 .chart-card__canvas, .card__canvas { position: relative; height: 300px; }
 .chart-card__canvas canvas, .card__canvas canvas { max-height: 300px; }
+.chart-card__canvas--tall { height: 340px; }
+.chart-card__canvas--tall canvas { max-height: 340px; }
 .card__canvas--short { height: 220px; margin-top: 16px; }
 .card__canvas--short canvas { max-height: 220px; }
 .chart-text { margin-top: 12px; font-size: 0.875rem; color: var(--muted); }
@@ -488,6 +490,8 @@ dialog#lightbox::backdrop { background: rgba(2, 6, 14, 0.8); }
   .page { padding: 12px 12px 60px; }
   .kpi__value { font-size: 1.5rem; }
   .chart-card__canvas, .card__canvas { height: 240px; }
+  .chart-card__canvas--tall { height: 300px; }
+  .chart-card__canvas--tall canvas { max-height: 300px; }
   .detail-panel__body { padding: 14px; }
 }
 

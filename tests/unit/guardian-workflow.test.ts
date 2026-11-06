@@ -34,6 +34,13 @@ describe("guardian.yml workflow smoke test", () => {
     expect(code).toContain("./_site/config.js");
   });
 
+  it("sets AWG_RUN_ORIGIN=cloud on the Build published data step", () => {
+    const start = code.indexOf("- name: Build published data");
+    const end = code.indexOf("- name: Add static dashboard to site");
+    expect(start).toBeGreaterThan(-1);
+    expect(code.slice(start, end)).toMatch(/AWG_RUN_ORIGIN:\s*cloud/);
+  });
+
   it("never force-pushes", () => {
     expect(code).not.toMatch(/push\s+(.*\s)?(-f|--force|--force-with-lease)\b/);
     expect(code).not.toContain("--force-with-lease");

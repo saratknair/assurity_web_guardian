@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  collectVisualViews,
   findingId,
   findingKey,
   type FindingKind,
@@ -490,19 +491,11 @@ export function buildRunFindings(inputs: RawRunInputs, opts: { caps?: PublishCap
   }
 
   // ---- visual findings ----
-  const visualViews = new Map<string, { slug: string; viewport: Viewport }>();
-  for (const f of inputs.visualFiles) {
-    const vp = asViewport(f.viewport);
-    if (vp && f.hasDiff && pages.has(f.slug)) visualViews.set(`${f.slug}.${vp}`, { slug: f.slug, viewport: vp });
-  }
-  for (const p of findingPages) {
-    const slug = str(p.slug);
-    if (!slug || !pages.has(slug) || !isObj(p.visual)) continue;
-    for (const vp of ["desktop", "mobile"] as const) {
-      const v = (p.visual as Record<string, unknown>)[vp];
-      if (isObj(v) && v.differs === true) visualViews.set(`${slug}.${vp}`, { slug, viewport: vp });
-    }
-  }
+  const visualViews = collectVisualViews(
+    pages,
+    inputs.visualFiles.filter((f) => f.hasDiff),
+    findingPages,
+  );
   if (detailLevel === "rule") {
     for (const [, { slug, viewport }] of [...visualViews].sort((a, b) => a[0].localeCompare(b[0]))) {
       const pageUrl = pages.get(slug)!.url;
