@@ -19,6 +19,9 @@
 
 import { SEVERITY_ORDER, label as sevLabel, symbol as sevSymbol } from "../lib/severity.js";
 import { LIFECYCLE_PRESENT, LIFECYCLE_LABELS } from "../lib/findings.js";
+import { runDomain, differentSiteLabel } from "../lib/domain.js";
+import { pageIgnoredText } from "../lib/captions.js";
+import { ignoredCountBySlug } from "../lib/ignored.js";
 import { buildPageRows, filterPages, sortPages, groupPages } from "../lib/pages.js";
 import {
   el, append, clear, button, badge, errorBanner, sectionHeading, plural, formatDateTime,
@@ -86,6 +89,12 @@ export function buildRunList(dashboard, index) {
       healthById.set(r.runId, r.health);
     }
   }
+  const domainById = new Map();
+  for (const r of idxRaw.concat(trend)) {
+    if (isObj(r) && typeof r.runId === "string" && runDomain(r) && !domainById.has(r.runId)) {
+      domainById.set(r.runId, runDomain(r));
+    }
+  }
   let src = Array.isArray(d.runs) ? d.runs.filter((r) => isObj(r) && typeof r.runId === "string" && r.runId) : [];
   const fromDashboard = src.length > 0;
   if (!src.length) src = idxRaw.filter((r) => isObj(r) && typeof r.runId === "string" && r.runId);
@@ -98,6 +107,7 @@ export function buildRunList(dashboard, index) {
       total: fromDashboard && typeof r.total === "number" ? cnt(r.total) : null,
       hasRunData: r.hasRunData !== false,
       health: typeof r.health === "string" ? r.health : healthById.get(r.runId) || "",
+      domain: runDomain(r) || domainById.get(r.runId) || "",
     },
   }));
   items.sort((a, b) => {
@@ -120,11 +130,13 @@ export function pickLatestId(dashboard, runList) {
   return runList && runList.length ? runList[0].runId : "";
 }
 
-/** Option text: "date - run id - N findings". */
-export function runOptionText(r) {
+/** Option text: "date - run id - N findings[ - Different site: host]". latest is optional. */
+export function runOptionText(r, latest) {
   const parts = [formatDateTime(r.finishedAt), r.runId];
   if (typeof r.total === "number") parts.push(plural(r.total, "finding", "findings"));
   if (r.hasRunData === false) parts.push("run data not published");
+  const diff = differentSiteLabel(r, latest);
+  if (diff) parts.push(diff);
   return parts.join(" - ");
 }
 
@@ -170,6 +182,17 @@ function pagesFromFindings(findings) {
     p.counts.total += 1;
   }
   return Array.from(map.values());
+}
+
+/** Page rows with ignoredCount set from a { slug: n } map (published values win). */
+export function withIgnored(pages, bySlug) {
+  const list = Array.isArray(pages) ? pages : [];
+  if (!isObj(bySlug)) return list;
+  return list.map((p) =>
+    isObj(p) && typeof p.ignoredCount !== "number" && typeof bySlug[p.slug] === "number"
+      ? Object.assign({}, p, { ignoredCount: bySlug[p.slug] })
+      : p,
+  );
 }
 
 function statesBySlugFrom(findings) {
@@ -227,6 +250,7 @@ export function summaryFromRun(run, entry) {
     pagesScanned: entry && typeof entry.pages === "number" ? cnt(entry.pages) : pages.length,
     pages,
     statesBySlug: statesBySlugFrom(r.findings),
+    ignoredBySlug: ignoredCountBySlug(r.ignored),
     hasRunData: true,
     health: entry && typeof entry.health === "string" ? entry.health : "",
   };
@@ -279,6 +303,7 @@ export function pageRowName(row) {
   const n = row.total;
   let s = row.url + ", " + plural(n, "finding", "findings");
   if (n > 0 && row.highest !== "none") s += ", highest severity " + sevLabel(row.highest);
+  if (row.ignoredCount > 0) s += ", plus " + row.ignoredCount + " ignored, not counted";
   return s;
 }
 
@@ -471,16 +496,31 @@ function buildExplorer(ctx, summary, runId, startParams) {
 
   let statesBySlug = summary.statesBySlug;
   let statesFailed = false;
-  let rows = buildPageRows(summary.pages);
+  let ignoredBySlug = summary.ignoredBySlug || null;
+  let rows = buildPageRows(withIgnored(summary.pages, ignoredBySlug));
   const totalPages = rows.length;
 
   function rebuildRows() {
-    const pages = summary.pages.map((p) =>
+    const pages = withIgnored(summary.pages, ignoredBySlug).map((p) =>
       Object.assign({}, p, { states: statesBySlug && p && statesBySlug[p.slug] ? statesBySlug[p.slug] : [] }),
     );
     rows = buildPageRows(pages);
   }
   if (statesBySlug) rebuildRows();
+
+  // "(+N ignored)" needs the run's ignored[] list; fetch it quietly when the
+  // summary came from dashboard.json and the run has ignored findings.
+  if (!ignoredBySlug && typeof summary.ignored === "number" && summary.ignored > 0 && summary.runId) {
+    ctx.loadRun(runId).then(
+      (out) => {
+        if (!ctx.isCurrent()) return;
+        ignoredBySlug = ignoredCountBySlug(out.run.ignored);
+        rebuildRows();
+        update(false);
+      },
+      () => { /* the "(+N ignored)" text is simply not shown */ },
+    );
+  }
 
   async function ensureStates() {
     if (statesBySlug || statesFailed) return;
@@ -654,6 +694,8 @@ function buildExplorer(ctx, summary, runId, startParams) {
     if (r.title) urlSpan.appendChild(el("span", "muted", r.title, { style: "display:block" }));
     inner.appendChild(urlSpan);
     inner.appendChild(el("span", "page-row__count", plural(r.total, "finding", "findings")));
+    const ignText = pageIgnoredText(r.ignoredCount);
+    if (ignText) inner.appendChild(el("span", "page-row__count muted", ignText));
     if (r.total > 0 && r.highest !== "none") inner.appendChild(badge(r.highest));
     else inner.appendChild(el("span", "page-row__count", "No findings"));
     li.appendChild(inner);
@@ -797,7 +839,8 @@ export async function render(container, ctx) {
   selWrap.appendChild(el("label", "", "Run", { for: selId }));
   const sel = el("select", "select", null, { id: selId, "data-focus-key": "run-select" });
   const options = runList.length ? runList : [{ runId: effectiveId, finishedAt: null, total: null, hasRunData: true }];
-  for (const r of options) sel.appendChild(el("option", "", runOptionText(r), { value: r.runId }));
+  const latestEntry = entryOf(latestId);
+  for (const r of options) sel.appendChild(el("option", "", runOptionText(r, latestEntry), { value: r.runId }));
   sel.value = effectiveId;
   function selectRun(id) {
     const next = Object.assign({}, params);
@@ -816,6 +859,15 @@ export async function render(container, ctx) {
   container.appendChild(
     el("p", "muted", "Showing run " + effectiveId + " (" + formatDateTime(summary.finishedAt) + ")"),
   );
+
+  const siteLabel = differentSiteLabel(entry, latestEntry);
+  if (siteLabel) {
+    const sn = el("div", "notice notice--warn", null, { role: "status" });
+    sn.appendChild(
+      el("span", "", siteLabel + ". This run describes a different site from the latest run (" + runDomain(latestEntry) + ")."),
+    );
+    container.appendChild(sn);
+  }
 
   if (effectiveId !== latestId) {
     const n = el("div", "notice notice--warn", null, { role: "status" });

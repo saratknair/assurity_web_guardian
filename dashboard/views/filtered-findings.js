@@ -18,7 +18,8 @@
 
 import { SEVERITY_ORDER, label as sevLabel } from "../lib/severity.js";
 import { LIFECYCLE_PRESENT, LIFECYCLE_LABELS, filterFindings, sortFindings } from "../lib/findings.js";
-import { el, append, clear, button, link, errorBanner, loading, plural, uniqueId } from "./common.js";
+import { el, append, clear, button, link, errorBanner, loading, plural, uniqueId, sectionHeading, kvList } from "./common.js";
+import { groupIgnoredByDecision, groupPagesText } from "../lib/ignored.js";
 import { renderFindingsList } from "./findings-list.js";
 
 const LIST_KEYS = ["sev", "state", "group", "rule"];
@@ -153,6 +154,29 @@ function tally(list, pick) {
     if (k) m.set(k, (m.get(k) || 0) + 1);
   }
   return m;
+}
+
+/**
+ * Ignored list: one block per decision with scope in words, reason,
+ * "Ignored by <reviewer> on <date>", decision id, pages covered (site-wide
+ * groups) and the covered Findings with links. All text via textContent.
+ */
+function renderIgnoredGroups(host, matches, ctx, runId) {
+  const groups = groupIgnoredByDecision(matches);
+  for (const g of groups) {
+    const sec = el("section", "detail-section ignored-group");
+    sec.appendChild(sectionHeading(g.scopeText, 3, "section-title"));
+    const facts = [];
+    facts.push(["Reason", g.reason || "not recorded"]);
+    facts.push(["Decision", g.byText]);
+    facts.push(["Decision id", g.decisionId || "not recorded"]);
+    const pagesText = groupPagesText(g);
+    if (pagesText) facts.push(["Pages", pagesText]);
+    facts.push(["Findings covered", String(g.findings.length)]);
+    sec.appendChild(kvList(facts));
+    renderFindingsList(sec, g.findings, ctx, { runId, limit: 100 });
+    host.appendChild(sec);
+  }
 }
 
 export async function render(container, ctx) {
@@ -291,6 +315,8 @@ export async function render(container, ctx) {
       box.appendChild(b);
     }
     listHost.appendChild(box);
+  } else if (scope === "ignored") {
+    renderIgnoredGroups(listHost, matches, ctx, runId);
   } else {
     renderFindingsList(listHost, matches, ctx, { runId, limit: 100 });
   }

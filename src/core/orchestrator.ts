@@ -2,7 +2,10 @@
 import AxeBuilderModule from "@axe-core/playwright";
 const AxeBuilder = ((AxeBuilderModule as unknown as { default?: unknown }).default ?? AxeBuilderModule) as unknown as (new (opts: { page: unknown }) => { withTags(tags: string[]): { analyze(): Promise<{ violations: { id: string; impact: string | null; help?: string; helpUrl?: string; nodes?: { target?: string[] }[] }[] }> } });
 import { resolve, join } from "node:path";
-import { writeFileSync } from "node:fs";
+import { writeFileSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { effectiveEntries, serializeLog } from "./dispositions.js";
+import { readLog, logPath } from "./disposition-store.js";
 import { resolveApprovedUrls, type AppConfig } from "../config/app-config.js";
 import { newRunIds } from "./ids.js";
 import { EvidenceStore, applyRetention } from "./evidence-store.js";
@@ -14,6 +17,7 @@ import { compare, type DeterministicCheck, type Outcome } from "../agents/compar
 import { qualityAnalysis, visualExplanation, triageRecommendation, type AiItem } from "../agents/ai-agents.js";
 import { latestBaselineVersion, generateTestFromBaseline, writeTestManifest, type GeneratedTest } from "../agents/test-generator.js";
 import { slugify } from "../agents/spec-generator.js";
+import { takeScreenshot } from "../agents/screenshot.js";
 import { compareScreenshot, type VisualResult } from "../agents/visual-compare.js";
 import { writeReport, writeDashboard, type ReportModel, type PageReport } from "../reporting/report.js";
 import { buildDashboard } from "../reporting/dashboard-builder.js";
@@ -21,6 +25,75 @@ import { LocalOtelExporter } from "../telemetry/otel-adapter.js";
 import { computeLifecycleForRun } from "./run-lifecycle.js";
 import { publish } from "../publish/publisher.js";
 import { runOriginMarker } from "../publish/published-data.js";
+
+/**
+ * Build the run-source marker from env. Only strictly validated short tokens are
+ * kept (numeric run id, 40-hex sha, [a-z_] event/trigger names); the rest is omitted.
+ * Returns null when nothing validates (e.g. outside CI).
+ */
+export function buildRunSource(env: Record<string, string | undefined>): Record<string, string> | null {
+  const out: Record<string, string> = {};
+  const trigger = (env.AWG_RUN_TRIGGER ?? "").trim();
+  if (/^[a-z_]{1,32}$/.test(trigger)) out.trigger = trigger;
+  const runId = (env.AWG_GH_RUN_ID ?? "").trim();
+  if (/^[0-9]{1,20}$/.test(runId)) out.githubRunId = runId;
+  const sha = (env.AWG_GH_SHA ?? "").trim();
+  if (/^[0-9a-f]{40}$/.test(sha)) out.sha = sha;
+  const event = (env.AWG_GH_EVENT_NAME ?? "").trim();
+  if (/^[a-z_]{1,32}$/.test(event)) out.eventName = event;
+  const hasGh = out.githubRunId !== undefined || out.sha !== undefined || out.eventName !== undefined;
+  return hasGh ? out : null;
+}
+
+/** Write `run-source.json` into the run dir when there is something valid to record. Never throws. */
+export function writeRunSourceMarker(runDir: string, env: Record<string, string | undefined>): boolean {
+  try {
+    const src = buildRunSource(env);
+    if (!src) return false;
+    writeFileSync(join(runDir, "run-source.json"), JSON.stringify(src, null, 2) + "\n", "utf8");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Write `dispositions-applied.json` into the run directory (design I.6).
+ * Status is `unavailable` (no entries) when the CI restore status says so or the log cannot be read.
+ * Never throws and never modifies the log.
+ */
+export function freezeDispositions(
+  runDir: string,
+  runId: string,
+  finishedAt: string,
+  artifactsDir: string = resolve("artifacts"),
+): void {
+  let status: "applied" | "unavailable" = "applied";
+  let entries: ReturnType<typeof effectiveEntries> = [];
+  let digestSource = "";
+  try {
+    let restore = "";
+    try {
+      const raw = JSON.parse(readFileSync(join(artifactsDir, "dispositions.status.json"), "utf8")) as { status?: unknown };
+      restore = typeof raw.status === "string" ? raw.status : "";
+    } catch {
+      restore = "";
+    }
+    const read = readLog(logPath(artifactsDir));
+    if (restore === "unavailable" || read.status === "unavailable") {
+      status = "unavailable";
+    } else {
+      digestSource = serializeLog(read.log);
+      entries = effectiveEntries(read.log, finishedAt);
+    }
+  } catch {
+    status = "unavailable";
+    entries = [];
+  }
+  const logDigest = createHash("sha256").update(digestSource, "utf8").digest("hex").slice(0, 16);
+  const out = { schemaVersion: 1, runId, finishedAt, status, logDigest, entries };
+  writeFileSync(join(runDir, "dispositions-applied.json"), JSON.stringify(out, null, 2) + "\n", "utf8");
+}
 
 /**
  * Conventional local Pages output directory for the published bundle (Req 6.7).
@@ -156,7 +229,7 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
 
         const shotDir = join(store.runDir, "screenshots");
         const shot = join(shotDir, `${slug}.${vp.name}.png`);
-        await page.screenshot({ path: shot, fullPage: true });
+        await takeScreenshot(page, shot);
         const ev = store.addEvidence({ kind: "screenshot", path: shot, page: url, viewport: vp.name });
         pageEvidence.push({ kind: `screenshot-${vp.name}`, path: shot });
 
@@ -261,6 +334,9 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
     writeFileSync(join(store.runDir, "trigger"), triggerEnv, "utf8");
   }
 
+  // Run-source marker (run-source.json): absent outside CI.
+  writeRunSourceMarker(store.runDir, process.env);
+
   // Run origin marker: "cloud" only when AWG_RUN_ORIGIN is exactly "cloud", else "local".
   writeFileSync(join(store.runDir, "origin"), runOriginMarker(process.env.AWG_RUN_ORIGIN), "utf8");
 
@@ -290,6 +366,9 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
   );
   store.writeJson("a11y-history-summary.json", lifecycle.summary);
   tel.event("a11y.history", { data: lifecycle.summary });
+
+  // Freeze the applied dispositions for this run (read the log once; never re-evaluated later).
+  freezeDispositions(store.runDir, runId, new Date().toISOString());
 
   const health: ReportModel["websiteHealth"] = totalFailedChecks > 0 ? "attention" : "healthy";
   const model: ReportModel = {

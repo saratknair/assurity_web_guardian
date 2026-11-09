@@ -19,7 +19,10 @@ import { el, clear, link, badge, lifecycleBadge, sectionHeading, kvList, loading
 import { plainEnglishSummary, shownElementsText, fixText, measureText, catalogueEntry } from "../lib/summary.js";
 import { FALLBACK_NOTE } from "../rule-catalogue.js";
 import { visibleGuidance, GUIDANCE_LABEL, GUIDANCE_SUBTITLE } from "../lib/guidance.js";
-import { evidenceCaption, imageAlt, imageUnavailableText, DIFF_LEGEND } from "../lib/captions.js";
+import {
+  evidenceCaption, imageAlt, imageUnavailableText, DIFF_LEGEND,
+  ignoredBannerText, regressionBlockText, ignoredElementsText,
+} from "../lib/captions.js";
 import { sameRuleOtherPages } from "../lib/findings.js";
 
 export const VISUAL_NOT_RATED_TEXT = "Not rated - visual changes need human review";
@@ -118,32 +121,18 @@ function dispositionBlocks(f, ignored) {
   if (ignored && isObj(f.disposition)) {
     const d = f.disposition;
     const box = el("div", "notice", null, { role: "note" });
-    box.appendChild(
-      el(
-        "p",
-        "",
-        "Ignored by " + (str(d.reviewer) || "a reviewer") + " on " + formatDateTime(d.at) +
-          ". Reason: " + (str(d.reason) || "not recorded") + ". Scope: " + (str(d.scope) || "not recorded") + "."
-      )
-    );
+    box.appendChild(el("p", "", ignoredBannerText(d)));
+    if (str(d.decisionId)) box.appendChild(el("p", "muted", "Decision id: " + d.decisionId));
     out.push(box);
   }
   if (f.lifecycle === "regression" && isObj(f.regression)) {
     const r = f.regression;
     const box = el("div", "notice notice--warn", null, { role: "note" });
-    box.appendChild(
-      el(
-        "p",
-        "",
-        "\u25B2 Regression: Reappeared after being marked resolved on " + formatDateTime(r.at) +
-          " by " + (str(r.reviewer) || "a reviewer") + ". Original reason: " + (str(r.reason) || "not recorded") + "."
-      )
-    );
+    box.appendChild(el("p", "", regressionBlockText(r)));
     out.push(box);
   }
-  if (typeof f.ignoredNodeCount === "number" && f.ignoredNodeCount > 0) {
-    out.push(el("p", "", plural(f.ignoredNodeCount, "element", "elements") + " ignored"));
-  }
+  const ignElems = ignoredElementsText(f.ignoredNodeCount);
+  if (ignElems) out.push(el("p", "", ignElems));
   return out;
 }
 

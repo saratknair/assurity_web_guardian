@@ -124,6 +124,7 @@ export function buildPageRows(pages) {
       title: title || null,
       group: p && typeof p.group === "string" && p.group ? p.group : groupOfUrl(url),
       total,
+      ignoredCount: p && typeof p.ignoredCount === "number" ? num(p.ignoredCount) : 0,
       sevCounts,
       highest,
       highestRank: highest === "none" ? SEVERITY_ORDER.length + 1 : rank(highest),

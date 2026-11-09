@@ -1,6 +1,13 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  applyDispositions,
+  normalizePageUrl,
+  type DetectedFinding,
+  type DispositionEntry,
+  type ResolvedItem,
+} from "../core/dispositions.js";
+import {
   collectVisualViews,
   findingId,
   findingKey,
@@ -33,6 +40,45 @@ export interface RawRunInputs {
   axe: { slug: string; viewport: string; raw: unknown | null; parseError?: string }[];
   visualFiles: { slug: string; viewport: string; hasDiff: boolean; diffPixels?: number }[];
   lifecycle: unknown | null; // lifecycle.json
+  /** Frozen dispositions-applied.json of the run; absent/null means `not-applicable`. */
+  dispositions?: FrozenDispositions | null;
+}
+
+/** The run's frozen applied set (design I.6). Never the live log. */
+export interface FrozenDispositions {
+  status: "applied" | "unavailable";
+  entries: DispositionEntry[];
+}
+
+export interface NewDecision {
+  id: string;
+  decision: string;
+  scope: string;
+  findingsAffected: number;
+}
+
+export interface DecisionsInfo {
+  status: "applied" | "unavailable" | "not-applicable";
+  appliedCount?: number;
+  newThisRun?: NewDecision[];
+  ignoredNewThisRun?: number;
+  unignoredNewThisRun?: number;
+  resolvedNewThisRun?: number;
+}
+
+/** Internal facts kept next to a built run so the Publisher can compare consecutive runs. */
+export interface OverlayState {
+  status: "applied" | "unavailable";
+  entryIds: string[];
+  meta: Record<string, { decision: string; scope: string }>;
+  /** entry id -> number of this run's Findings (or resolved items) it affects */
+  affected: Record<string, number>;
+  /** keys (page|viewport|rule) of Ignored_Findings of this run */
+  ignoredKeys: string[];
+  /** keys of active Findings of this run */
+  activeKeys: string[];
+  /** decision ids of resolved items carrying humanResolved */
+  humanResolvedIds: string[];
 }
 
 export interface Omission {
@@ -97,7 +143,7 @@ export interface RunFindingsFile {
     byLifecycle: LifecycleCounts;
     resolved: number;
   };
-  decisions: { status: "not-applicable" };
+  decisions: DecisionsInfo;
   pages: PagePublished[];
   findings: PublishedFinding[];
   resolved: unknown[];
@@ -126,6 +172,8 @@ export interface BuiltRun {
   runFindings: RunFindingsFile;
   /** keyed by path relative to the run dir, e.g. "evidence/<slug>.<viewport>.json" */
   evidence: Record<string, EvidenceFile>;
+  /** Present only when the run has a frozen dispositions file; not published. */
+  overlay?: OverlayState;
 }
 
 // ---------------------------------------------------------------------------
@@ -146,6 +194,46 @@ function listSafe(dir: string): string[] {
   } catch {
     return [];
   }
+}
+
+function isStr(v: unknown): v is string {
+  return typeof v === "string";
+}
+
+function validEntry(e: unknown): e is DispositionEntry {
+  if (typeof e !== "object" || e === null || Array.isArray(e)) return false;
+  const r = e as Record<string, unknown>;
+  const m = r.matcher as Record<string, unknown> | null;
+  return (
+    isStr(r.id) &&
+    (r.decision === "ignore" || r.decision === "resolve" || r.decision === "unignore") &&
+    isStr(r.scope) &&
+    typeof m === "object" &&
+    m !== null &&
+    isStr(m.pageUrl) &&
+    isStr(m.viewport) &&
+    isStr(m.ruleId) &&
+    isStr(m.cssTarget) &&
+    isStr(r.reason) &&
+    isStr(r.reviewer) &&
+    isStr(r.at) &&
+    (r.undoes === null || isStr(r.undoes))
+  );
+}
+
+/**
+ * Read a run's frozen dispositions-applied.json (never the live log).
+ * Missing file -> null (`not-applicable`); present but unreadable -> `unavailable`.
+ */
+export function loadFrozenDispositions(runDir: string): FrozenDispositions | null {
+  const p = join(runDir, "dispositions-applied.json");
+  if (!existsSync(p)) return null;
+  const j = readJsonOrNull(p);
+  if (typeof j !== "object" || j === null || Array.isArray(j)) return { status: "unavailable", entries: [] };
+  const r = j as Record<string, unknown>;
+  if (r.status === "unavailable") return { status: "unavailable", entries: [] };
+  if (r.status !== "applied" || !Array.isArray(r.entries)) return { status: "unavailable", entries: [] };
+  return { status: "applied", entries: r.entries.filter(validEntry) };
 }
 
 /** Read raw artifacts of one run. Never throws; missing/corrupt files become null. */
@@ -180,6 +268,8 @@ export function loadRawRunInputs(runDir: string): RawRunInputs {
     axe,
     visualFiles,
     lifecycle: readJsonOrNull(join(runDir, "lifecycle.json")),
+    // `dispositions` is set only by the Publisher (loadFrozenDispositions), so local
+    // detection views (Admin GUI) keep seeing every detected Finding.
   };
 }
 
@@ -331,6 +421,7 @@ export function buildRunFindings(inputs: RawRunInputs, opts: { caps?: PublishCap
 
   // ---- a11y rule findings from raw axe ----
   const drafts = new Map<string, Draft>();
+  const rawById = new Map<string, { nodes: unknown[]; src: Record<string, unknown> }>();
   const evidence: Record<string, EvidenceFile> = {};
   const axeCovered = new Set<string>(); // `${slug}.${viewport}`
   const ruleIdsByView = new Map<string, string[]>(); // `${slug}.${viewport}` -> rule ids
@@ -414,6 +505,7 @@ export function buildRunFindings(inputs: RawRunInputs, opts: { caps?: PublishCap
       };
       if (legacy?.id) finding.legacyFindingId = legacy.id;
       drafts.set(key, { finding, key });
+      rawById.set(id, { nodes: g.nodes, src: g.src });
       ruleIds.push(ruleId);
       evFile.withheldCount += ev.nodes.reduce((n, node) => n + node.withheld.length, 0);
       evFile.violations.push({
@@ -538,7 +630,7 @@ export function buildRunFindings(inputs: RawRunInputs, opts: { caps?: PublishCap
   }
 
   // ---- ordering and totals ----
-  const findings = [...drafts.values()]
+  const detectedAll = [...drafts.values()]
     .map((d) => d.finding)
     .sort(
       (a, b) =>
@@ -548,6 +640,155 @@ export function buildRunFindings(inputs: RawRunInputs, opts: { caps?: PublishCap
         a.ruleId.localeCompare(b.ruleId) ||
         a.id.localeCompare(b.id),
     );
+
+  // ---- disposition overlay (design I.4 to I.6); frozen set only, never the live log ----
+  let findings: PublishedFinding[] = detectedAll;
+  let ignoredList: PublishedFinding[] = [];
+  let resolvedOut: unknown[] = resolved;
+  let overlay: OverlayState | undefined;
+  const frozen = inputs.dispositions ?? null;
+  if (frozen) {
+    const entries = frozen.entries;
+    overlay = {
+      status: frozen.status,
+      entryIds: entries.map((e) => e.id),
+      meta: {},
+      affected: {},
+      ignoredKeys: [],
+      activeKeys: [],
+      humanResolvedIds: [],
+    };
+    for (const e of entries) overlay.meta[e.id] = { decision: e.decision, scope: e.scope };
+    if (entries.length > 0) {
+      const seenOmission = new Set<string>();
+      const pub = (raw: string, max: number, ref: string): string => {
+        const r = sanitizeEvidenceText(raw, max);
+        if (!r.withheld) return r.value;
+        const path = `dispositions/${ref.replace(/[^A-Za-z0-9_-]/g, "_")}`;
+        if (!seenOmission.has(path)) {
+          seenOmission.add(path);
+          omissions.push({ path, role: "decision", reason: r.reason });
+        }
+        return "[withheld]";
+      };
+      const targetsOf = (f: PublishedFinding): string[] => {
+        if (f.kind !== "a11y-rule") return [];
+        const raw = rawById.get(f.id);
+        return raw ? raw.nodes.map((n) => nodeTargetOf(n, caps)) : [];
+      };
+      const detected: DetectedFinding[] = detectedAll.map((f) => ({
+        id: f.id,
+        kind: f.kind,
+        pageUrl: f.pageUrl,
+        slug: f.slug,
+        viewport: f.viewport,
+        ruleId: f.ruleId,
+        severity: f.severity,
+        lifecycle: f.lifecycle,
+        nodeTargets: targetsOf(f),
+        nodeCount: typeof f.nodeCount === "number" ? f.nodeCount : undefined,
+      }));
+      const isKeyed = (r: unknown): r is Record<string, unknown> =>
+        isObj(r) && typeof r.pageUrl === "string" && typeof r.viewport === "string" && typeof r.ruleId === "string";
+      const validResolved = resolved.filter(isKeyed) as unknown as ResolvedItem[];
+      const otherResolved = resolved.filter((r) => !isKeyed(r));
+      const outcome = applyDispositions(detected, entries, validResolved);
+      const byId = new Map(detectedAll.map((f) => [f.id, f]));
+
+      const undone = new Set(entries.filter((e) => e.decision === "unignore" && e.undoes).map((e) => e.undoes as string));
+      findings = outcome.active.map((a) => {
+        const out: PublishedFinding = { ...(byId.get(a.id) as PublishedFinding) };
+        if (a.regression) {
+          out.lifecycle = "regression";
+          out.regression = {
+            decisionId: a.regression.decisionId,
+            at: a.regression.at,
+            reviewer: pub(a.regression.reviewer, 80, `${a.regression.decisionId}.reviewer`),
+            reason: pub(a.regression.reason, 500, `${a.regression.decisionId}.reason`),
+          };
+        }
+        if (a.ignoredNodeCount > 0) {
+          const raw = rawById.get(out.id);
+          const targets = targetsOf(out);
+          const matched = new Set(
+            entries
+              .filter(
+                (e) =>
+                  e.decision === "ignore" &&
+                  e.scope === "element" &&
+                  !undone.has(e.id) &&
+                  e.matcher.ruleId === out.ruleId &&
+                  e.matcher.viewport === out.viewport &&
+                  normalizePageUrl(e.matcher.pageUrl) === normalizePageUrl(out.pageUrl),
+              )
+              .map((e) => e.matcher.cssTarget),
+          );
+          if (raw) {
+            const keep = raw.nodes.filter((_n, i) => !matched.has(targets[i]));
+            const ev = buildViolationEvidence({ ...raw.src, id: out.ruleId, nodes: keep }, caps);
+            out.nodeCount = ev.nodeCount;
+            out.shownNodeCount = ev.nodes.length;
+            out.omittedNodeCount = ev.omittedNodeCount;
+            out.hasElementDetail = ev.nodes.length > 0;
+            const evFile = typeof out.evidence === "string" ? evidence[out.evidence] : undefined;
+            const viol = evFile?.violations.find((v) => v.findingId === out.id);
+            if (evFile && viol) {
+              const count = (ns: ViolationEvidence["nodes"]): number => ns.reduce((n, node) => n + node.withheld.length, 0);
+              evFile.withheldCount += count(ev.nodes) - count(viol.nodes);
+              viol.nodeCount = ev.nodeCount;
+              viol.omittedNodeCount = ev.omittedNodeCount;
+              viol.nodes = ev.nodes;
+            }
+          }
+          out.ignoredNodeCount = a.ignoredNodeCount;
+        }
+        return out;
+      });
+      ignoredList = outcome.ignored.map((i) => ({
+        ...(byId.get(i.id) as PublishedFinding),
+        disposition: {
+          decisionId: i.disposition.decisionId,
+          decision: i.disposition.decision,
+          scope: i.disposition.scope,
+          reason: pub(i.disposition.reason, 500, `${i.disposition.decisionId}.reason`),
+          reviewer: pub(i.disposition.reviewer, 80, `${i.disposition.decisionId}.reviewer`),
+          at: i.disposition.at,
+        },
+      }));
+      resolvedOut = [
+        ...outcome.resolved.map((r) =>
+          r.humanResolved
+            ? {
+                ...r,
+                humanResolved: {
+                  decisionId: r.humanResolved.decisionId,
+                  at: r.humanResolved.at,
+                  reviewer: pub(r.humanResolved.reviewer, 80, `${r.humanResolved.decisionId}.reviewer`),
+                },
+              }
+            : r,
+        ),
+        ...otherResolved,
+      ];
+
+      overlay.ignoredKeys = outcome.ignored.map((f) => findingKey(f));
+      overlay.activeKeys = outcome.active.map((f) => findingKey(f));
+      overlay.humanResolvedIds = outcome.resolved.flatMap((r) => (r.humanResolved ? [r.humanResolved.decisionId] : []));
+      const affectedBy = (e: DispositionEntry): number => {
+        if (e.decision === "ignore") {
+          const o = applyDispositions(detected, [e]);
+          return o.ignored.length + o.active.filter((x) => x.ignoredNodeCount > 0).length;
+        }
+        if (e.decision === "resolve") {
+          const o = applyDispositions(detected, [e], validResolved);
+          return o.active.filter((x) => x.regression).length + o.resolved.filter((x) => x.humanResolved).length;
+        }
+        const target = entries.find((x) => x.id === e.undoes);
+        return target && target.decision === "ignore" ? affectedBy(target) : 0;
+      };
+      for (const e of entries) overlay.affected[e.id] = affectedBy(e);
+    }
+  }
 
   const bySeverity = zeroSeverity();
   const byLifecycle = zeroLifecycle();
@@ -581,18 +822,66 @@ export function buildRunFindings(inputs: RawRunInputs, opts: { caps?: PublishCap
     historyStatus,
     totals: {
       all: findings.length,
-      detected: findings.length,
-      ignored: 0,
+      detected: findings.length + ignoredList.length,
+      ignored: ignoredList.length,
       bySeverity,
       byLifecycle,
-      resolved: resolved.length,
+      resolved: resolvedOut.length,
     },
-    decisions: { status: "not-applicable" },
+    decisions: overlay ? decisionsFor(overlay, null) : { status: "not-applicable" },
     pages: [...pageRows.values()],
     findings,
-    resolved,
-    ignored: [],
+    resolved: resolvedOut,
+    ignored: ignoredList,
     omissions,
   };
-  return { runFindings, evidence };
+  const built: BuiltRun = { runFindings, evidence };
+  if (overlay) built.overlay = overlay;
+  return built;
+}
+
+function decisionsFor(o: OverlayState, prev: OverlayState | null): DecisionsInfo {
+  const prevIds = new Set(prev?.entryIds ?? []);
+  const newIds = [...new Set(o.entryIds)].filter((id) => !prevIds.has(id));
+  const newSet = new Set(newIds);
+  const prevIgnored = new Set(prev?.ignoredKeys ?? []);
+  return {
+    status: o.status,
+    appliedCount: new Set(o.entryIds).size,
+    newThisRun: newIds.map((id) => ({
+      id,
+      decision: o.meta[id]?.decision ?? "",
+      scope: o.meta[id]?.scope ?? "",
+      findingsAffected: o.affected[id] ?? 0,
+    })),
+    ignoredNewThisRun: o.ignoredKeys.filter((k) => !prevIgnored.has(k)).length,
+    unignoredNewThisRun: o.activeKeys.filter((k) => prevIgnored.has(k)).length,
+    resolvedNewThisRun: o.humanResolvedIds.filter((id) => newSet.has(id)).length,
+  };
+}
+
+/**
+ * Recompute `decisions` for a run against the previous published run (by finishedAt).
+ * A previous run with no frozen file counts as the empty set. No-op for `not-applicable` runs.
+ */
+export function finalizeDecisions(current: BuiltRun, previous: BuiltRun | null): void {
+  if (!current.overlay) return;
+  current.runFindings.decisions = decisionsFor(current.overlay, previous?.overlay ?? null);
+}
+
+function flattenTarget(t: unknown): string {
+  const parts: string[] = [];
+  const walk = (v: unknown): void => {
+    if (typeof v === "string") parts.push(v);
+    else if (Array.isArray(v)) v.forEach(walk);
+  };
+  walk(t);
+  return parts.join(" >> ");
+}
+
+/** The CSS target string the evidence publishes for a raw axe node ("" when withheld or absent). */
+function nodeTargetOf(n: unknown, caps: PublishCaps): string {
+  const target = isObj(n) ? n.target : undefined;
+  const r = sanitizeEvidenceText(flattenTarget(target), caps.maxTargetChars);
+  return r.withheld ? "" : r.value;
 }

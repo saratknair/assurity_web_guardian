@@ -17,8 +17,9 @@
 //   severity segment -> { view: "findings", params: { run, sev: [s] } }
 //   lifecycle bar    -> { view: "findings", params: { run, state: [s] } }
 
-import { LIFECYCLE_PRESENT, LIFECYCLE_LABELS, decisionEffectText } from "../lib/findings.js";
+import { LIFECYCLE_PRESENT, LIFECYCLE_LABELS, decisionEffectText, DECISIONS_UNAVAILABLE_TEXT } from "../lib/findings.js";
 import { SEVERITY_ORDER, label as sevLabel, symbol as sevSymbol } from "../lib/severity.js";
+import { runDomain, differentSiteLabel, trendGaps, gapNote } from "../lib/domain.js";
 
 export const RUN_DATA_MISSING_TEXT = "Run data not published";
 
@@ -76,9 +77,32 @@ export function trendRows(runs) {
       hasRunData,
       route: hasRunData && runId ? { view: "run", runId } : null,
       note: hasRunData ? "" : RUN_DATA_MISSING_TEXT,
+      domain: runDomain(r),
       effect: decisionEffectText(isObj(r.decisions) ? r.decisions : {}),
+      decisionsStatus: isObj(r.decisions) && typeof r.decisions.status === "string" ? r.decisions.status : "not-applicable",
+      ignored: typeof r.ignored === "number" && Number.isFinite(r.ignored) && r.ignored >= 0 ? Math.floor(r.ignored) : null,
     };
   });
+}
+
+/** Run-table cell text for the Ignored count; legacy runs without the field read "Not applicable". */
+export function ignoredCellText(row) {
+  if (!row || row.ignored === null || row.ignored === undefined) return "Not applicable";
+  return String(row.ignored);
+}
+
+/**
+ * Visible text lines for the decisions annotations under the trend chart:
+ * one "Run <id>: <effect>" line per run where decisions first took effect,
+ * plus the unavailable notice when any run could not load its decisions.
+ */
+export function decisionLines(rows) {
+  const list = Array.isArray(rows) ? rows : [];
+  const lines = [];
+  for (const r of list) if (r.effect) lines.push("Run " + r.runId + ": " + r.effect);
+  const unavailable = list.filter((r) => r.decisionsStatus === "unavailable");
+  for (const r of unavailable) lines.push("Run " + r.runId + ": " + DECISIONS_UNAVAILABLE_TEXT);
+  return lines;
 }
 
 /** Visible summary for the trend chart. */
@@ -495,15 +519,36 @@ export function renderTrendChart(host, runs, ctx) {
   const color = cssVar("--link");
   const ax = axisColors();
 
+  // Latest run (last row, oldest first) decides which runs are "Different site".
+  const latestRow = rows.length ? rows[rows.length - 1] : null;
+  const gaps = trendGaps(rows);
+  const gapAt = new Set(gaps.map((g) => g.index));
   const tableRows = rows.map((r) => {
     const runCell = r.route
       ? actionLink(ctx, r.route, r.runId, "Open run " + r.runId)
       : el("span", "", r.runId + " - " + RUN_DATA_MISSING_TEXT);
-    const note = [r.note, r.effect].filter(Boolean).join("; ");
-    return [runCell, r.dateText, String(r.total), note];
+    const note = [r.note, r.effect, r.decisionsStatus === "unavailable" ? DECISIONS_UNAVAILABLE_TEXT : ""].filter(Boolean).join("; ");
+    const site = r.domain ? [r.domain, differentSiteLabel(r, latestRow) ? "(Different site)" : ""].filter(Boolean).join(" ") : "Not recorded";
+    return [runCell, r.dateText, String(r.total), ignoredCellText(r), site, note];
   });
-  const table = buildTable("Active findings per run", ["Run", "Date", "Active findings", "Notes"], tableRows);
+  const table = buildTable("Active findings per run", ["Run", "Date", "Active findings", "Ignored", "Site", "Notes"], tableRows);
   const details = finishCard(parts.card, null, "Show data table", table);
+  if (gaps.length) {
+    // Visible text note (not colour alone), placed under the chart summary.
+    const gapBox = el("div", "notice notice--warn");
+    gapBox.setAttribute("role", "note");
+    for (const g of gaps) gapBox.appendChild(el("p", "", gapNote(g)));
+    parts.card.insertBefore(gapBox, parts.canvasWrap);
+  }
+  const dLines = decisionLines(rows);
+  if (dLines.length) {
+    // Visible text under the chart (triangle points are not the only cue).
+    const dBox = el("div", "notice", null);
+    dBox.setAttribute("role", "note");
+    dBox.appendChild(el("p", "", "Triangle points mark runs where decisions first took effect."));
+    for (const t of dLines) dBox.appendChild(el("p", "", t));
+    parts.card.insertBefore(dBox, details);
+  }
   if (!rows.length) {
     parts.canvasWrap.parentNode.removeChild(parts.canvasWrap);
     return null;
@@ -521,13 +566,15 @@ export function renderTrendChart(host, runs, ctx) {
           backgroundColor: color,
           borderWidth: 2,
           tension: 0,
-          pointRadius: rows.map((r) => (r.effect ? 7 : 5)),
-          pointHoverRadius: 8,
+          pointRadius: rows.map((r) => (r.effect ? 9 : 5)),
+          pointHoverRadius: 10,
           pointHitRadius: 12,
-          pointStyle: rows.map((r) => (r.hasRunData ? "circle" : "rectRot")),
+          pointStyle: rows.map((r) => (!r.hasRunData ? "rectRot" : r.effect ? "triangle" : "circle")),
           pointBackgroundColor: rows.map((r) => (r.hasRunData ? color : "rgba(0,0,0,0)")),
           pointBorderColor: color,
           pointBorderWidth: rows.map((r) => (r.hasRunData ? 1 : 2.5)),
+          // Break the line between adjacent runs of different known domains.
+          segment: { borderColor: (c) => (gapAt.has(c.p1DataIndex) ? "rgba(0,0,0,0)" : undefined) },
         },
       ],
     },
@@ -547,7 +594,12 @@ export function renderTrendChart(host, runs, ctx) {
             },
             afterLabel: (item) => {
               const r = rows[item.dataIndex];
-              return [r.note, r.effect].filter(Boolean).join("; ");
+              const lines = [];
+              if (r.note) lines.push(r.note);
+              if (r.ignored !== null) lines.push("Ignored: " + r.ignored);
+              if (r.effect) lines.push("Decisions took effect: " + r.effect);
+              if (r.decisionsStatus === "unavailable") lines.push(DECISIONS_UNAVAILABLE_TEXT);
+              return lines;
             },
           },
         },

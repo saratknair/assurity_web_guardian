@@ -19,6 +19,8 @@ import {
 import { DEFAULT_CAPS } from "./evidence.js";
 import {
   buildRunFindings,
+  finalizeDecisions,
+  loadFrozenDispositions,
   loadRawRunInputs,
   type BuiltRun,
   type Omission,
@@ -90,6 +92,8 @@ export interface PublishedRunSummary {
   hasRunData?: boolean;
   trigger?: string | null;
   hasImages?: boolean;
+  /** Additive optional: recorded domain, else the single host shared by the run's page URLs; omitted when unknown. */
+  domain?: string;
 }
 
 /** RunsIndex, newest-first (design → Data Models → RunsIndex). */
@@ -270,6 +274,34 @@ export function readRunsNewestFirst(runsRoot: string, envOrigin?: string): RunFa
 }
 
 
+function hostOfUrl(u: string): string | null {
+  try {
+    const h = new URL(u).hostname.toLowerCase();
+    return h.length > 0 ? h : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Derived domain of a run: the domain recorded in run-source.json when it is a
+ * plausible host, else the single host shared by all its page URLs, else null.
+ */
+export function deriveRunDomain(runDir: string, pageUrls: string[]): string | null {
+  const src = readJson<{ domain?: unknown }>(join(runDir, "run-source.json"));
+  if (src && typeof src.domain === "string") {
+    const d = src.domain.trim().toLowerCase();
+    if (/^[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?$/.test(d)) return d;
+  }
+  const hosts = new Set<string>();
+  for (const u of pageUrls) {
+    const h = hostOfUrl(u);
+    if (!h) return null;
+    hosts.add(h);
+  }
+  return hosts.size === 1 ? [...hosts][0] : null;
+}
+
 /** Read the optional one-line `trigger` marker (schedule, workflow_dispatch, manual, local). */
 function readTrigger(runDir: string): string | null {
   const p = join(runDir, "trigger");
@@ -336,6 +368,7 @@ interface PendingImage {
 interface RunOutcome {
   facts: RunFacts;
   trigger: string | null;
+  runDomain: string | null;
   built: BuiltRun;
   summary: RunSummary;
   hasImages: boolean;
@@ -520,7 +553,6 @@ export async function buildPublishedData(opts: {
 }): Promise<{ runsPublished: string[]; withheld: Record<string, string[]> }> {
   const runsRoot = opts.runsRoot ?? "artifacts/runs";
   const historyPath = opts.historyPath ?? "artifacts/a11y-history.json";
-  const domain = opts.domain ?? "assurity.nz";
   const envOrigin = process.env.AWG_RUN_ORIGIN;
   const retention = imageRetentionRuns();
 
@@ -538,9 +570,28 @@ export async function buildPublishedData(opts: {
     const inputs = loadRawRunInputs(runDir);
     inputs.runId = facts.runId;
     inputs.finishedAt = facts.finishedAt ?? null;
+    // Frozen applied set of this run only; the live Disposition_Log is never read here.
+    inputs.dispositions = loadFrozenDispositions(runDir);
     const built = buildRunFindings(inputs, { caps: DEFAULT_CAPS });
-    return { runDir, facts, built, trigger: readTrigger(runDir) };
+    const runDomain = deriveRunDomain(
+      runDir,
+      built.runFindings.pages.map((p) => p.url),
+    );
+    return { runDir, facts, built, trigger: readTrigger(runDir), runDomain };
   });
+  // Compare each run's applied set with the previous run's (by finishedAt) for decisions.
+  for (const p of prepared) {
+    const fin = p.facts.finishedAt;
+    let prev: (typeof prepared)[number] | null = null;
+    if (fin) {
+      for (const q of prepared) {
+        const qf = q.facts.finishedAt;
+        if (q === p || !qf || qf >= fin) continue;
+        if (prev === null || qf > (prev.facts.finishedAt as string)) prev = q;
+      }
+    }
+    finalizeDecisions(p.built, prev ? prev.built : null);
+  }
   const withImages = runsWithImages(
     prepared.map((p) => ({ runId: p.facts.runId, finishedAt: p.facts.finishedAt ?? null })),
     retention,
@@ -551,7 +602,7 @@ export async function buildPublishedData(opts: {
   const withheld: Record<string, string[]> = {};
   const runsPublished: string[] = [];
 
-  for (const { runDir, facts, built, trigger } of prepared) {
+  for (const { runDir, facts, built, trigger, runDomain } of prepared) {
     const outRunDir = join(runsOutDir, facts.runId);
     ensureDir(outRunDir);
 
@@ -595,7 +646,7 @@ export async function buildPublishedData(opts: {
     };
     writeText(join(outRunDir, "summary.json"), JSON.stringify(summary, null, 2));
 
-    outcomes.push({ facts, trigger, built, summary, hasImages: retained });
+    outcomes.push({ facts, trigger, built, summary, hasImages: retained, runDomain });
     runsPublished.push(facts.runId);
   }
 
@@ -620,12 +671,17 @@ export async function buildPublishedData(opts: {
     return mtimeOf(b.summary.runId) - mtimeOf(a.summary.runId);
   });
 
+  const domainById = new Map(outcomes.map((o) => [o.summary.runId, o.runDomain]));
+  // Domain label: explicit option wins; otherwise the latest run's derived domain (never a fixed host).
+  const domain = opts.domain ?? (indexRuns[0] ? domainById.get(indexRuns[0].summary.runId) : null) ?? "";
+
   const index: RunsIndex = {
     schemaVersion: 2,
     generatedAt: new Date().toISOString(),
     domain,
     imageRetentionRuns: retention,
     runs: indexRuns.map(({ summary: r }) => ({
+      ...(domainById.get(r.runId) ? { domain: domainById.get(r.runId) as string } : {}),
       runId: r.runId,
       finishedAt: r.finishedAt,
       status: r.status,
@@ -659,7 +715,13 @@ export async function buildPublishedData(opts: {
   const byId = new Map(outcomes.map((o) => [o.summary.runId, o]));
   const aggregates = buildDashboardAggregates(allBuilt).map((a) => {
     const o = byId.get(a.runId);
-    return { ...a, origin: o?.facts.origin ?? a.origin, trigger: o?.trigger ?? null, hasImages: o?.hasImages ?? false };
+    return {
+      ...a,
+      origin: o?.facts.origin ?? a.origin,
+      trigger: o?.trigger ?? null,
+      hasImages: o?.hasImages ?? false,
+      ...(o?.runDomain ? { domain: o.runDomain } : {}),
+    };
   });
   const latestOutcome = indexRuns[0] ? byId.get(indexRuns[0].summary.runId) : undefined;
   const dashboard: Record<string, unknown> = { ...base };

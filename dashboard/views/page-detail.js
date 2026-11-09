@@ -17,6 +17,8 @@ import { rank, label as sevLabel, SEVERITY_ORDER } from "../lib/severity.js";
 import { plainEnglishSummary } from "../lib/summary.js";
 import { evidenceCaption, imageAlt, imageUnavailableText } from "../lib/captions.js";
 import { LIFECYCLE_LABELS, LIFECYCLE_PRESENT } from "../lib/findings.js";
+import { regressionBlockText, humanResolvedText, ignoredElementsText, pageIgnoredText } from "../lib/captions.js";
+import { resolvedItemsForPage, resolvedItemName } from "../lib/ignored.js";
 
 const VIEWPORT_ORDER = ["desktop", "mobile"];
 const NO_VIEWPORT = "Viewport not recorded";
@@ -234,10 +236,30 @@ function renderFindings(ctx, container, groups, runId, dashboardCatalogueOpts) {
       });
       append(li, badge(f.severity), " ", a, " ", lifecycleBadge(f.lifecycle));
       li.appendChild(el("p", "empty-state__body", plainEnglishSummary(f, undefined, dashboardCatalogueOpts)));
+      if (f.lifecycle === "regression" && isObj(f.regression)) {
+        li.appendChild(el("p", "notice notice--warn", regressionBlockText(f.regression)));
+      }
+      const ign = ignoredElementsText(f.ignoredNodeCount);
+      if (ign) li.appendChild(el("p", "muted", ign));
       ul.appendChild(li);
     }
     sec.appendChild(ul);
   }
+  container.appendChild(sec);
+}
+
+function renderResolved(container, items) {
+  if (!items.length) return;
+  const sec = el("section", "detail-section");
+  sec.appendChild(sectionHeading("Resolved in this run (not part of the total)", 3));
+  const ul = el("ul", "chip-row");
+  for (const r of items) {
+    const li = el("li", "finding-item");
+    li.appendChild(el("span", "", resolvedItemName(r)));
+    if (isObj(r.humanResolved)) li.appendChild(el("p", "muted", humanResolvedText(r.humanResolved)));
+    ul.appendChild(li);
+  }
+  sec.appendChild(ul);
   container.appendChild(sec);
 }
 
@@ -423,6 +445,16 @@ export async function render(container, ctx) {
       countsNode.appendChild(document.createTextNode(s.count + " " + sevLabel(s.severity).toLowerCase()));
     });
   }
+  const ignoredHere = run ? arr(run.ignored).filter((f) => isObj(f) && f.slug === slug).length : 0;
+  const ignText = pageIgnoredText(ignoredHere);
+  if (ignText) {
+    countsNode.appendChild(document.createTextNode(" "));
+    countsNode.appendChild(el("span", "muted", ignText));
+    countsNode.appendChild(document.createTextNode(" "));
+    countsNode.appendChild(
+      link("List ignored", ctx.formatRoute({ view: "findings", params: { run: runId, scope: "ignored", page: slug } }), "target"),
+    );
+  }
   summary.appendChild(
     kvList([
       ["Highest severity", highestNode],
@@ -440,6 +472,7 @@ export async function render(container, ctx) {
     main.appendChild(errorBanner("runs/" + runId + "/run-findings.json", { detail: runError && runError.message }));
   } else if (run) {
     renderFindings(ctx, main, groups, runId, undefined);
+    renderResolved(main, resolvedItemsForPage(run.resolved, slug, pageUrl));
     const vpSet = [];
     for (const g of groups) if (g.viewport && vpSet.indexOf(g.viewport) === -1) vpSet.push(g.viewport);
     for (const it of items) if (it.viewport && vpSet.indexOf(it.viewport) === -1) vpSet.push(it.viewport);

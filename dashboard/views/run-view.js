@@ -16,9 +16,9 @@
 // import time: runRows, findRunEntry, previousRun, changeText.
 
 import { SEVERITY_ORDER } from "../lib/severity.js";
-import { sortFindings } from "../lib/findings.js";
+import { sortFindings, decisionEffectText, DECISIONS_UNAVAILABLE_TEXT } from "../lib/findings.js";
 import {
-  el, append, link, badge, errorBanner, sectionHeading, kvList, loading, plural, formatDateTime,
+  differentSiteBadge, el, append, link, badge, errorBanner, sectionHeading, kvList, loading, plural, formatDateTime,
 } from "./common.js";
 import { renderSeverityChart, renderLifecycleChart, destroyCharts, RUN_DATA_MISSING_TEXT } from "./charts.js";
 import { renderFindingsList } from "./findings-list.js";
@@ -129,6 +129,13 @@ export async function render(container, ctx) {
   if (!entry) entry = { runId, finishedAt: null };
 
   container.appendChild(el("h2", "", "Run " + runId));
+  const siteBadge = differentSiteBadge(entry, rows.length ? rows[0] : null);
+  if (siteBadge) {
+    const p = el("p", "notice notice--warn", null, { role: "status" });
+    p.appendChild(siteBadge);
+    p.appendChild(el("span", "", ". This run describes a different site from the latest run."));
+    container.appendChild(p);
+  }
 
   if (entry.hasRunData === false) {
     notPublished(container, runId, ctx);
@@ -169,9 +176,17 @@ export async function render(container, ctx) {
     ["Origin", text(entry.origin) || "not recorded"],
     ["Pages scanned", String(pagesScanned)],
     ["Active findings", String(total)],
+    ["Ignored", typeof entry.ignored === "number" && entry.ignored >= 0 ? String(cnt(entry.ignored)) : "Not applicable"],
     ["Change versus previous run", changeText(total, prev) + (prev ? " (previous run " + prev.runId + ")" : "")],
   ]);
   container.appendChild(facts);
+
+  const decisions = isObj(run.decisions) ? run.decisions : isObj(entry.decisions) ? entry.decisions : {};
+  const effectText = decisionEffectText(decisions);
+  if (effectText) container.appendChild(el("p", "notice", effectText, { role: "note" }));
+  if (decisions.status === "unavailable") {
+    container.appendChild(el("p", "notice notice--warn", DECISIONS_UNAVAILABLE_TEXT, { role: "note" }));
+  }
 
   const sevSection = el("section", "stack");
   sevSection.appendChild(sectionHeading("Findings by severity", 3));

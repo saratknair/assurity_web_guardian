@@ -24,6 +24,22 @@ export interface HumanDecision {
   producedBy?: string; // agent/process that produced the artifact
 }
 
+/** Optional extra context copied into a finding-disposition audit entry. */
+export interface DispositionDetail {
+  scope?: string;
+  matcher?: unknown;
+  undoes?: string;
+  [key: string]: unknown;
+}
+
+export type DispositionKind = "ignore" | "resolve" | "unignore";
+
+export const DISPOSITION_DECISION: Record<DispositionKind, HumanDecisionKind> = {
+  ignore: "dismissed",
+  resolve: "accepted",
+  unignore: "rejected",
+};
+
 export class SelfApprovalError extends Error {}
 export class ApprovalError extends Error {}
 
@@ -49,7 +65,10 @@ export class ApprovalGate {
   ) {}
 
   /** Promote a draft to a versioned baseline atomically, then audit (Req 4.3, 4.7). */
-  approveSpecification(d: HumanDecision): { baselinePath: string; version: number; reviewId: string } {
+  approveSpecification(
+    d: HumanDecision,
+    opts: { baselinesRoot?: string } = {},
+  ): { baselinePath: string; version: number; reviewId: string } {
     this.assertHuman(d);
     if (d.decision !== "accepted") {
       throw new ApprovalError(`approveSpecification requires decision "accepted", got "${d.decision}"`);
@@ -59,7 +78,7 @@ export class ApprovalGate {
       throw new ApprovalError(`No draft found for slug "${d.slug}" at ${draftPath}`);
     }
 
-    const dir = resolve(this.baselinesRoot, d.slug);
+    const dir = resolve(opts.baselinesRoot ?? this.baselinesRoot, d.slug);
     mkdirSync(dir, { recursive: true });
     const version = this.nextVersion(dir);
     const finalPath = join(dir, `baseline.v${version}.md`);
@@ -97,16 +116,95 @@ export class ApprovalGate {
   }
 
   /** Record a finding disposition (accept/reject/dismiss). Never auto. (Req 15.3) */
-  disposeFinding(d: HumanDecision & { findingId: string }): string {
+  disposeFinding(d: HumanDecision & { findingId: string; detail?: DispositionDetail }): string {
     this.assertHuman(d);
     const reviewId = newReviewId();
-    this.auditLog.append({
+    const entry: Record<string, unknown> = {
       type: "finding-disposition",
       reviewId,
       reviewer: d.reviewer,
       decision: d.decision,
       reason: d.reason,
       findingId: d.findingId,
+    };
+    if (d.detail !== undefined) entry.detail = d.detail;
+    this.auditLog.append(entry as never);
+    return reviewId;
+  }
+
+  /** Record a durable disposition decision (Req 18.9, 18.10, 17.11). */
+  recordDispositionDecision(args: {
+    id: string;
+    kind: DispositionKind;
+    reviewer: string;
+    reason: string;
+    slug: string;
+    detail?: DispositionDetail;
+  }): string {
+    return this.disposeFinding({
+      reviewer: args.reviewer,
+      decision: DISPOSITION_DECISION[args.kind],
+      reason: args.reason,
+      slug: args.slug,
+      findingId: "disposition:" + args.id,
+      detail: args.detail,
+    });
+  }
+
+  /** Authorize a console setup/config action (Req 21.5, 22.12, 24.7, 25.4). */
+  authorizeSetupAction(args: {
+    reviewer: string;
+    action: string;
+    detail?: Record<string, unknown>;
+  }): string {
+    this.assertHuman({
+      reviewer: args.reviewer,
+      decision: "accepted",
+      reason: args.action,
+      slug: args.action,
+    });
+    const reviewId = newReviewId();
+    this.auditLog.append({
+      type: "config-change-authorized",
+      reviewId,
+      reviewer: args.reviewer,
+      action: args.action,
+      detail: args.detail ?? {},
+    });
+    return reviewId;
+  }
+
+  /** Audit a visual baseline approval/update (Req 24.4). Same keys as the CLI script plus source and sha16. */
+  approveVisualBaseline(args: {
+    reviewer: string;
+    slug: string;
+    viewport: string;
+    source: string;
+    sha16: string;
+    updated?: boolean;
+    baselinePath?: string;
+    sourceRun?: string;
+  }): string {
+    this.assertHuman({
+      reviewer: args.reviewer,
+      decision: "accepted",
+      reason: "visual baseline",
+      slug: args.slug,
+    });
+    const reviewId = newReviewId();
+    const baselinePath =
+      args.baselinePath ?? resolve("baselines-visual", args.slug, `${args.viewport}.png`);
+    const updated = args.updated ?? existsSync(baselinePath);
+    this.auditLog.append({
+      type: updated ? "visual-baseline-updated" : "visual-baseline-approved",
+      reviewId,
+      reviewer: args.reviewer,
+      slug: args.slug,
+      viewport: args.viewport,
+      sourceRun: args.sourceRun ?? args.source,
+      baselinePath,
+      source: args.source,
+      sha16: args.sha16,
     });
     return reviewId;
   }

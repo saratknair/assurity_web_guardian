@@ -29,6 +29,7 @@
 //                                  h2 themselves; use level 3+ for sections.
 //   kvList(entries, cls?)          <dl class="kv"> from [[key, value], ...];
 //                                  value may be a string or a Node.
+//   differentSiteBadge(run, latest) <span> "Different site: host" or null.
 //   loading(text?)                 <p class="loading" role="status">.
 //   plural(n, one, many)           "1 page" / "2 pages".
 //   formatDateTime(iso)            "2026-10-26 08:00 UTC" or "Date not recorded".
@@ -37,6 +38,7 @@
 
 import { label as sevLabel } from "../lib/severity.js";
 import { LIFECYCLE_LABELS } from "../lib/findings.js";
+import { differentSiteLabel } from "../lib/domain.js";
 
 let idCounter = 0;
 
@@ -167,6 +169,15 @@ export function kvList(entries, cls) {
     dl.appendChild(dd);
   }
   return dl;
+}
+
+/**
+ * "Different site: host" label as a text span, or null when the run's domain
+ * is unknown or the same as the latest run's.
+ */
+export function differentSiteBadge(run, latest) {
+  const t = differentSiteLabel(run, latest);
+  return t ? el("span", "muted different-site", t) : null;
 }
 
 export function loading(text) {
