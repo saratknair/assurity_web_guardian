@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Assurity Web Guardian - Console</title>
+  <link rel="stylesheet" href="/assets/console.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <h1>Assurity Web Guardian Console</h1>
+        <p class="brand-sub">Local setup and review. Nothing here is public.</p>
+      </div>
+    </div>
+    <nav id="nav" aria-label="Console sections"></nav>
+  </header>
+  <div id="status" class="status-region" role="status" aria-live="polite"></div>
+  <div id="alert" class="alert-region" role="alert"></div>
+  <main id="main" tabindex="-1">
+    <noscript><p>This console needs JavaScript to run.</p></noscript>
+    <div id="section-host"></div>
+  </main>
+  <script type="module" src="/assets/console.js"></script>
+</body>
+</html>

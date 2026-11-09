@@ -11,6 +11,7 @@ import {
   ScopeApprovalError,
 } from "./agents/scope-store.js";
 import { loadDomainConfig } from "./config/domain-config.js";
+import { createDisposition, realDispositionPorts } from "./admin/dispositions-api.js";
 
 /**
  * CLI entry (Req 4.3, 29.1).
@@ -55,7 +56,53 @@ function listPending(): void {
   for (const d of drafts) console.log("  - " + d.replace(".draft.md", "") + "  (" + d + ")");
 }
 
+const DISPOSITION_DECISIONS = ["ignore", "resolve", "unignore"];
+
+/**
+ * Finding disposition (Req 18.14): same validation and Approval_Gate path as
+ * the Admin GUI (createDisposition), recorded with source "cli".
+ */
+function approveDisposition(args: Record<string, string>): void {
+  const result = createDisposition(
+    realDispositionPorts(resolve(".")),
+    {
+      decision: args.decision,
+      scope: args.scope,
+      pageUrl: args.page,
+      viewport: args.viewport,
+      ruleId: args.rule,
+      cssTarget: args.target,
+      reason: args.reason,
+      reviewer: args.reviewer,
+      undoes: args.undoes,
+    },
+    "cli",
+  );
+  const json = result.json as {
+    entry?: { id?: string } | null;
+    duplicate?: boolean;
+    errors?: { field: string; message: string }[];
+    error?: string;
+  };
+  if (result.status === 201 || result.status === 200) {
+    const id = json.entry?.id ?? "";
+    console.log(`${json.duplicate ? "ALREADY RECORDED" : "RECORDED"} id=${id}`);
+    console.log("Takes effect from the next run.");
+    return;
+  }
+  if (json.errors) {
+    for (const e of json.errors) console.error(`INVALID ${e.field}: ${e.message}`);
+    process.exit(2);
+  }
+  console.error("REJECTED: " + (json.error ?? `status ${result.status}`));
+  process.exit(result.status === 403 ? 3 : 4);
+}
+
 function approve(args: Record<string, string>): void {
+  if (args.decision !== undefined && DISPOSITION_DECISIONS.includes(args.decision)) {
+    approveDisposition(args);
+    return;
+  }
   const slug = args.slug;
   const reviewer = args.reviewer;
   const decision = (args.decision ?? "accepted") as
@@ -65,7 +112,8 @@ function approve(args: Record<string, string>): void {
     | "baseline-update-approved";
   const reason = args.reason ?? "";
   if (!slug || !reviewer) {
-    console.error('Usage: approve --slug <slug> --reviewer "<name>" [--decision accepted|rejected] --reason "<why>"');
+    console.error('Usage: approve --slug <slug> --reviewer "<name>" [--decision accepted|rejected] --reason "<why>"\n' +
+        '   or: approve --decision ignore|resolve|unignore --scope element|page-rule|site-rule --page <url> --viewport <vp> --rule <id> --target <css> --undoes <id> --reviewer "<name>" --reason "<why>"');
     process.exit(2);
   }
   const gate = new ApprovalGate(new AppendOnlyLog(resolve(AUDIT)), PENDING, "baselines");

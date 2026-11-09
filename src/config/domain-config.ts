@@ -24,6 +24,8 @@ export interface DomainConfig {
   requestSpacingMs: number;
   /** Path to the authoritative human-approved scope file for this domain. */
   scopeFile: string;
+  /** Optional discovery probe paths (each starts with "/"). Absent means probe "/" only. */
+  probePaths?: string[];
 }
 
 export interface ScheduleConfig {
@@ -97,6 +99,13 @@ function validateDomainConfig(slug: string, cfg: DomainConfig): void {
     if (typeof v !== "number" || !Number.isFinite(v) || v < 0) {
       throw new Error(`Domain config ${slug}: invalid "${String(key)}": ${String(v)}`);
     }
+  }
+  if (
+    cfg.probePaths !== undefined &&
+    (!Array.isArray(cfg.probePaths) ||
+      cfg.probePaths.some((p) => typeof p !== "string" || !p.startsWith("/")))
+  ) {
+    throw new Error(`Domain config ${slug}: "probePaths" must be an array of paths starting with "/"`);
   }
   if (cfg.requestSpacingMs < 1000) {
     throw new Error(
