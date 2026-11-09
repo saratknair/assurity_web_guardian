@@ -4,7 +4,8 @@
     "run_mw5jpa783ab13fb2feeb",
     "run_mw5kszth9581d6e80fcd",
     "run_mw6vgpahe99614b4412a",
-    "run_mw8bh1tq8521f3fbf1bd"
+    "run_mw8bh1tq8521f3fbf1bd",
+    "run_mw8q3ncsfb1d31d35b24"
   ],
   "findings": {
     "https://assurity.nz/business-analysis/|desktop|link-name": {
@@ -14,16 +15,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -34,16 +36,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -54,16 +57,17 @@
       "viewport": "mobile",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -74,16 +78,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -94,16 +99,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -114,16 +120,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -134,16 +141,17 @@
       "viewport": "mobile",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -154,16 +162,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -174,16 +183,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -194,16 +204,17 @@
       "viewport": "mobile",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -214,16 +225,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -234,16 +246,17 @@
       "viewport": "desktop",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -254,16 +267,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -274,16 +288,17 @@
       "viewport": "desktop",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -294,16 +309,17 @@
       "viewport": "mobile",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -314,16 +330,17 @@
       "viewport": "mobile",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -334,16 +351,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -354,16 +372,17 @@
       "viewport": "mobile",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -374,16 +393,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -394,16 +414,17 @@
       "viewport": "mobile",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -414,16 +435,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -434,16 +456,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -454,16 +477,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -474,16 +498,17 @@
       "viewport": "mobile",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -494,16 +519,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -514,16 +540,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -534,16 +561,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -554,16 +582,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -574,16 +603,17 @@
       "viewport": "mobile",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -594,16 +624,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -614,16 +645,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -634,16 +666,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -654,16 +687,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -674,16 +708,17 @@
       "viewport": "mobile",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -694,16 +729,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -714,16 +750,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -734,16 +771,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -754,16 +792,17 @@
       "viewport": "mobile",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -774,16 +813,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -794,16 +834,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -814,16 +855,17 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -834,16 +876,17 @@
       "viewport": "mobile",
       "impact": "critical",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -854,16 +897,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-06T23:00:17.529Z",
-      "occurrenceCount": 2,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 3,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
-        "run_mw5kszth9581d6e80fcd"
+        "run_mw5kszth9581d6e80fcd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
-      "state": "resolved",
-      "lastSeenRun": "run_mw5kszth9581d6e80fcd",
-      "resolvedRun": "run_mw6vgpahe99614b4412a",
-      "resolutionDate": "2026-11-07T20:46:47.710Z"
+      "state": "new",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
+      "resolvedRun": null,
+      "resolutionDate": null
     },
     "https://assurity.nz/|mobile|link-name": {
       "fingerprint": "https://assurity.nz/|mobile|link-name",
@@ -872,16 +916,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -892,16 +937,17 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -912,16 +958,17 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -932,16 +979,17 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -952,16 +1000,17 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -972,16 +1021,17 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -992,16 +1042,17 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 4,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 5,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1012,15 +1063,16 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1031,15 +1083,16 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1050,15 +1103,16 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1069,15 +1123,16 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1088,15 +1143,16 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1107,15 +1163,16 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1126,15 +1183,16 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1145,15 +1203,16 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1164,15 +1223,16 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1183,15 +1243,16 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1202,15 +1263,16 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1221,15 +1283,16 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1240,15 +1303,16 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1259,15 +1323,16 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1278,15 +1343,16 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-08T21:02:39.624Z",
-      "occurrenceCount": 3,
+      "lastSeen": "2026-11-09T03:51:48.723Z",
+      "occurrenceCount": 4,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
-        "run_mw8bh1tq8521f3fbf1bd"
+        "run_mw8bh1tq8521f3fbf1bd",
+        "run_mw8q3ncsfb1d31d35b24"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mw8bh1tq8521f3fbf1bd",
+      "lastSeenRun": "run_mw8q3ncsfb1d31d35b24",
       "resolvedRun": null,
       "resolutionDate": null
     }
