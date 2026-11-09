@@ -727,6 +727,715 @@ The Dashboard stays static and read-only. It only reads fields the Publisher wro
 - **Image retention** (`lib/captions.js`): `imageUnavailableText(reason, retentionRuns)` returns "Images not kept for this run (only the latest 10 runs keep images)" for `image-retention` and the existing wording for other reasons; every place that would render an image calls it when the path is `null`.
 - **Legacy data**: runs without `ignored`, `decisions`, or `hasImages` are treated as 0 ignored, status `not-applicable`, and images as published if the path exists.
 
+### J. Admin_Console: setup, publish, and run control (Requirements 21 to 30)
+
+Section I added decision panels to the Admin GUI. Section J turns the same loopback server into the full Admin_Console: guarded domain and new-domain setup, Approved_URLs, discovery, baselines, publish, trigger, schedule, run logs, and a Setup_Activity_Log. Everything is deterministic, zero-token, free, ASCII-only, and adds no runtime dependency (cron parsing, YAML line editing, and glob matching are hand-written; git is driven through `node:child_process` `execFile`; PNG metadata uses the already-installed `pngjs`). There is no AI chat and no large-language-model call anywhere in J.
+
+#### J.0 What the code review found (and how Section J responds)
+
+| Observation (from real code and config) | Design consequence |
+|---|---|
+| `src/admin/admin-server.ts` performs no Host, Origin, or Content-Type check on any route. `POST /api/run` launches `scripts/run-scheduled.mjs` (a local monitoring run). `POST /api/schedule` writes `config/schedule.json` and re-registers a Windows Task Scheduler entry, which never reaches GitHub. `NODE_BIN` is a hard-coded `C:\Users\nairs\...` path. | A central guard in front of every non-GET route (J.1). `POST /api/run` and the old local schedule form are retired (J.1.4). Child processes use `process.execPath`. |
+| `getDomain` calls `loadDomainConfig()` with no argument, which throws "Multiple domain configs found" as soon as a second file exists in `config/domains/`. | The console resolves the domain through `cfg.domain` (the slug in `config/app.config.json`), so a second domain file is safe (J.3.5). |
+| `resolveApprovedUrls` prefers `config/scope/<slug>.approved.json` over `config/page-seed.json` when that file exists with pages. No such file exists today. | The console detects a scope override and refuses URL edits with an explanation, because editing the seed would silently change nothing (J.4.6). |
+| The orchestrator skips any page with no approved Spec_Baseline (`page.skipped: no approved baseline`). | "Ready to scan" is shown per Approved_URL, and the wizard requires approved Spec_Baselines for every URL (J.3.3, J.6). |
+| The Guardian screenshot is `page.screenshot({ path, fullPage: true })` in a fresh context at `cfg.viewports`, `waitUntil: "load"`. | Baseline_Production must reuse exactly this call through one shared function (J.6.3). |
+| `scripts/discover-candidates.mjs` hard-codes ten assurity.nz `probePaths` and an assurity.nz external-link test, and writes a fixed output path. | Both become domain-driven with identical behaviour for assurity.nz (J.5.3). |
+| Visual baselines only appear as `proposed-visual-baselines/` inside a run directory, written by `compareScreenshot` when no baseline exists. `approve-visual-baselines.mjs` copies them and appends audit entries. | Open decision with a recommendation (J.6.3). |
+| `guardian.yml` has no `push` trigger. `commit-runs-data` pushes to `runs-data` with `GITHUB_TOKEN`. | Add a path-filtered `push` trigger on `main` only (J.9). |
+| `src/publish/published-data.ts`, `build-published-data.ts`, and `dashboard-data.ts` default the domain label to `"assurity.nz"`, and the workflow never sets `AWG_DOMAIN`. | After a domain change the public Dashboard would still say assurity.nz. J.12 fixes the label source (additive). |
+| `artifacts/` is git-ignored on `main`; `artifacts/audit.jsonl` is local; `baselines-visual/` holds 20 tracked PNG files, about 29.6 MB (about 1.5 MB each). | Setup log and drafts live under `artifacts/admin/` and are untracked by construction. Repo growth from baselines is real and is handled in J.8.7. |
+
+#### J.1 Architecture
+
+```mermaid
+flowchart LR
+  subgraph BROWSER["Reviewer browser tab (127.0.0.1:7787)"]
+    UI[Console UI: admin-ui/console.js]
+  end
+  subgraph SERVER["admin-server.ts (adapter only)"]
+    AD[HTTP adapter: sockets, headers, body read with size limit, security headers]
+  end
+  subgraph PURE["Pure API layer (no sockets, deps injected)"]
+    PF[preflight and handle: local-guard first]
+    RT[console-router route table]
+    A1[domain-setup-api]
+    A2[urls-api]
+    A3[discovery-api]
+    A4[baselines-api]
+    A5[publish-api]
+    A6[schedule-api]
+    A7[runs-api]
+    A8[dispositions-api Section I]
+    A9[setup-log]
+  end
+  subgraph PORTS["Ports (real in server, fakes in tests)"]
+    FS[ProjectFs: atomic writes inside project root]
+    GIT[GitPort: execFile git, args arrays, no shell]
+    JOBS[JobPort: single-flight child processes]
+    GATE[ApprovalPort: Approval_Gate + audit]
+    CLK[Clock]
+  end
+  UI --> AD --> PF --> RT
+  RT --> A1 & A2 & A3 & A4 & A5 & A6 & A7 & A8
+  A1 & A2 & A3 & A4 & A5 & A6 --> A9
+  A1 & A2 & A3 & A4 & A5 & A6 & A7 --> FS
+  A5 --> GIT
+  A3 & A4 --> JOBS
+  A1 & A2 & A4 & A5 & A6 --> GATE
+  A9 --> FS
+```
+
+##### J.1.1 Modules
+
+All new files are under `src/admin/` unless stated. Each is pure or takes its I/O through the ports above, so vitest can drive it without sockets, a browser, or a network.
+
+| Module | Role |
+|---|---|
+| `local-guard.ts` | `checkLocalRequest` (defined in I.7) plus `checkHostOnly` for read routes. |
+| `console-router.ts` | Route table and `createConsole(deps).handle(req)`; applies the guard centrally. |
+| `console-deps.ts` | The port interfaces and the production wiring `realDeps()`. |
+| `workspace.ts` | `Workspace` roots: `project` (real files) or `draft` (staging area), so the same URL, discovery, and baseline code serves both the normal console and the New_Domain_Setup wizard. |
+| `host-validate.ts` | `validateNewHost` (syntax only). |
+| `url-set.ts` | `normaliseApprovedUrl`, `projectUrls`, `applyUrlOps`, readiness helpers. |
+| `domain-setup-api.ts`, `urls-api.ts`, `discovery-api.ts`, `baselines-api.ts` | Areas 21 to 24. |
+| `setup-log.ts` | Append-only ASCII JSONL writer and reader (J.7). |
+| `publish-paths.ts`, `publish-delta.ts`, `publish-api.ts`, `git-port.ts`, `git-feedback.ts` | Config_Publish (J.8). |
+| `cron.ts`, `workflow-schedule.ts`, `schedule-api.ts` | Schedule edit (J.10). |
+| `runs-api.ts` | Run details and logs (J.11). |
+| `job-runner.ts` | Single-flight child process runner (J.5.2). |
+| `scrub.ts` | `scrubForDisplay` (J.2). |
+| `atomic-file.ts` | Write temp file then rename; EOL-preserving text edit helpers. |
+| `src/agents/screenshot.ts` (new) | `takeScreenshot(page, path)`, the one screenshot call shared by the orchestrator and the baseline capture (J.6.3). |
+| `admin-ui/` (new folder) | `console.css`, `console.js`, `lib/*.js` (pure view-model helpers). Served from a fixed whitelist. |
+| Changed: `admin-server.ts` | Becomes the thin adapter. The inline HTML page moves to `admin-ui/`. |
+| Changed: `approval-gate.ts` | Two additive methods (J.2). |
+| Changed: `scripts/discover-candidates.mjs`, `scripts/make-all-drafts.mjs` | Domain-driven and env-configurable; same default behaviour (J.5, J.6). |
+| Changed: `src/core/orchestrator.ts`, `.github/workflows/guardian.yml` | `takeScreenshot` call, `run-source.json` marker, push trigger (J.9, J.11). |
+
+##### J.1.2 Request pipeline and the pure API contract
+
+```ts
+export interface ConsoleRequest {
+  method: string;                                  // "GET", "POST", ...
+  path: string;                                    // decoded pathname, no query
+  query: Record<string, string>;                   // first value of each key
+  headers: { host?: string; origin?: string; contentType?: string; secFetchSite?: string; contentLength?: number };
+  body: string | null;                             // raw text, already size-limited by the adapter; null for GET
+}
+export interface ConsoleResponse {
+  status: number;
+  json?: unknown;                                  // serialised with JSON.stringify by the adapter
+  text?: string;                                   // text/plain; charset=utf-8
+  bytes?: Uint8Array; contentType?: string;        // PNG proposal or baseline images only
+}
+export interface RouteDef {
+  method: "GET" | "POST";
+  pattern: string;                                 // exact path, or "/api/runs/:id" style with named segments
+  mutating: boolean;                               // true for every POST; a test enforces method === "POST" implies mutating
+  maxBodyBytes: number;                            // 0 for GET; 8 KB dispositions; 16 KB setup routes
+  handler: (ctx: HandlerContext) => Promise<ConsoleResponse>;
+}
+export function createConsole(deps: ConsoleDeps): {
+  preflight(method: string, path: string, headers: ConsoleRequest["headers"]): ConsoleResponse | null; // 403, 404, 405, 413 before the body is read
+  handle(req: ConsoleRequest): Promise<ConsoleResponse>;                                                // re-runs preflight, then dispatches
+};
+```
+
+Order inside `handle` (default-deny, route-independent):
+
+1. **Guard first.** For any method other than GET and HEAD, run `checkLocalRequest` (Host, Origin, Content-Type `application/json`, Sec-Fetch-Site) before route lookup. A failure returns 403 with no detail, for known routes, unknown routes, and retired routes alike. For GET, run `checkHostOnly` (Host must be `127.0.0.1:<port>` or `localhost:<port>`), which defeats DNS rebinding reads of local data. R30.6 requires the full guard on state-changing routes; the Host-only check on reads is an additive hardening.
+2. **Route lookup.** 404 for an unknown path, 405 for a known path with another method.
+3. **Body limit.** `Buffer.byteLength(body) > route.maxBodyBytes` returns 413. The adapter streams the body with the same ceiling and stops reading (then closes the connection) as soon as the limit is crossed, so an oversize body is never buffered (R30.7). A request that fails the guard is rejected before its body is read.
+4. **Parse and validate.** Malformed JSON returns 400 with a reason; each handler validates every field (types, lengths, patterns) before touching state.
+5. **Handler.** Handlers receive ports only. Mutations take the in-process `projectLock` (a promise-chain mutex) so a double click or two tabs cannot interleave seed, pending, or draft writes.
+
+The adapter in `admin-server.ts` has no business logic: it builds a `ConsoleRequest`, calls `preflight`, reads the body with the limit, calls `handle`, and writes the response with these headers on every response: `Cache-Control: no-store`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, and for HTML `Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`. `frame-ancestors 'none'` stops another site from framing the console and tricking a click. The server still calls `listen(port, "127.0.0.1")`; a source-scan test forbids `0.0.0.0`, `::`, and a `listen` call without a host (R30.5).
+
+##### J.1.3 Route table
+
+Every `POST` goes through the central guard. `Max` is the body ceiling.
+
+| Method and path | Max | Purpose | Req |
+|---|---|---|---|
+| `GET /`, `GET /assets/console.js`, `GET /assets/console.css`, `GET /assets/lib/*.js` | 0 | UI shell and assets from a fixed whitelist | 21 to 30 |
+| `GET /api/status` | 0 | Overview: domain, "N of 10 used", unpublished changes, running job, last publish, latest run | 21.1, 22.2, 26.6 |
+| `GET /api/domain` | 0 | Current Guarded_Domain, slug, base URL | 21.1 |
+| `GET /api/domain/draft` | 0 | In-progress New_Domain_Setup state (or `null`) | 21.3 |
+| `POST /api/domain/draft` | 16 KB | Start the wizard with a host (validated, draft created, project untouched) | 21.2, 21.4 |
+| `POST /api/domain/draft/cancel` | 16 KB | Delete the draft and staged files | 21.11 |
+| `POST /api/domain/confirm` | 16 KB | Authorize, apply the transaction, optionally publish | 21.5, 21.6, 21.10 |
+| `GET /api/urls?scope=current` or `draft` | 0 | Approved_URLs with readiness and "N of M used" | 22.1, 22.2 |
+| `POST /api/urls/add` | 16 KB | Add one or more URLs (stages in pending for `current`, writes to the draft for `draft`) | 22.3, 22.4, 22.6, 22.14 |
+| `POST /api/urls/remove` | 16 KB | Remove a URL | 22.7, 22.8, 22.12 |
+| `POST /api/urls/edit` | 16 KB | Edit = remove old + add new | 22.10, 22.11, 22.12 |
+| `GET /api/project/pending` | 0 | Staged URL changes not yet applied | 22.18 |
+| `POST /api/project/update` | 16 KB | "Update project": apply staged changes to local files; no git | 22.18, 26.2 |
+| `POST /api/discovery/run` | 16 KB | Start the Discovery_Crawler job | 23.1, 23.2 |
+| `GET /api/jobs/status` | 0 | The single current or last job: state, elapsed, progress, sanitised output tail | 23.2 |
+| `GET /api/discovery/candidates?scope=` | 0 | Candidates marked approved or not yet approved | 23.4 |
+| `POST /api/discovery/approve` | 16 KB | Promote selected candidates | 23.5 to 23.7 |
+| `GET /api/baselines?scope=` | 0 | Per-URL readiness: Spec_Baseline, Visual_Baseline per viewport, proposals present | 24.2 |
+| `POST /api/baselines/spec/draft` | 16 KB | Start the draft-writing job (`make-all-drafts` logic) | 24.1 |
+| `POST /api/baselines/visual/capture` | 16 KB | Start the local capture job (option A, J.6.3) | 24.1 |
+| `GET /api/baselines/proposals?scope=` | 0 | Proposed spec drafts (text) and visual captures (manifest) | 24.2 |
+| `GET /api/baselines/image?kind=&id=&slug=&viewport=` | 0 | PNG of a proposal or current baseline (ids validated against manifests) | 24.2 |
+| `POST /api/baselines/approve` | 16 KB | Approve selected proposals through the Approval_Gate | 24.3 to 24.6 |
+| `POST /api/baselines/adopt-cloud` | 16 KB | Approve screenshots from a synced cloud run as baselines (mitigation, J.6.5) | 24.3 |
+| `GET /api/publish/status` | 0 | Delta (added, changed, deleted), sizes, `canPublish`, reason | 26.5, 26.6 |
+| `POST /api/publish` | 16 KB | Config_Publish; `purpose` is `publish` or `trigger` | 26.3, 27.2 |
+| `GET /api/git/feedback` | 0 | Git_Feedback_View records and last published commit | 30.1 to 30.4 |
+| `GET /api/schedule` | 0 | Current cron from the workflow file, human summary, published value | 28.1 |
+| `POST /api/schedule` | 16 KB | Validate and edit the cron; optionally publish | 28.2 to 28.4 |
+| `GET /api/runs`, `GET /api/runs/:id`, `GET /api/runs/:id/log?file=&before=` | 0 | Run list, details, logs | 29 |
+| `POST /api/sync`, `GET /api/sync/status` | 16 KB, 0 | Pull run history from `runs-data` (read-only toward the remote) | 29, 30.1 |
+| `GET /api/setup-log?limit=&before=` | 0 | Setup_Activity_Log, newest first | 25.2 |
+| `GET/POST /api/findings`, `/api/dispositions`, `/api/dispositions/sync*` | 0 or 8 KB | Section I.7, unchanged | 18 to 20 |
+| `POST /api/open/office`, `POST /api/open/dashboard` | 16 KB | Existing "open in browser" helpers; they take no input; now guarded | 30.6 |
+
+##### J.1.4 Retired and replaced routes
+
+| Existing route | Fate | Why |
+|---|---|---|
+| `POST /api/run` | Retired. Returns 410 `{ "error": "retired", "use": "POST /api/publish" }` after the guard. The handler no longer spawns `run-scheduled.mjs`. | A local run is not a cloud run. The console must not fabricate run records or status (R27.6); genuine runs come from GitHub Actions. Local runs through the CLI or Task Scheduler still work but are no longer offered here. |
+| `POST /api/schedule` (old body `enabled`, `intervalHours`, `dailyAt`) | Replaced by the cron edit of J.10. The old body shape is rejected with 400. `config/schedule.json` and `src/admin/schedule.ts` stay for CLI users but are not exposed. | The schedule lives only in the workflow file (R28.5). A local Task Scheduler entry never reached GitHub. |
+| `GET /api/schedule` (old shape) | Replaced by `{ cron, summary, published, ... }`. | Same. |
+| `POST /api/sync` | Kept (it is a real, read-only pull from `runs-data` through `cloudSync`) but guarded and relabelled "Pull runs from GitHub". | It is not a stub: it feeds the Runs and logs section (R29). |
+| Inline placeholder sections ("wired up in a later step") | Removed with the old page. | Nothing in the UI may imply an effect that does not happen. |
+
+A test asserts that no handler in the route table references `run-scheduled`, `schedule.json`, or `schtasks`.
+
+#### J.2 Shared conventions
+
+- **Reviewer.** Every approval-type action takes `reviewer` (trimmed, 1 to 80 characters). Order of checks: empty or whitespace reviewer returns 400 "Reviewer name is missing" with nothing recorded; then the Approval_Gate runs `assertHuman`, which rejects agent identities (`SelfApprovalError`, audited as `self-approval-rejected` by the existing gate behaviour) and returns 403. Only then do effects and logs happen.
+- **Approval_Gate additions (additive, existing callers unaffected).** `authorizeSetupAction({ reviewer, action, detail })` runs `assertHuman` and appends `{ type: "config-change-authorized", action, reviewer, detail }` to `artifacts/audit.jsonl`. `approveVisualBaseline({ reviewer, slug, viewport, source, sha16 })` runs `assertHuman` and appends `visual-baseline-approved` or `visual-baseline-updated` with the same keys the script writes (`type`, `reviewer`, `slug`, `viewport`, `sourceRun`, `baselinePath`), plus `source` and `sha16`. `baselinePath` is repo-relative. `approveSpecification` is used as is, with a `baselinesRoot` argument pointing at the staging folder for the wizard.
+- **Never TelemetryEmitter.** The console writes the audit log through `AppendOnlyLog` only. It never uses `TelemetryEmitter`, `FileExporter`, or the Event_Server, because those feed the Virtual Office (R25.4).
+- **Atomic file writes.** `atomicWriteText(path, text)` writes `path.tmp-<pid>` in the same folder then renames. Text edits preserve the file's end-of-line style (CRLF or LF), final newline, and absence of a byte-order mark.
+- **Path safety.** Every path is built with `resolveInside(root, ...segments)`, which rejects absolute segments, `..`, and anything whose resolved path leaves `root`. Slugs must match `^[a-z0-9][a-z0-9-]{0,119}$`; capture ids `^cap_[0-9a-f]{12}$`; run ids `^run_[a-z0-9]{6,40}$`.
+- **Scrubbing for display.** `scrubForDisplay(text, ctx)` is applied to every string that originates outside the console's own code (child process output, git output, run logs, error messages) before it is returned: (1) credential URLs `https://user:token@host` become `https://***@host`; (2) token shapes (`ghp_`, `gho_`, `ghs_`, `github_pat_`, `AKIA...`, `Bearer ...`) are replaced by `[secret removed]`; (3) the project root becomes `<project>`, the home directory `<home>`, and any other absolute Windows, UNC, or POSIX path becomes `[path removed]` via the Sanitizer's `stripPaths`; (4) the existing `redact` runs; (5) control characters other than newline and tab are dropped; (6) each line is capped at 2000 characters. **Commit SHAs (40 hex characters) are protected** before step 4 and restored after it, because `redact` would otherwise blank any 32-plus character token and R26.7 requires the SHA to be shown. `scrubForDisplay` is idempotent.
+- **Reviewer name publication.** The commit message, setup log, and audit log contain the Reviewer name. The commit message is public on GitHub, and the console says so next to the publish button (J.13).
+
+#### J.3 Guarded domain and New_Domain_Setup (Requirement 21)
+
+##### J.3.1 Reading the domain
+
+`GET /api/domain` reads `config/app.config.json` (`approvedDomain`, `baseUrl`, `domain` slug) and then `loadDomainConfig(cfg.domain)` (explicit slug, never the no-argument form). It returns the host, base URL, and slug. There is no free-text control that changes the domain; the only entry point is "Change domain", which starts the wizard (R21.2).
+
+##### J.3.2 There is no pre-existing allow-list check (stated explicitly)
+
+`validateNewHost` checks syntax only. It does not consult the current `approvedDomain`, `config/domains/*.json`, or any list of approved hosts, and it does not call `validateDomainSubmission`'s approved-set test. Setting the new domain is the trust decision itself (R21.5). The compensating controls are: strict syntax and public-host rules (below); the Reviewer retypes the host on the confirm step; the Approval_Gate records the Reviewer name and an audit entry before anything is written; the crawl rate stays at 1 request per second per host (`requestSpacingMs >= 1000` is validated by the existing loaders); and the confirm screen says "Only point the Guardian at a site you are allowed to test."
+
+`validateNewHost(input): { ok: true; host; baseUrl; slug } | { ok: false; reason }` (pure, total, never throws):
+
+- Trim; 1 to 253 characters; drop one trailing dot. Accept a bare host or an `https://` URL; take the host only. Reject `http://` ("Only https sites can be monitored"), any other scheme, user info (`user@`), a port other than 443, a path other than `/`, a query, a fragment, and whitespace. The message for a path reads "Enter only the site name, for example example.com".
+- Parse with `new URL("https://" + host)` so internationalised names become ASCII punycode; store the ASCII form, lower-cased.
+- Labels: at least two; each 1 to 63 of `[a-z0-9-]`, not starting or ending with a hyphen; the last label is alphabetic (2 to 63 characters) or starts with `xn--`. This rejects IPv4 literals (numeric last label) and IPv6 brackets.
+- Reject `localhost` and names ending in `.localhost`, `.local`, `.internal`, `.localdomain`, `.lan`, and `.home.arpa`.
+- `baseUrl = "https://" + host`; `slug = host with every run of non-alphanumeric characters replaced by "-"` (so `assurity.nz` gives `assurity-nz`, matching the existing file name). Normalisation is idempotent: validating the returned host returns the same host.
+- Defence in depth, outside the pure function: before the first crawl or capture job of a draft, the console resolves the host with `dns.promises.lookup(host, { all: true })` and refuses to continue if any address is loopback, private, or link-local ("This name points to a private address"). If the lookup fails the job is not started and the reason is shown.
+
+##### J.3.3 Flow
+
+```mermaid
+flowchart TD
+  S0([Domain section: Change domain]) --> S1[Step 1 Enter the new domain]
+  S1 -->|syntax invalid| E1[Show the reason, store nothing]
+  E1 --> S1
+  S1 -->|valid| D[(Draft created: artifacts/admin/new-domain-draft.json)]
+  D --> S2[Step 2 Build the Approved URL list for the new domain]
+  S2 -->|at least 1 URL via discovery or manual add| S3[Step 3 Produce and approve baselines]
+  S3 -->|Spec_Baseline and both Visual_Baselines approved for every URL| S4[Step 4 Confirm and publish]
+  S4 -->|retype domain and enter reviewer| G{Approval_Gate allows?}
+  G -->|no: empty name or agent identity| S4
+  G -->|yes| T[Apply transaction to project files]
+  T -->|any failure| R[Roll back, keep draft, show error]
+  R --> S4
+  T -->|ok| P[Publish to GitHub unless the Reviewer unticks it]
+  P --> Done([New domain active, setup log entry written])
+  S1 -->|Cancel| X[Delete draft and staged files, project untouched]
+  S2 -->|Cancel| X
+  S3 -->|Cancel| X
+  S4 -->|Cancel| X
+```
+
+Step gating is computed on the server and enforced again by the confirm route: `deriveStep(draft)` is `urls` when the draft has no URL, `baselines` when any URL lacks an approved Spec_Baseline or an approved Visual_Baseline for either viewport, otherwise `confirm` (R21.8, R21.9). The orchestrator skips pages without an approved Spec_Baseline, which is why the Spec_Baseline gate is hard. The Visual_Baseline gate is also hard in the wizard so a new site starts with a full set; the normal Baselines section allows partial sets.
+
+##### J.3.4 Draft state and isolation (R21.7, R21.11)
+
+The draft lives in `artifacts/admin/` (git-ignored, never read by the Guardian or the Publisher) and is held separately from the project:
+
+```ts
+export interface NewDomainDraft {
+  schemaVersion: 1;
+  draftId: string;                      // "dd_" + 12 hex
+  createdAt: string; updatedAt: string; // ISO-8601 UTC
+  previousDomain: string;               // approvedDomain at start, for the setup log
+  host: string; baseUrl: string; slug: string;
+  urls: string[];                       // draft Approved_URLs, normalised, in-domain, at most max
+  spec: Record<string, { approvedAt: string; version: number }>;                    // key: url slug
+  visual: Record<string, Partial<Record<"desktop" | "mobile", { approvedAt: string; sha16: string }>>>;
+}
+```
+
+Staged files for the draft live under `artifacts/admin/new-domain/`: `candidates.json`, `captures/<captureId>/...`, `baselines/<slug>/baseline.v1.md`, `baselines-visual/<slug>/<viewport>.png`. The `Workspace` for `scope=draft` points all roots there (seed = the draft's `urls`, baselines roots = the staged folders, candidates path = the draft's `candidates.json`). Approving a baseline in the wizard writes only into the staged folders (the Approval_Gate is constructed with the staging `baselinesRoot`). Cancel deletes `artifacts/admin/new-domain/` and the draft file. A draft untouched for 7 days is discarded the next time the console starts (setup log entry `domain-draft-discarded`), which covers "abandon" (R21.11). Starting a new wizard while a draft exists asks the Reviewer to discard it first.
+
+While a draft exists, `config/app.config.json`, `config/page-seed.json`, `config/domains/*`, `baselines/**`, and `baselines-visual/**` are byte-identical to before (Property 46).
+
+##### J.3.5 Confirm: authorization, files changed, atomicity
+
+`POST /api/domain/confirm` with `{ reviewer, retypedHost, publish }`:
+
+1. Guard, body limit, reviewer check, `retypedHost === draft.host`, `canConfirm(draft)` (at least one URL, all in the new domain, count at most the fixed maximum, all baselines approved). The pending queue of the current domain must be empty (otherwise 409 "Apply or discard your pending URL changes first").
+2. `ApprovalPort.authorizeSetupAction({ action: "domain-change", detail: { from, to } })`. The audit entry exists before any file is written. If the transaction later fails, a second audit entry `config-change-failed` records it.
+3. Back up `config/app.config.json` and `config/page-seed.json` to `artifacts/admin/backup/<timestamp>/`.
+4. Apply in this order, tracking every created path: (a) promote staged baselines into `baselines/<slug>/` and `baselines-visual/<slug>/` (new files only; an identical existing file is skipped); (b) write `config/domains/<newSlug>.json` if it does not exist; (c) write `config/page-seed.json` with `approvedUrls` replaced by the draft list and every other field (including `maxUrls`) preserved; (d) write `config/app.config.json` last with `approvedDomain`, `baseUrl`, and `domain` set and every other field (including `limits`) preserved. Step (d) is the switch: before it the old domain is still active.
+5. On any error: restore the two backups, delete the paths created in this transaction, keep the draft, return 500 with a scrubbed reason. Property 47 tests this by injecting a failure after each step.
+6. On success: delete the draft folder, append the setup log entry `domain-changed` naming the previous and new domain (R21.10), and, if `publish` is true, run Config_Publish (J.8) with `purpose: "publish"`. A publish failure does not undo the local change; the Git_Feedback_View shows it with a Retry (R26.9).
+
+Files changed on confirm: `config/app.config.json` (three fields), `config/page-seed.json` (`approvedUrls`), `config/domains/<newSlug>.json` (new), `baselines/<newSlugs>/` (new), `baselines-visual/<newSlugs>/` (new). The new domain file copies the numeric defaults (`maxDiscoveryCount`, `largeScopeThreshold`, `requestSpacingMs`) from the previous domain file, sets `approvedSchemes` to `["https"]`, `scopeFile` to `config/scope/<newSlug>.approved.json`, and `probePaths` to `["/"]` (J.5.3). The previous domain file and its baselines stay (history is never rewritten, and switching back is possible). Note for the implementation: `scripts/verify.mjs` builds its host allow-list from every file in `config/domains/`, so the old host remains in that verification list; this is a verification script, not the Guardian's runtime boundary (`cfg.approvedDomain` is).
+
+All later URL and crawl checks use the new `approvedDomain`, because `SiteGateway`, `domain-guard`, the discovery script, and the inventory agent all read `cfg.approvedDomain` (R21.6).
+
+The confirm screen also lists any active `site-rule` Dispositions, because a site-wide ignore has no domain in its matcher and would start applying to the new site (J.12).
+
+#### J.4 Approved URLs (Requirement 22)
+
+##### J.4.1 Rules (pure, `url-set.ts`)
+
+- **Normalisation.** `normaliseApprovedUrl(input, approvedDomain, approvedSchemes)`: parse with `new URL`; scheme must be one of the domain's `approvedSchemes` (default `https`); host lower-cased and must satisfy the existing `isApprovedDomain` rule (equal to the approved domain or a subdomain of it); drop the fragment and a default port; length at most 2048; if the last path segment has no dot and the path does not end in `/`, append `/` (this matches every entry in the current seed and the discovery script). Anything else returns a reason such as "That address is outside assurity.nz" (R22.3).
+- **Slug collision.** Baselines are keyed by `slugify(url)` (scheme removed, non-alphanumerics become `-`). Two different URLs such as `/a-b/` and `/a/b/` map to one slug and would share baselines. An add whose slug equals an existing URL's slug is rejected with the colliding URL named.
+- **Set semantics.** The Approved_URL set is ordered. Adding a URL already present is a no-op reported as "already approved" (idempotent, R22.6, R22.19). New URLs append at the end. Existing entries keep their order and their exact text (R22.15).
+- **Fixed maximum.** `max = Math.min(seed.maxUrls, cfg.limits.pages)`, 10 today. No route accepts a new maximum, and the seed and config writers never modify `maxUrls` or `limits` (Property 44). Display text is `` `${n} of ${max} used` `` where `n` is the length of the projected set (R22.2). An add that would exceed `max` is rejected with "The limit of 10 approved pages is reached. Remove one to free a slot." (R22.4, R22.17).
+- **Edit.** `edit(from, to)` is `remove(from)` then `add(to)` applied as one unit with the same `editId`: both operations validate (the new URL must pass domain, normalisation, collision, and cap checks, evaluated after the removal frees its slot), and if the add is invalid nothing is staged. The old URL's baseline files are never renamed or moved; the new URL is flagged `requiresReapproval` until its Spec_Baseline and Visual_Baselines are approved through the Baselines section (R22.10, R22.11).
+
+##### J.4.2 Staging and "Update project" (R22.18, R26.2)
+
+For `scope=current` the console never edits `config/page-seed.json` directly from an add, edit, or remove. Each accepted operation is validated against the projected set (seed plus staged operations) and appended to `artifacts/admin/pending-changes.json`:
+
+```ts
+export interface PendingChanges {
+  schemaVersion: 1;
+  ops: { opId: string; editId: string | null; op: "add" | "remove"; url: string; reviewer: string; at: string }[];
+}
+```
+
+The URL list shows the projected set with "pending" badges and "N of 10 used" for the projected count. `POST /api/project/update` (reviewer required, Approval_Gate authorised) applies every staged operation to `config/page-seed.json` in one atomic write that preserves unknown fields, `maxUrls`, key order, and the file's end-of-line style, clears the pending file, and writes the audit entry and the setup log entry. It performs no git operation. Publishing is separate (J.8). If staged operations exist when the Reviewer opens Publish, the Publish section says "You have N staged changes. Choose Update project first so they are included."
+
+For `scope=draft` there is no second staging layer: the draft file is itself the staging area, so adds and removes write to `draft.urls` immediately.
+
+Baseline approvals (R24.3) and the schedule edit (R28.3) write their own files at the moment of approval or submit, because their requirements say so. "Update project" therefore means "apply the staged Approved_URL changes (and, in the wizard, nothing else) to the local files". The Status section lists any local file changes of every kind that are not yet published (J.8.2).
+
+##### J.4.3 Audit and log
+
+- Remove and edit: `ApprovalPort.authorizeSetupAction` runs at staging time with `{ action: "url-remove" or "url-edit", detail: { removed, added } }` (R22.12). The setup log entry names the URL removed and the URL added.
+- Add: a setup log entry with the Reviewer name and the number of URLs added (R22.14); the gate also runs so an agent identity is rejected.
+- Update project: audit `project-updated` with the staged operation ids; setup log entry `project-updated`.
+- An empty or whitespace Reviewer name returns 400 "Reviewer name is missing" before anything is staged or logged (R22.13).
+
+##### J.4.4 Readiness per URL
+
+`GET /api/urls` returns each URL with `slug`, `pending` (`add`, `remove`, or none), `specBaseline` (latest `baselines/<slug>/baseline.vN.md` exists), `visualBaseline` per viewport (`baselines-visual/<slug>/<viewport>.png` exists), `requiresReapproval`, and `status`: `ready`, `needs-spec-baseline` ("Will be skipped by the next run until a specification baseline is approved"), or `needs-visual-baseline` ("Will be scanned, but visual changes cannot be detected until a visual baseline is approved").
+
+##### J.4.5 Removal effects
+
+A removed URL stops being scanned from the first run that uses the updated seed, which on GitHub is the first run after the change is published (R22.9). Its `baselines/<slug>/` and `baselines-visual/<slug>/` files stay on disk and in git so re-adding the URL can reuse them (R22.8). Run history is untouched. The A11y_History keeps its entries for the removed page; because the page is no longer scanned, Phase 1's lifecycle rule ("not scanned this run is not evidence of a fix") leaves them unchanged and they never turn into false "resolved" items.
+
+##### J.4.6 Scope-file override
+
+If `readApprovedScope(cfg.domain)` returns a scope with at least one page, `resolveApprovedUrls` scans that scope instead of the seed. In that case the URL section shows "A separate approved-scope file is in use for this site, so changes here would not change what is scanned" and the add, edit, and remove controls are disabled. This keeps R22.9 honest.
+
+#### J.5 Discovery (Requirement 23)
+
+##### J.5.1 API and sequence
+
+`POST /api/discovery/run { scope }` starts the job (J.5.2) and returns 202 with the job id, or 409 `busy` if any browser job is running. The UI polls `GET /api/jobs/status` every 2 seconds while a job is running and announces start and finish in a polite live region. When the job ends with exit code 0 the candidates file is read and validated (`generatedAt`, `approvedDomain`, and each candidate's `url`, `httpStatus`, `title`, `h1`, `concern`; unknown fields dropped; at most 100 candidates; strings capped and scrubbed). `GET /api/discovery/candidates` marks each candidate `alreadyApproved` (its normalised URL is in the current or draft set) or not, and `approvable` (HTTP 2xx, no `concern`, passes `normaliseApprovedUrl`). If the file's `approvedDomain` differs from the active domain (or draft domain) the view shows "These pages were found for <other domain>. Run discovery again." and approval is disabled.
+
+Discovery is local. It involves no GitHub call and no push (R23.3). The only network traffic is the crawler's page loads against the Guarded_Domain (or the draft host), at the configured spacing (R23.10).
+
+##### J.5.2 Job runner (`job-runner.ts`)
+
+```ts
+export type JobKind = "discovery" | "spec-drafts" | "visual-capture";
+export interface JobStatus {
+  state: "idle" | "running" | "done" | "failed" | "timed-out" | "interrupted";
+  kind: JobKind | null; scope: "current" | "draft" | null;
+  startedAt: string | null; finishedAt: string | null; elapsedMs: number;
+  exitCode: number | null;
+  progress: { done: number; total: number } | null;     // parsed from "PROGRESS:<done>/<total>" lines
+  tail: string[];                                        // last 200 lines, each scrubbed, at most 64 KB in total
+}
+export interface JobPort {
+  start(spec: JobSpec): { ok: true } | { ok: false; reason: "busy" | "preflight-failed"; detail: string };
+  status(): JobStatus;
+}
+```
+
+- **Single flight across all kinds.** One browser job at a time, because the work is paced at 1 request per second per host and parallel crawls would break the Conservative_Request_Rate. A second start returns 409.
+- **Fixed commands only.** `JobSpec.script` is one of three constants (`scripts/discover-candidates.mjs`, `scripts/make-all-drafts.mjs`, `scripts/capture-visual-baselines.mjs`). The request never supplies a command or a path; values passed to the script are validated host names, slugs, and relative paths placed in `AWG_*` environment variables.
+- **Spawn.** `child_process.spawn(process.execPath, [script], { cwd: projectRoot, shell: false, windowsHide: true, env: allowListedEnv, stdio: ["ignore", "pipe", "pipe"], detached: process.platform !== "win32" })`. The environment allow-list is `PATH`, `SystemRoot`, `TEMP`, `TMP`, `HOME`, `USERPROFILE`, `LOCALAPPDATA`, `PLAYWRIGHT_BROWSERS_PATH`, `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`, and `AWG_*`. No other variable (in particular no token) is passed.
+- **Preflight (no process started on failure).** `dist/config/app-config.js` exists (otherwise "Run npm run build first"); the Playwright Chromium executable exists; `artifacts/.guardian.lock` does not exist (a local Guardian run is active); for a draft, the DNS check of J.3.2.
+- **Timeout.** Discovery 12 minutes, spec drafts 10 minutes, capture 15 minutes (worst case for 10 URLs and 2 viewports at 1 second spacing plus a 30 second navigation limit is about 10.3 minutes). On timeout the runner kills the whole process tree (`taskkill /pid <pid> /T /F` on Windows; `process.kill(-pid)` on POSIX), because killing only the Node process leaves Chromium running. The state becomes `timed-out`.
+- **Output capture.** stdout and stderr lines go into a ring buffer, scrubbed with `scrubForDisplay` on the way out, rendered as plain text. `last-job.json` (kind, state, times, exit code, no output) is persisted under `artifacts/admin/jobs/`, so after a console restart a job that was `running` is reported as `interrupted`.
+- **Shutdown.** On server close the runner kills any running child.
+
+##### J.5.3 Making the Discovery_Crawler domain-driven (no change for assurity.nz)
+
+`scripts/discover-candidates.mjs` today hard-codes ten assurity.nz `probePaths` and the external-link test `h === "assurity.nz" || h.endsWith(".assurity.nz")`. Changes, all behaviour-preserving for assurity.nz:
+
+1. **Domain source.** `APPROVED = process.env.AWG_DISCOVERY_DOMAIN ?? cfg.approvedDomain`; `BASE = process.env.AWG_DISCOVERY_BASE_URL ?? cfg.baseUrl`; `OUT = process.env.AWG_DISCOVERY_OUT ?? "artifacts/pending-review/candidates/candidate-pages.json"`. The three variables are set only by the console for the wizard (draft host and draft output path); with none set the script behaves as today.
+2. **Probe paths from configuration.** `DomainConfig` gains an optional `probePaths?: string[]` (each starting with `/`, at most 30 entries, `[A-Za-z0-9/_.~-]` only). `config/domains/assurity-nz.json` receives the ten current paths verbatim and in the same order, so the candidate list for assurity.nz is unchanged. A domain file with no `probePaths` (every new domain) uses `["/"]`, so the crawler makes no guessed requests to a site it has never seen; it still follows same-domain homepage links. The script reads the probe list from `loadDomainConfig(cfg.domain)` and from the env override in wizard mode (the draft has no domain file yet, so the console passes `["/"]`).
+3. **Pure candidate builder.** The list construction moves to `src/agents/candidate-urls.ts` as `buildCandidateUrls({ baseUrl, probePaths, homeLinks, approvedDomain })`: probe URLs first in order (`baseUrl + path`, runs of `/` at the end collapsed to one), then the first 30 distinct same-domain homepage links in discovery order (each with a trailing slash), de-duplicated by insertion order, capped at 20. A golden test embeds the old inline algorithm and asserts equal output for a recorded assurity.nz homepage link list.
+4. **External-link flag.** Replace the literal with the same expression using `APPROVED`: `!(h === APPROVED || h.endsWith("." + APPROVED))`. For assurity.nz it is identical.
+5. **Redirects.** After each `goto`, if `page.url()` is not on `APPROVED` (checked with `isApprovedDomain`), the record gets `concern: "redirected outside the guarded domain"` and no page content is read. This keeps R23.10 true when a site redirects off-domain; it can differ from today only when a page redirects off-domain.
+6. **Progress.** The script prints `PROGRESS:<done>/<total>` after each page.
+
+The script still needs `npm run build` (it imports from `dist/`) and an installed Playwright Chromium; the preflight reports both in plain English.
+
+##### J.5.4 Approving candidates (R23.5 to R23.8)
+
+`POST /api/discovery/approve { scope, urls, reviewer }`: each selected URL must appear in the validated candidates file (the request cannot introduce a URL the crawler did not find), be `approvable`, and pass `normaliseApprovedUrl`, the collision check, and the cap. If any selected URL fails, or the selection would exceed the free slots, the whole request returns 400 with a per-URL reason and nothing is staged. On success the URLs become staged add operations (J.4.2) or draft URLs, one setup log entry records the Reviewer name, the number of candidates discovered, and the number approved (R23.7), and the response repeats those counts. Running discovery alone never changes the seed, pending file, or draft (R23.6). If the job fails or the file has no candidates, the outcome is displayed and the Approved_URL set is unchanged (R23.8).
+
+#### J.6 Baselines (Requirement 24)
+
+##### J.6.1 Spec_Baselines
+
+The `make-all-drafts.mjs` logic moves to `src/agents/draft-batch.ts` (`makeDrafts({ urls, cfg, baselinesRoot, onProgress })`) and the script becomes a thin wrapper that prints the same per-URL JSON lines as today plus `PROGRESS:` lines. Wizard mode passes `AWG_DRAFT_URLS_FILE` (relative path to a JSON array written by the console), `AWG_DRAFT_DOMAIN`, and `AWG_BASELINES_ROOT` (the staging baselines folder, used for the "already has a baseline" skip); with none set it reads the seed as today. Drafts are written by the existing `writeDraftSpec` to `artifacts/pending-review/spec-drafts/<slug>.draft.md` (untracked). The Baselines section shows each draft as plain text (capped at 20 KB, scrubbed). Approval calls `approveSpecification({ reviewer, decision: "accepted", reason, slug })`, which writes `baselines/<slug>/baseline.v{N}.md` atomically and audits it, exactly as the CLI does. In wizard mode the gate is built with `baselinesRoot = artifacts/admin/new-domain/baselines`, so nothing reaches `baselines/` until confirm.
+
+##### J.6.2 Visual_Baselines today
+
+`compareScreenshot` writes `proposed-visual-baselines/<slug>/<viewport>.png` inside a run directory only when no approved baseline exists, and `approve-visual-baselines.mjs <reviewer> [runId]` copies those files into `baselines-visual/` and appends `visual-baseline-approved` or `visual-baseline-updated` audit entries. A proposal cannot be produced for a page that already has a baseline, and it cannot be produced without a run.
+
+##### J.6.3 OPEN DECISION: how the console produces Visual_Baseline proposals (awaiting user confirmation)
+
+| Criterion | (a) Standalone local capture step | (b) Console starts a local Guardian run | (c) No laptop capture; let the first cloud run propose, then adopt |
+|---|---|---|---|
+| What it does | New `scripts/capture-visual-baselines.mjs`: for each Approved_URL and each viewport, open a fresh context at `cfg.viewports`, `goto` with `waitUntil: "load"` and `cfg.limits.navTimeoutMs`, pace at `requestSpacingMs`, call the shared `takeScreenshot(page, path)`, write PNG plus manifest into `artifacts/admin/captures/<captureId>/`. Approval promotes into `baselines-visual/`. | Start the existing local run (`run-scheduled.mjs`); read `proposed-visual-baselines/` from the new run directory; approve with the existing script logic. | Publish with no visual baselines; the first cloud run writes `proposed-visual-baselines/` into its raw run directory on `runs-data`; pull it with Sync; approve from that run. |
+| Fidelity to CI | Same viewport, full-page, context, wait, and pacing settings, enforced by one shared screenshot function. Different operating system and fonts than the CI runner (J.6.4). | Highest code reuse, same cross-platform gap as (a). | Exact: produced by the CI runner itself. |
+| Honesty (Requirement 25) | Output is not in `artifacts/runs/`, so the Publisher, Runs list, A11y_History, dispositions snapshot, and Virtual Office never see it. A capture cannot be mistaken for a run. | A local run is a monitoring run: it appears in `artifacts/runs/`, in the Runs list (`origin: local`), in the local A11y_History, and in the replay data. It would need suppression flags to avoid being treated as a monitoring run. High risk of breaking R25.3 to R25.5. | Honest (a genuine run). |
+| Other drawbacks | Small new script and manifest. | Pages without an approved Spec_Baseline are skipped, so Spec_Baselines must come first; runs axe and every check (slower, more requests to the site); cannot refresh a page that already has a baseline (proposals only appear when none exists); needs the run lock. | Cannot satisfy R21.9 inside the wizard (baselines must exist before confirm), and the first run has no visual comparison. |
+| Effort | Small to medium: one script, one shared function (a one-line change in the orchestrator), manifest and API. | Small code, large coupling and suppression work. | Smallest, but conflicts with the approved wizard order. |
+
+**Recommendation (awaiting user confirmation): option (a), plus the "adopt cloud screenshots" action of option (c) as the follow-up described in J.6.5.** (a) is the only option that satisfies R21.9 and R24.1 honestly and independently of CI; (b) fails the honesty requirement; (c) alone cannot work inside the wizard but is the best way to remove the cross-platform risk afterwards.
+
+Shared screenshot function: `src/agents/screenshot.ts` exports `SCREENSHOT_SETTINGS_ID = "fullPage=true"` and `takeScreenshot(page, path)`, which calls `page.screenshot({ path, fullPage: true })`. The orchestrator's single `page.screenshot` call is replaced by `takeScreenshot`. A source-scan test asserts that `.screenshot(` appears nowhere else under `src/` or `scripts/`, so any future setting (animation freezing, masking, font waiting) applies to the Guardian and the capture together and baselines continue to match what CI compares.
+
+Capture manifest (`artifacts/admin/captures/<captureId>/manifest.json`, never published): `{ schemaVersion, captureId, scope, domain, capturedAt, settingsId, platform, chromium, items: [{ slug, url, viewport, width, height, bytes, sha16 }] }`. The sha is the first 16 hex characters of SHA-256, below the redactor's 32-character threshold. Image bytes are served only for ids found in a manifest.
+
+##### J.6.4 Approving visual baselines
+
+`POST /api/baselines/approve { scope, captureId, items: [{ slug, kind, viewport }], reviewer, note }`:
+
+1. Guard, size limit, reviewer present (400 "Reviewer name is missing", nothing recorded), then for each item `approveVisualBaseline` runs the gate (`assertHuman`: agent identities are rejected with 403).
+2. Each item must exist in the manifest, and the file's current SHA-256 prefix must still equal `sha16` (a file changed after capture is refused).
+3. Promote with `atomicCopy(src, dest)` to `baselines-visual/<slug>/<viewport>.png` (or the staged folder for a draft). If the destination already holds identical bytes it is skipped and reported as "unchanged", so approving the same capture twice is a no-op (idempotent).
+4. Audit entry per promoted item with the script's keys: `type` `visual-baseline-approved` (new file) or `visual-baseline-updated` (replaced), `reviewer`, `slug`, `viewport`, `sourceRun` set to `console-capture:<captureId>`, and repo-relative `baselinePath`, plus `source: "admin-console"` and `sha16`. The audit entry is appended only after the rename succeeds, matching the gate's behaviour for Spec_Baselines.
+5. One setup log entry `baselines-approved` with the Reviewer name, the number of pages, and the number of viewports (R24.6).
+6. A partial failure reports which items were promoted and which were not; nothing is rolled back (promotion is additive and re-approving is safe).
+
+##### J.6.5 Cross-platform rendering risk and mitigation
+
+The laptop is Windows; the CI runner is Ubuntu. Both use the Chromium build that matches the locked Playwright version, but font availability, hinting, and anti-aliasing differ by operating system. Pixelmatch runs at threshold 0.1, and a different page height from fallback fonts changes dimensions, which `compareScreenshot` reports as a difference. Expect that some laptop-produced baselines produce visual differences on the first cloud run even when the site did not change. Visual differences are never auto-failed and are shown as "Not rated - visual changes need human review", so the cost is noise, not a false failure.
+
+Mitigation, in order of use:
+
+1. **Say it up front.** The capture screen, and the publish confirmation when the change set contains Visual_Baselines produced on a different platform from the CI runner, state: "These images were captured on Windows. The cloud run uses Linux, so fonts may render slightly differently and the first run may show visual differences."
+2. **Adopt cloud screenshots (recommended follow-up).** After the first cloud run, the Baselines section offers "Use the cloud run's screenshots as baselines". It lists the synced cloud runs (Sync already copies the whole raw run, including `screenshots/`), lets the Reviewer pick pages and viewports, and approves them through the same path as J.6.4 with `sourceRun` set to the cloud run id (`POST /api/baselines/adopt-cloud`). The images then come from the exact environment that will compare them.
+3. **Record the platform.** Each approved baseline's platform and Chromium version stay in the capture manifest and audit entry. Writing a small tracked `baselines-visual/manifest.json` (slug, viewport, approvedAt, source, platform, sha16; no Reviewer name) would let the Dashboard show baseline provenance later. It is optional and not read by the Publisher in this feature.
+4. **Rejected: containerised capture.** Capturing inside the Playwright Linux image would match CI but adds a Docker dependency and setup the administrator would have to manage.
+
+##### J.6.6 Baseline size
+
+Each full-page PNG is about 1.5 MB. Approving the same bytes twice adds nothing (step 3). The Baselines section shows the current total size of `baselines-visual/` and the size of the pending change; J.8.7 covers repository growth.
+
+#### J.7 Setup_Activity_Log (Requirement 25)
+
+- **Location and format.** `artifacts/admin/setup-activity.jsonl`, one JSON object per line. The folder is under `artifacts/`, which is git-ignored on `main`. The console never writes to `artifacts/runs/`, the run `events.jsonl`, `findings.json`, or any file the Publisher or the replay builder reads.
+- **Append only.** `setup-log.ts` exports `appendSetupEntry` and `readSetupEntries` only. Writes use `fs.appendFileSync` with flag `a`. No function edits, truncates, or deletes; there is no route that does. A property test asserts that after each append the previous file bytes are an exact prefix of the new bytes.
+- **ASCII only.** The line is `JSON.stringify(entry)` followed by replacing every code unit above 0x7E (and control characters) with `\uXXXX`, including each half of a surrogate pair, so the file contains only ASCII bytes (R25.8) and parsing the line restores the original strings.
+- **Entry schema.**
+
+```ts
+export type SetupAction =
+  | "domain-draft-started" | "domain-draft-cancelled" | "domain-draft-discarded" | "domain-changed"
+  | "urls-added" | "url-removed" | "url-edited" | "project-updated"
+  | "discovery-run" | "candidates-approved"
+  | "spec-drafts-produced" | "visual-captured" | "baselines-approved" | "baselines-adopted-from-cloud"
+  | "schedule-changed" | "publish" | "publish-failed";
+export interface SetupEntry {
+  schemaVersion: 1;
+  id: string;                    // "sal_" + first 12 hex of sha256(at + action + reviewer + summary)
+  at: string;                    // ISO-8601 UTC, set by the server clock
+  reviewer: string;              // "" only for actions with no Reviewer (discovery-run, visual-captured)
+  action: SetupAction;
+  summary: string;               // at most 300 characters, scrubbed, plain text
+  counts: { [k: string]: number };   // discovered, approved, added, removed, pages, viewports, files, urls ...
+  detail: { [k: string]: string };   // previousDomain, newDomain, removedUrl, addedUrl, cron, commit (12 hex) ... scrubbed
+}
+```
+
+- **Reading.** `GET /api/setup-log?limit=&before=` returns entries newest first (default 100, maximum 500). A line that fails to parse is skipped and counted in `skippedLines`; the view still renders.
+- **Kept out of public views (R25.3 to R25.6).** The Publisher reads only `artifacts/runs/`, the A11y_History, and the Disposition_Log. The replay builder reads published run data. `CONFIG_PATHS` (J.8.1) does not include `artifacts/`, and Config_Publish stages only those paths, so the log is never pushed. The console offers no "include setup log in publish" control; if one is wanted later it must be a separate, explicit button (R25.6). **Guard tests:** (1) a source scan asserts that no file under `src/publish/`, `src/reporting/`, `src/core/`, `scripts/build-office-replay.mjs`, `virtual-office/src/`, or `dashboard/` contains the strings `setup-activity`, `artifacts/admin`, or `SetupEntry`; (2) a behavioural test writes a canary string into a temp setup log, runs `buildPublishedData` over a temp tree that also contains `artifacts/admin/`, and asserts that the canary appears nowhere in the output tree; (3) a unit test asserts `CONFIG_PATHS` has no entry that is `artifacts` or begins with `artifacts/`.
+
+#### J.8 Update project versus Publish to GitHub (Requirement 26)
+
+The two controls are distinct (R26.1). **Update project** applies staged Approved_URL changes to local files and never runs a git write (J.4.2). **Publish to GitHub** (Config_Publish) sends the configuration files to `main`. Baseline approvals and the schedule edit write their own local files when submitted; all of them show up in the same "changes not yet published" list.
+
+##### J.8.1 What counts as configuration
+
+```ts
+// src/admin/publish-paths.ts
+export const CONFIG_PATHSPECS = [
+  "config/app.config.json",             // approvedDomain, baseUrl, domain slug, limits
+  "config/page-seed.json",              // Approved_URLs and the fixed maximum
+  "config/domains/",                    // domain files, including the one a new-domain setup creates
+  "baselines/",                         // Spec_Baselines
+  "baselines-visual/",                  // Visual_Baselines (PNG)
+  ".github/workflows/guardian.yml",     // Schedule_Cron and triggers
+] as const;
+export function isConfigPath(repoRelativePath: string): boolean;   // pure; rejects "..", absolute paths, backslashes are normalised first
+```
+
+Not included, on purpose: `artifacts/` (Setup_Activity_Log, audit log, drafts, captures), `config/schedule.json` (the local Task Scheduler file, no longer exposed), `config/scope/` (the console never writes it; if it changes the Publish section lists it under "Not published by the console"), and everything under `src/`, `dashboard/`, `virtual-office/`, `scripts/`, `tests/`, `.kiro/`, and `package*.json`. The six entries are a subset of the workflow's push path filter (J.9), so every console publish starts a run.
+
+##### J.8.2 Computing "local changes to publish"
+
+The delta compares the working-tree contents of the configuration paths with the configuration paths at the tip of `origin/main`, not with local `HEAD`, the index, or unrelated commits. This is what "unpublished" means to GitHub.
+
+1. `git fetch origin main` (60 second limit). On failure the console continues with the last known `origin/main`, marks the result "Could not check GitHub; showing changes since the last check at <time>", and refuses to publish if no `origin/main` has ever been fetched.
+2. Local map: `git ls-files -co --exclude-standard -z -- <CONFIG_PATHSPECS>` lists tracked and untracked-but-not-ignored files; entries whose file is missing on disk are treated as absent. Hash all present files with `git hash-object --stdin-paths` (run from the repository root so `.gitattributes` and line-ending filters apply exactly as `git add` would, avoiding false changes from CRLF conversion).
+3. Remote map: `git ls-tree -r -z origin/main -- <CONFIG_PATHSPECS>`.
+4. `computeDelta(local, remote)` (pure) returns sorted `added`, `modified` (different blob id), and `deleted` (in remote, absent locally). Byte sizes of added and modified files come from `fs.stat`.
+5. `canPublish` is true only when the delta is non-empty, `origin` exists, no publish is running, and there are no staged Approved_URL operations (J.4.2).
+
+When the delta is empty, `GET /api/publish/status` returns `canPublish: false, reason: "nothing-to-publish"`, the UI disables the Publish and Trigger buttons and shows "Nothing to publish. Everything in the configuration is already on GitHub.", and `POST /api/publish` returns 409 without any git write (R26.5, R27.3). The same delta drives the "unpublished changes" badge in the Status section and the Git_Feedback_View (R26.6, R30.4).
+
+The status also warns when the current branch is not `main` ("You are on branch X. The configuration files in this folder will be published to main.") and lists a GitHub readiness check: each Approved_URL in the working seed whose Spec_Baseline is on neither `origin/main` nor in the delta is named, because the cloud run skips such pages.
+
+##### J.8.3 The publish algorithm (never touches the Reviewer's branch, index, or working tree)
+
+The commit is built with git plumbing as a child of `origin/main` in a temporary index, so unrelated uncommitted edits, staged changes, and local-only commits can never be included (R26.4).
+
+```mermaid
+sequenceDiagram
+  participant UI as Console UI
+  participant API as publish-api (pure)
+  participant GIT as GitPort (execFile, no shell)
+  participant GH as GitHub origin
+  UI->>API: GET /api/publish/status
+  API->>GIT: fetch origin main (60 s)
+  GIT->>GH: fetch
+  API->>GIT: ls-files, hash-object, ls-tree (config paths only)
+  API-->>UI: delta, sizes, warnings, canPublish
+  UI->>API: POST /api/publish (reviewer, confirm, purpose)
+  API->>API: guard, size limit, reviewer check, lock (409 if busy)
+  API->>API: recompute delta (empty means 409, no git write)
+  API->>API: Approval_Gate authorizeSetupAction (audit entry)
+  API->>GIT: read-tree base into temp index, hash-object -w, update-index, write-tree
+  API->>GIT: commit-tree with parent base, message on stdin
+  API->>GIT: push origin commit:refs/heads/main (120 s, no force)
+  GIT->>GH: push
+  alt accepted
+    GH-->>API: ok
+    API->>GIT: fetch origin main, align local branch only if safe
+    API->>API: record Git_Feedback, setup log, last published
+  else rejected as non-fast-forward
+    API->>GIT: fetch, diff names base..newtip for config paths
+    alt remote changed configuration paths
+      API-->>UI: stop, list files, nothing pushed
+    else only unrelated paths changed
+      API->>GIT: rebuild commit on new tip and push again (3 attempts at most)
+    end
+  end
+  API-->>UI: result, commit SHA, time, branch, remote
+```
+
+Steps in order:
+
+1. Single-flight `publishLock` (a second request returns 409 `publish-running`).
+2. Validate `reviewer` (J.2; and `validateReviewerName` below), `confirm === true`, `acknowledgeDeletes === true` when the delta has deletions, and `acknowledgeSize === true` when the size warning applies (J.8.7).
+3. Recompute the delta with a fresh fetch. Empty delta: 409, nothing else happens.
+4. `authorizeSetupAction({ action: "publish", detail: { files, purpose } })`.
+5. Build the commit: `base = git rev-parse origin/main`; with `GIT_INDEX_FILE` pointing at a temp file in the OS temp folder: `git read-tree <base>`; `git hash-object -w --stdin-paths` for added and modified files; `git update-index --index-info` with mode `100644` entries for added and modified paths and mode `0` entries for deletions; `git write-tree`; `git commit-tree <tree> -p <base> -F -` with the message on stdin. The author and committer are the Reviewer's own git identity; if none is configured the console reports "Set your git name and email first" and stops. The temp index is always deleted. Commit hooks do not run for plumbing commits; this is noted in the UI help.
+6. Save the commit under a private ref `refs/awg/last-publish-attempt` so it is kept locally if the push fails (R26.9). Then `git push --porcelain origin <commit>:refs/heads/main` with `GIT_TERMINAL_PROMPT=0` so a missing credential fails instead of waiting for input. Credentials come only from the Reviewer's git credential helper; the console never asks for, stores, or reads a token (R30.8). If sign-in fails the message says "Run git push once in a terminal to sign in, then retry."
+7. On success: `git fetch origin main`; best-effort local alignment (J.8.4); write Git_Feedback records, `lastPublished`, and the setup log entry `publish` (reviewer, counts, 12-character commit prefix); respond with the full 40-character SHA and `pushedAt` (R26.7).
+8. On rejection: classify the output. `non-fast-forward`: fetch; if `git diff --name-only <base> <newTip> -- <CONFIG_PATHSPECS>` is non-empty, stop with `remote-config-changed` and the file list ("GitHub has newer changes to these configuration files. Review them with git pull, then publish again."); otherwise rebuild from step 5 on the new tip and push again (3 attempts at most). This is additive: no merge commit, no rebase, no force. Other rejections get plain-English messages: a protected `main`; credentials that lack permission to change workflow files when `guardian.yml` is in the change (the `workflow` permission); no network; no `origin` remote. Whatever the cause, the working-tree files are untouched, so Retry recomputes and tries again (R26.9).
+
+Git subcommands the console may run are a fixed whitelist: `fetch`, `rev-parse`, `ls-files`, `ls-tree`, `hash-object`, `read-tree`, `update-index`, `write-tree`, `commit-tree`, `push`, `diff` (names only), `update-ref`, `reset` (index only, J.8.4), `remote get-url`, `config --get` (name and email), and `status --short -- <CONFIG_PATHSPECS>` (shown in the Git_Feedback_View). `GitPort.run(args)` rejects any other subcommand, any argument beginning with `--force`, `-f`, or a refspec beginning with `+`, and `--force-with-lease`. A spy-runner test asserts that no publish scenario ever calls `add`, `commit`, `checkout`, `stash`, `pull`, `merge`, `rebase`, or `reset --hard`.
+
+`validateReviewerName` (used for every action whose Reviewer name can reach a public place): 1 to 80 characters after trimming, no control characters, and none of `/ \ : < > |`, so a name cannot smuggle a path or markup into a public commit message.
+
+##### J.8.4 Local alignment after a successful push
+
+After the push the Reviewer's local `main` is behind `origin/main` by the new commit while the working tree already holds its content. To avoid a confusing "modified" status, the console aligns the local branch only when it is provably safe: the current branch is `main` and local `HEAD` equals the `base` used for the commit (no local-only commits). Then it runs `git update-ref refs/heads/main <newCommit> <base>` (a compare-and-swap) followed by `git reset -q HEAD -- <CONFIG_PATHSPECS>`, which sets the index entries for configuration paths to the new `HEAD` and leaves the working tree and every other path alone. If the conditions do not hold, nothing is moved and the feedback says "Your local branch was not moved because it has other commits. Run git pull when convenient." The delta (J.8.2) is computed against `origin/main`, so the publish state stays correct either way.
+
+##### J.8.5 Commit message
+
+`buildCommitMessage(input)` is pure and deterministic, ASCII-only (non-ASCII characters in names are written as `\uXXXX`), with no paths:
+
+```text
+Publish configuration: domain assurity.nz, 10 URLs, 6 baseline files
+
+Reviewer: S. Nair
+Domain: assurity.nz
+Approved URLs: 10
+Schedule: 0 17 * * *
+Files: 8 (2 added, 5 changed, 1 deleted)
+  + baselines-visual/assurity-nz-careers/desktop.png
+  ~ config/page-seed.json
+  - baselines/assurity-nz-old/baseline.v1.md
+  ... and 5 more files
+Published-by: awg-admin-console
+```
+
+The subject is at most 72 characters. The file list shows at most 40 entries. The Reviewer name is public once pushed, and the Publish section says so next to the button (R26.11).
+
+##### J.8.6 Git_Feedback_View (Requirement 30)
+
+`artifacts/admin/git-feedback.json` keeps the last 50 records, written atomically:
+
+```ts
+export interface GitFeedbackRecord {
+  id: string; at: string;                                   // ISO-8601 UTC
+  op: "status" | "fetch" | "commit" | "push" | "align-local";
+  ok: boolean;
+  branch: string; remote: string;                           // remote shown as "github.com/owner/repo" (scheme, user info, and ".git" removed)
+  lines: string[];                                          // plain text, scrubbed, at most 40 lines of 2000 characters
+  commit?: string;                                          // full 40-character SHA, kept by the scrubber
+  pushedAt?: string;
+}
+export interface LastPublished { sha: string; pushedAt: string; branch: string; remote: string; purpose: "publish" | "trigger" }
+```
+
+The view is a `<pre role="log" tabindex="0">` filled with `textContent`, formatted like a terminal: `$ git fetch origin main`, the scrubbed output, then a result line. Above it the console shows the last published commit (full SHA and timestamp), the branch and remote, and the unpublished-changes badge. It never renders git output as markup, and never shows a secret or a local absolute path (R30.9). Mapping to the cloud run: the commit SHA is compared with `run-source.json` of pulled runs (J.11); if a matching run is found the view prints "This publish started run <runId> (GitHub Actions run #<number>)", otherwise "No run is recorded for this commit yet. If you published again soon after, GitHub may have replaced this run with the newer one."
+
+##### J.8.7 Repository growth and baselines on `main`
+
+- **Actions needs the baselines on `main`.** The cloud run checks out `main`. Without `baselines/<slug>/baseline.v*.md` on `main` the orchestrator skips the page; without `baselines-visual/<slug>/<viewport>.png` on `main` the run can only write proposals. Publishing the baselines is therefore part of making a new site work, not optional. The GitHub readiness check in J.8.2 names pages that would be skipped.
+- **Size.** The 20 tracked PNG files total about 29.6 MB (about 1.5 MB each). A full set for a new domain of 10 URLs and 2 viewports adds about 30 MB. Every changed baseline is a new full blob (PNG compresses poorly across versions) and history is never rewritten, so repository size only grows. Re-approving the full set monthly would add roughly 360 MB a year.
+- **Controls.** Only bytes that differ from `origin/main` are published (identical files are skipped by blob id). The Publish section shows file count and total size, and above 25 MB total it requires an extra tick: "I understand this adds N MB to the repository permanently." A single file above 50 MB is blocked (GitHub warns at 50 MB and rejects at 100 MB). A capture whose PNG exceeds 10 MB is flagged in the manifest. The Baselines section shows the current total size of `baselines-visual/`.
+- **Not done, with reasons.** Git LFS (account quota and bandwidth limits, extra setup, and `lfs: true` in checkout), lossy or lossless re-compression (changes pixels or needs a new dependency), and history rewriting (forbidden: pushes stay additive).
+
+#### J.9 Trigger a run (Requirement 27)
+
+##### J.9.1 Workflow change
+
+```yaml
+on:
+  schedule:
+    - cron: "0 17 * * *"
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+    paths:
+      - "config/**"
+      - "!config/schedule.json"
+      - "baselines/**"
+      - "baselines-visual/**"
+      - ".github/workflows/guardian.yml"
+```
+
+- **Branch and path are combined with AND.** The workflow starts only for a push to `main` that changes at least one matching file. Ordinary code, documentation, `.kiro/`, test, and Dashboard source pushes do not start a run.
+- **No loop.** `commit-runs-data` pushes only to `runs-data`, which `branches: [main]` does not match. In addition, GitHub does not start workflow runs for pushes made with the built-in `GITHUB_TOKEN`. The workflow also never pushes to `main`.
+- **`config/schedule.json` is excluded** with a negated pattern because it only feeds the retired local scheduler; a change to it is not a monitoring configuration change.
+- **Every console publish triggers a run** because each path in `CONFIG_PATHSPECS` matches a pattern above (checked by a small hand-written glob matcher in a test). Saving a new schedule also starts a run, because `guardian.yml` is in the filter; the schedule dialog says so.
+- **Fork guard unchanged.** The `if:` condition on the jobs already allows non-pull-request events.
+- **Run source markers.** The "Run Guardian" step env gains `AWG_GH_SHA: ${{ github.sha }}`, `AWG_GH_RUN_ID: ${{ github.run_id }}`, and `AWG_GH_RUN_NUMBER: ${{ github.run_number }}` next to the existing `AWG_RUN_TRIGGER`. All are GitHub-controlled values, not payload data, so the rule against interpolating untrusted `github.event.*` into scripts still holds. The orchestrator validates them (`sha` is 40 hex characters; the others are digits) and writes `artifacts/runs/<id>/run-source.json` (`trigger`, `sha`, `githubRunId`, `githubRunNumber`, `domain`). Nothing from it is published except `trigger` and `domain` (J.12). The Dashboard's trigger label map gains "push" shown as "Configuration push" (small additive text change).
+
+##### J.9.2 Concurrency
+
+The workflow keeps `concurrency: { group: guardian, cancel-in-progress: false }`. For this group GitHub allows one running and one pending run; when a newer run is queued while another is already pending, the older pending run is cancelled. For back-to-back publishes A, B, C this means A runs, B is replaced by C, and C runs afterwards using the latest `main`, which already contains the changes of A, B, and C, so nothing is lost and runs do not overlap. A superseded run shows as "cancelled" in GitHub, not as a failure. The publish confirmation says: "If a run is already in progress, the new run waits. If you publish several times, only the newest waiting run is kept." (This is GitHub's documented behaviour; the first real use should confirm it, and the console wording does not depend on it.) A scheduled run can likewise be replaced by a push-triggered run and the reverse; either way the run uses the latest configuration.
+
+##### J.9.3 What "Trigger a run" does and does not do
+
+"Trigger a run" is the Publish action with `purpose: "trigger"`, enabled only when the delta is non-empty (R27.2, R27.3). The console states: "A run starts when real configuration changes are published to GitHub. Starting a run with no change would need a stored GitHub personal access token to call the GitHub API, and this console does not store one." (R27.4). The push result appears in the Git_Feedback_View (R27.5). The console creates no run record and no run status; run results appear only after a genuine cloud run is pulled (R27.6). Manual dispatch from the GitHub Actions page remains available outside the console.
+
+#### J.10 Schedule edit (Requirement 28)
+
+##### J.10.1 Cron validation (`cron.ts`, pure, hand-written)
+
+`parseCron(text): { ok: true; ast } | { ok: false; reason }` accepts exactly five space-separated fields: minute (0 to 59), hour (0 to 23), day of month (1 to 31), month (1 to 12 or `JAN` to `DEC`), day of week (0 to 6 or `SUN` to `SAT`). Each field is a comma list of `*`, `*/n`, `a`, `a-b`, or `a-b/n` with ascending ranges and `n >= 1`. Rejected with a reason: wrong field count, empty field, names in the wrong field, `7` for Sunday, steps of 0, descending ranges, `?`, `L`, `W`, `#`, and macros such as `@daily` (GitHub does not support them). Whitespace is normalised to single spaces; text length is capped at 100.
+
+GitHub-specific rule: scheduled workflows cannot run more often than every 5 minutes. `minGapMinutes(ast)` computes the smallest gap between consecutive fire times assuming every day is eligible (a conservative check that may reject some schedules that would be fine on restricted days); a gap under 5 minutes is rejected with "GitHub does not run schedules more often than every 5 minutes." Warnings (not errors): a schedule at minute 0 may be delayed at busy times; day of month and day of week both restricted means "either may match" (standard cron).
+
+Facts shown next to the field, as plain text: GitHub cron is always UTC; scheduled workflows run only from the repository's default branch, so a new schedule takes effect when the edited workflow reaches `main`; and GitHub may disable scheduled workflows in a public repository after about 60 days without repository activity.
+
+`describeCron(ast): string` returns an ASCII summary built from fixed templates, for example `0 17 * * *` gives "Every day at 17:00 UTC", and `*/30 9-17 * * 1-5` gives "Every 30 minutes, between 09:00 and 17:59 UTC, Monday to Friday". For a schedule with one fixed minute and one fixed hour it adds the New Zealand time using `Intl.DateTimeFormat` with `Pacific/Auckland` for the current date, for example "(05:00 or 06:00 in New Zealand, depending on daylight saving)". `formatCron(ast)` is the canonical text, and `parseCron(formatCron(ast))` equals `ast` (Property 57).
+
+##### J.10.2 Reading and editing `guardian.yml` (`workflow-schedule.ts`)
+
+No YAML parser is used. The module scans lines:
+
+- `readSchedule(text)`: find the top-level `on:` line, then a line `  schedule:` (two-space indent) beneath it, then the `- cron:` entries at deeper indent until the next line of indent two or less that is not blank or a comment. Return the entries with their line numbers and value ranges. Exactly one cron entry is supported; zero or more than one returns `{ ok: false, reason }` and the console refuses to edit ("The workflow has more than one schedule; edit it by hand.").
+- `replaceCron(text, newCron)`: replace only the characters between the quotes (the quote style, indentation, spacing, and any trailing comment are kept). Before writing, the module re-reads the result and checks that (1) `readSchedule` returns the new value, (2) the number of differing lines is exactly 1, and (3) every other line is byte-identical. If any check fails, nothing is written (fail-closed). The end-of-line style, final newline, and absence of a byte-order mark are preserved. Pinned action SHAs, `permissions:`, `concurrency:`, and comments are therefore untouched (R28.3).
+- The comment above the schedule line currently says "17:00 UTC daily". To stop later edits leaving a misleading comment, the implementation changes that comment once, by hand, to neutral wording ("Schedule is edited from the Admin Console; see the Schedule section"). The edit logic never rewrites comments.
+
+`GET /api/schedule` returns `{ cron, summary, warnings, published }`, where `published` is the cron read from `git show origin/main:.github/workflows/guardian.yml` (or `null` if unreadable), so the panel can say "On GitHub: 0 17 * * * (this change is not published yet)".
+
+`POST /api/schedule { cron, reviewer, publish }`: guard, size limit, reviewer check, `parseCron` and the 5-minute rule (400 with the reason, nothing recorded), Approval_Gate authorisation, atomic edit of the working-tree workflow file, setup log entry `schedule-changed` with the new value (R28.4). When `publish` is true, the UI first shows the publish confirmation listing every changed configuration file (not only the workflow), then the route runs Config_Publish; when false the change stays local and appears in the unpublished list. There is no separate local schedule (R28.5).
+
+#### J.11 Run details and logs (Requirement 29)
+
+- **Where logs come from.** The console reads only local run directories under `artifacts/runs/<id>/`: `run.json`, `results.json`, `findings.json`, `run-source.json` (new), `events.jsonl` (the run event log), and the run's `audit.jsonl`. Cloud runs arrive through the existing read-only Sync from `runs-data`, which copies the whole raw run directory. GitHub Actions step logs are not stored locally and are not fetched (that needs an authenticated API call), so the console links to the Actions run page as plain text when the run is mapped.
+- **Run list.** `GET /api/runs` keeps its existing fields (`runId`, `finishedAt`, `status`, `health`, `pages`, `failedChecks`, `pendingReview`, `origin`) from `readRunsNewestFirst` and adds `trigger`, `domain`, `githubRunNumber`, and `hasLogs`. The latest run is selected by default; any earlier run can be chosen (R29.1, R29.3).
+- **Mapping runId to a GitHub Actions run.** `run-source.json` holds `sha`, `githubRunId`, and `githubRunNumber` for runs produced after this feature. The URL `https://github.com/<owner>/<repo>/actions/runs/<githubRunId>` is built from the scrubbed remote and shown as text and as a link created with the DOM API. Older runs show "GitHub run not recorded".
+- **Details.** `GET /api/runs/:id` returns a whitelisted summary (status, health, counts, trigger, origin, domain, start and finish times) and the list of available log files with sizes. Each section (`summary`, `events`, `audit`) is read independently; one that cannot be read returns `{ ok: false, reason }` and the rest still render (R29.4).
+- **Log text.** `GET /api/runs/:id/log?file=events|audit&before=<byteOffset>` validates the run id against `^run_[a-z0-9]{6,40}$`, the file name against the two-name whitelist, and re-checks that the resolved path is inside `artifacts/runs/<id>/`. It reads at most 128 KB ending at `before` (default: end of file), splits into lines, drops a partial first line, and formats each JSONL record as `time type message` with remaining fields shown as compact `key=value` pairs capped at 300 characters. A line that is not valid JSON is shown as scrubbed raw text. The response reports `totalBytes`, `startOffset`, and `truncated` so the UI says "Showing the last N lines of M. Show earlier lines." Every line passes through `scrubForDisplay` and is capped at 2000 characters; the UI renders it with `textContent` in a `<pre>` (R29.5, R29.6).
+
+#### J.12 Interaction of a domain change with history (Requirement 21 and Phase 1 published data)
+
+What is keyed to the domain and what happens when it changes:
+
+| Item | Effect of a domain change | Handling |
+|---|---|---|
+| `baselines/<slug>/`, `baselines-visual/<slug>/` | Slugs include the host, so the new site's baselines are separate files. The old site's files stay. | Nothing deleted; both remain in git. |
+| A11y_History and lifecycle | Keys are `pageUrl, viewport, rule`. Old-site entries remain; they are never matched again, and because those pages are not scanned they stay unchanged and never become "resolved". | No change to Phase 1 logic. |
+| Disposition_Log | `page-rule` and `element` matchers include the full page URL and so never match the new site. A `site-rule` ignore has no domain in its matcher and would apply to the new site too. | The confirm step lists active `site-rule` ignores with "These will also apply to the new site"; the Reviewer can un-ignore them in the Decisions section first. Phase 1 semantics are unchanged. |
+| Run history on `runs-data` | Runs from the old domain remain. They are never rewritten or deleted. | No change. |
+| Published `domain` label | `published-data.ts` and `build-published-data.ts` default to `"assurity.nz"`, and the workflow never sets `AWG_DOMAIN`, so the public Dashboard would keep saying assurity.nz. | Resolve the label as `AWG_DOMAIN`, else `loadConfig().approvedDomain` (the config is checked out in CI), else the old default only if the config cannot be read. |
+| Per-run domain | Not recorded today. | The orchestrator writes `domain` into `run-source.json`. For older runs the Publisher derives the domain from the hosts of the run's own page URLs; if they do not share one host it publishes `null` ("not recorded"). |
+
+Proposed minimal honest presentation (awaiting user confirmation; see Decisions): publish `domain` per run as an additive optional field in `index.json` `runs[]`, `dashboard.json` `runs[]`, and the per-run file. The Dashboard then (1) shows the latest run's domain in the header, (2) labels each run whose domain differs from the latest run's as "Different site: <host>" in the run selector, the run table, and the Run_View, and (3) breaks the trend line at the boundary (a gap between the last run of one domain and the first of the next, built from a `null` data point with `spanGaps: false`) and adds a visible text line under the chart: "The site changed from <old> to <new> on <date>. Results before this date describe a different site." The data table alternative gets a "Site" column. Nothing is filtered out or rewritten.
+
+**This implies a Phase 1 published-data change, kept additive:** one optional `domain` string per run and the corrected label source. Consumers that ignore unknown fields keep working, `schemaVersion` is unchanged, and the Dashboard tolerates its absence (legacy runs show no "Different site" label because the domain is unknown). The public Dashboard still never shows anything about setup activity.
+
+#### J.13 Console user interface (admin-ui/)
+
+One page, plain HTML, JavaScript, and CSS, no build step, served from `admin-ui/` through the fixed asset whitelist (CSP from J.1.2 allows only same-origin scripts and styles, so there is no inline script or inline style). All dynamic text uses `textContent`; a source-scan test forbids `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `eval`, and `new Function` under `admin-ui/`.
+
+| Section (landmark `section` with `h2`) | Contents |
+|---|---|
+| Overview | Current domain; "N of 10 used"; unpublished-changes badge; running job and its progress; last published commit; latest run and its trigger; the sentence "This console has no AI. Every action is a button." |
+| Domain | Current domain; "Change domain" opens the four-step wizard (ordered list with `aria-current="step"`); validation errors in a `role="alert"` region with focus moved to the field. |
+| Approved URLs | Table with caption: URL, readiness, pending badge, Remove, Edit; add box; "Update project" button and the staged-changes list. |
+| Discovery | "Find pages" button, progress, candidate table with checkboxes (already approved shown as text, not colour only), "Approve selected". |
+| Baselines | Per-URL readiness table; "Write specification drafts", "Capture screenshots on this computer", proposal review (draft text, side-by-side images with alt text), "Approve selected", "Use the cloud run's screenshots". |
+| Findings and decisions | Section I panels (Findings, Decisions) unchanged. |
+| Publish | Delta list with sizes, publication notice, Publish and "Publish and start a run" buttons (disabled with the reason when nothing to publish), Git_Feedback_View. |
+| Schedule | Current cron, plain-English summary, UTC note, edit form, "On GitHub" value. |
+| Runs and logs | Run table, details, log viewer with "Show earlier lines", "Pull runs from GitHub". |
+| Setup activity | Setup_Activity_Log, newest first. |
+
+Accessibility and plain English: a skip link and a labelled `nav` with in-page links; every input has a visible `label`; buttons are real `button` elements; confirmations use native `<dialog>` with focus returned to the trigger; long jobs update a `role="status"` region politely (throttled to every 5 seconds apart from start and end); visible focus rings; no information by colour alone; tables have `caption` and `th scope`; `prefers-reduced-motion` respected; targets at least 24 by 24 CSS pixels. Copy is short and avoids git jargon, for example "Update project saves your changes on this computer only", "Publish to GitHub sends the configuration files to GitHub so the daily run uses them", and "Your name and reasons are published on the public Dashboard" (decisions, as in Section I) or "Your name appears in the commit message on GitHub, which is public" (publish).
+
+Pure view-model helpers live in `admin-ui/lib/*.js` (`usedText(n, max)`, `deltaSummary(delta)`, `jobProgressText(status)`, `stepLabel(step)`), imported by vitest directly like `dashboard/lib/`.
+
+#### J.14 Security summary
+
+| Threat | Control |
+|---|---|
+| Another web page posts to `127.0.0.1:7787` (CSRF) | Central `checkLocalRequest` on every non-GET route (Host, Origin, Content-Type JSON, Sec-Fetch-Site), no `Access-Control-*` headers, so cross-origin JSON posts fail preflight. |
+| DNS rebinding to read local data | `checkHostOnly` on every GET; Host must be `127.0.0.1:<port>` or `localhost:<port>`. |
+| Clickjacking | `frame-ancestors 'none'` and `X-Frame` equivalent via CSP. |
+| Oversized or hostile body | Content-Length pre-check, streaming limit, 413, no side effects. |
+| Command or argument injection | `execFile`/`spawn` with argument arrays and `shell: false`; fixed script and subcommand whitelists; user values only after pattern validation; commit message on stdin. |
+| Path traversal | `resolveInside`, slug and id patterns, file-name whitelists. |
+| Secret or path leakage into the UI, logs, or commits | `scrubForDisplay`, `validateReviewerName`, and no file outside `CONFIG_PATHSPECS` is ever staged. |
+| Token storage | None. All pushes use the Reviewer's git credential helper (R30.8). |
+| Forced or history-rewriting pushes | `GitPort` rejects force flags, `+` refspecs, and non-whitelisted subcommands. |
+| Interleaved writes | `projectLock` mutex, `publishLock`, atomic writes, single-flight jobs. |
+| Binding beyond loopback | `listen(port, "127.0.0.1")` only, with a source-scan test (R30.5). |
+
 ## Data Models
 
 All new JSON files carry `"schemaVersion": 2`. Every file is written with `JSON.stringify(x, null, 2)`, and every published structure passes `sanitizeJson` and a residual-path check before writing. Key names avoid the redactor's sensitive substrings (see Overview); a test checks this.
@@ -1009,6 +1718,52 @@ Worked timeline (same entries): run A finished 2026-10-26T08:00Z applies only th
 - Baseline validation: for new runs the Publisher compares the current baseline file hash with the recorded `baselineHash`; for older runs it recomputes `pixelmatch(baselineNow, currentRunShot)` and requires the same count as the derived measure. On mismatch the baseline is not published (`baseline-changed-since-run`), so an old comparison is never shown against a different baseline (R17.5).
 - Cost: decoding PNGs for older runs happens only inside the image-retention window (latest 10 runs) and only for pages with a diff image.
 
+### Admin_Console files and shapes (Requirements 21 to 30)
+
+The TypeScript shapes for requests, drafts, pending changes, jobs, setup entries, and Git feedback are given inline in Section J. This subsection lists where each piece of state lives and which tracked configuration files the console changes.
+
+| File | Tracked? | Written by | Notes |
+|---|---|---|---|
+| `artifacts/admin/new-domain-draft.json` and `artifacts/admin/new-domain/**` | No (`artifacts/` is ignored) | wizard routes | Draft, candidates, captures, staged baselines. Deleted on cancel or confirm. |
+| `artifacts/admin/pending-changes.json` | No | URL routes, Update project | Staged add and remove operations (J.4.2). |
+| `artifacts/admin/captures/<captureId>/manifest.json` and PNG files | No | capture job | Proposals; never read by the Publisher (J.6.3). |
+| `artifacts/admin/setup-activity.jsonl` | No | every setup route | Append-only, ASCII-escaped (J.7). |
+| `artifacts/admin/git-feedback.json` | No | publish and status routes | Last 50 records and `lastPublished` (J.8.6). |
+| `artifacts/admin/jobs/last-job.json` | No | job runner | State only, no output. |
+| `artifacts/admin/backup/<timestamp>/` | No | domain confirm | Copies of `app.config.json` and `page-seed.json` for rollback (J.3.5). |
+| `artifacts/audit.jsonl` | No | Approval_Gate | Existing append-only audit log, now also receives `config-change-authorized` entries. |
+| `config/app.config.json` | Yes | domain confirm only | `approvedDomain`, `baseUrl`, `domain` change; every other field and the formatting are preserved. |
+| `config/page-seed.json` | Yes | Update project, domain confirm | `approvedUrls` changes; `maxUrls` and unknown fields are preserved. |
+| `config/domains/<slug>.json` | Yes | domain confirm; one-time edit of `assurity-nz.json` for `probePaths` | New optional `probePaths` field. |
+| `baselines/<slug>/baseline.vN.md`, `baselines-visual/<slug>/<viewport>.png` | Yes | baseline approval, domain confirm | Never deleted by the console. |
+| `.github/workflows/guardian.yml` | Yes | schedule edit; one-time edit for the push trigger and run-source env | The schedule edit changes one line (J.10.2). |
+| `artifacts/runs/<id>/run-source.json` | No (raw run artifact, goes to `runs-data`) | orchestrator in CI | `{ schemaVersion, trigger, sha, githubRunId, githubRunNumber, domain }` (J.9.1). |
+
+Example `config/domains/assurity-nz.json` after the one-time edit (only `probePaths` is new; the ten values are the ones hard-coded in `discover-candidates.mjs` today, in the same order):
+
+```json
+{
+  "domain": "assurity.nz",
+  "baseUrl": "https://assurity.nz",
+  "approvedSchemes": ["https"],
+  "maxDiscoveryCount": 500,
+  "largeScopeThreshold": 25,
+  "requestSpacingMs": 1000,
+  "scopeFile": "config/scope/assurity-nz.approved.json",
+  "probePaths": ["/", "/software-quality-services/", "/performance-testing/", "/business-analysis/", "/case-studies/", "/resources/", "/careers/", "/about/", "/contact/", "/engagement-models/"]
+}
+```
+
+Example candidates file (already written by the crawler today; the console validates it and ignores unknown fields):
+
+```json
+{ "generatedAt": "2026-10-27T08:20:11.000Z", "approvedDomain": "example.org",
+  "candidates": [ { "url": "https://example.org/", "httpStatus": 200, "title": "Home", "h1": "Welcome",
+                    "purpose": "Welcome", "navCount": 1, "ctas": [], "forms": 0, "hasExternalLinks": false, "concern": "" } ] }
+```
+
+Published-data impact of Section J is limited to one optional additive field: `domain` (a string or `null`) on each run entry in `index.json` and `dashboard.json` and in the per-run file, plus a corrected source for the top-level `domain` label (J.12).
+
 ## Correctness Properties
 
 *A property is a characteristic or behavior that should hold true across all valid executions of a system-essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
@@ -1260,6 +2015,150 @@ Worked timeline (same entries): run A finished 2026-10-26T08:00Z applies only th
 
 **Validates: Requirements 20.10, 20.11**
 
+### Property 42: Approved URL sets are idempotent, in-domain, and bounded (PBT)
+
+*For any* seed, any approved domain, and any sequence of add, remove, and edit requests over arbitrary URL strings, the projected Approved_URL set SHALL contain only normalised URLs inside the domain, SHALL never contain two URLs with the same slug, SHALL never exceed the fixed maximum (the smaller of `seed.maxUrls` and `cfg.limits.pages`), and the displayed text SHALL equal `"N of M used"` for the projected count; adding any URL twice SHALL give the same set as adding it once; and a rejected request SHALL leave the seed, the pending file, and the logs unchanged.
+
+**Validates: Requirements 22.2, 22.3, 22.4, 22.5, 22.6, 22.13, 22.17, 22.19**
+
+### Property 43: Remove and edit keep baselines and history, and edit requires re-approval (PBT)
+
+*For any* project state and any removal or edit of an Approved_URL, the set of files and the bytes under `baselines/` and `baselines-visual/` SHALL be identical before and after, `artifacts/runs/` SHALL be unchanged, removal followed by re-adding the same URL SHALL restore membership and the same baseline readiness, and after an edit the old URL SHALL be absent, the new URL SHALL be present and flagged `requiresReapproval` until its baselines are approved, and the old URL's baseline files SHALL not be renamed or moved.
+
+**Validates: Requirements 22.8, 22.9, 22.10, 22.11**
+
+### Property 44: Update project writes only local files and changes the seed minimally (PBT)
+
+*For any* seed JSON with arbitrary extra fields and any sequence of staged operations, applying "Update project" SHALL write the seed with `maxUrls` and every unknown field unchanged, the remaining entries in their original order, the new `approvedUrls` equal to the projected set, the file's end-of-line style preserved, `cfg.limits` untouched, and SHALL invoke no git write operation; and any later parse of the written seed SHALL give the same set.
+
+**Validates: Requirements 22.15, 22.18, 26.2**
+
+### Property 45: Host validation is syntactic, total, and independent of any allow-list (PBT)
+
+*For any* input string, `validateNewHost` SHALL return a result without throwing; *for any* generated syntactically valid public host name the result SHALL be `ok` with a lower-cased ASCII host, `baseUrl` `https://<host>`, and slug equal to the host with non-alphanumeric runs replaced by `-`, SHALL be the same whatever the current approved domain or domain files are, and validating the returned host SHALL return the same host; and *for any* input that is an IP literal, `localhost`, a reserved local suffix, has a scheme other than https, user info, a port, a path, or a malformed label, the result SHALL be a rejection with a non-empty reason.
+
+**Validates: Requirements 21.4, 21.5**
+
+### Property 46: A new-domain draft changes nothing until it is confirmed (PBT)
+
+*For any* sequence of wizard actions that does not include a successful confirm (start, add or remove draft URLs, discovery, spec drafts, capture, staged approvals, cancel, and confirm requests that are rejected), the bytes of `config/app.config.json`, `config/page-seed.json`, `config/domains/*`, `baselines/**`, and `baselines-visual/**` SHALL be identical to their state before the wizard started; cancel SHALL remove the draft file and the staging folder; and a confirm request on a draft with no URL, with a URL outside the new domain, with a missing approved Spec_Baseline or Visual_Baseline, or with a mistyped host SHALL be rejected with no change.
+
+**Validates: Requirements 21.2, 21.3, 21.7, 21.8, 21.9, 21.11**
+
+### Property 47: Confirm is atomic and leaves a consistent configuration (PBT with fault injection)
+
+*For any* complete draft and any single injected failure at any step of the confirm transaction, the project files SHALL be restored to their exact pre-confirm bytes, files created by the transaction SHALL be removed, and the draft SHALL be kept; and *for any* successful confirm, `approvedDomain`, `baseUrl`, and `domain` in `config/app.config.json` SHALL agree with each other (`baseUrl` host equals `approvedDomain`, slug equals the slug of the host), every seed URL SHALL be inside the new domain and within the maximum, exactly one `config-change-authorized` audit entry SHALL precede the first file write, and exactly one `domain-changed` setup log entry naming the previous and new domain SHALL be appended.
+
+**Validates: Requirements 21.5, 21.6, 21.10, 21.12**
+
+### Property 48: Every approval needs a human reviewer name (PBT)
+
+*For any* approval-type request (staged URL add, remove, or edit, Update project, candidate approval, baseline approval, domain confirm, schedule edit, publish) and *for any* reviewer string, an empty or whitespace-only name SHALL be rejected with "Reviewer name is missing" and SHALL change no file and append no audit or setup log entry; an agent identity SHALL be rejected, SHALL promote or change nothing, and SHALL append only the gate's `self-approval-rejected` entry; and a valid name SHALL produce exactly one audit entry for the action together with its effects and one setup log entry containing that name.
+
+**Validates: Requirements 21.5, 22.12, 22.13, 23.7, 24.4, 24.5, 24.7, 28.4**
+
+### Property 49: Candidate pages enter the approved set only by explicit approval (PBT)
+
+*For any* candidates file (including candidates for another domain, non-success statuses, duplicates, and entries outside the domain) and any selection, running or reading discovery SHALL leave the seed, the pending file, and the draft unchanged; approval SHALL stage exactly the selected URLs that are present in the file, approvable, in the domain, not colliding, and within the free slots, or reject the whole request with a per-URL reason when any selected URL fails; and the reported counts SHALL equal the number of candidates read and the number staged.
+
+**Validates: Requirements 23.4, 23.5, 23.6, 23.7, 23.8**
+
+### Property 50: The job runner is single-flight, time-bounded, and its output is sanitised (PBT with a fake spawner)
+
+*For any* sequence of start requests, status polls, and process exits (success, failure, hang), at most one process SHALL be running at a time and every start while one is running SHALL be refused with `busy` without spawning; a process that exceeds its timeout SHALL be killed and the state SHALL become `timed-out`; the reported output tail SHALL never exceed 200 lines or 64 KB and SHALL contain no absolute path or secret; and a failed or empty discovery SHALL leave the Approved_URL set unchanged.
+
+**Validates: Requirements 23.2, 23.8, 24.1**
+
+### Property 51: Baseline promotion is idempotent and audited like the existing script (PBT for idempotence, example test for audit shape)
+
+*For any* capture manifest and any selection of items, approving the same selection twice SHALL leave the destination files byte-identical to approving it once, SHALL skip items whose bytes are unchanged, SHALL refuse an item whose file no longer matches its recorded `sha16`, SHALL write each destination atomically, and SHALL append one audit entry per promoted item only after its rename succeeds, with the same `type` and the same keys (`reviewer`, `slug`, `viewport`, `sourceRun`, `baselinePath`) as `scripts/approve-visual-baselines.mjs` plus `source` and `sha16`; and an approval SHALL append one setup log entry whose page and viewport counts equal the items promoted.
+
+**Validates: Requirements 24.2, 24.3, 24.4, 24.6, 24.7**
+
+### Property 52: The setup log is append-only, ASCII-only, and round-trips (PBT)
+
+*For any* sequence of setup entries whose strings contain arbitrary Unicode (including surrogate pairs, control characters, quotes, and newlines), after every append the previous file bytes SHALL be an exact prefix of the new file bytes, every byte of the file SHALL be below 0x80, every line SHALL parse as JSON, parsing SHALL recover the original strings exactly, and reading SHALL return the entries in reverse chronological order; and the setup log module SHALL expose no operation that edits, truncates, or deletes an entry.
+
+**Validates: Requirements 25.1, 25.2, 25.7, 25.8**
+
+### Property 53: Setup activity never reaches published data (PBT with a canary, plus a source scan)
+
+*For any* canary string written into the setup log, the audit log, the draft, and the capture manifests, building Published_Data and the replay inputs from a project tree that contains them SHALL produce output containing no occurrence of the canary, no `artifacts/admin` path, and no setup action; no console route SHALL write inside `artifacts/runs/`; and `CONFIG_PATHSPECS` SHALL contain no path under `artifacts/`.
+
+**Validates: Requirements 25.3, 25.4, 25.5, 25.6**
+
+### Property 54: Publish stages exactly the configuration delta and nothing else (PBT)
+
+*For any* working tree (generated file maps with tracked, untracked, staged, modified, deleted, ignored, and non-configuration files) and any `origin/main` file map, the files selected for the commit SHALL be exactly the added, modified, and deleted files whose paths satisfy `isConfigPath`; no path outside `CONFIG_PATHSPECS` SHALL ever appear in the update-index input, including paths containing `..`, absolute paths, and backslashes; and a file whose blob id equals the remote's SHALL never be selected.
+
+**Validates: Requirements 26.3, 26.4, 26.11**
+
+### Property 55: An empty delta disables publishing and creates no commit (PBT)
+
+*For any* pair of local and remote configuration maps, `computeDelta` SHALL be empty if and only if the maps are identical on the configuration paths; when it is empty `canPublish` SHALL be false with reason `nothing-to-publish`, `POST /api/publish` and the trigger action SHALL return 409, and a spy on the git port SHALL record no `commit-tree`, `update-index`, or `push` call; and the unpublished-changes indicator SHALL be on if and only if the delta is non-empty.
+
+**Validates: Requirements 26.5, 26.6, 27.3, 30.4**
+
+### Property 56: Publishing is additive and reports honestly (example tests against temporary git repositories)
+
+Against a temporary bare remote and clone: a successful publish SHALL create exactly one new commit on the remote `main` whose only parent is the previous tip and whose tree differs from it only in configuration paths; the Reviewer's current branch, index, staged changes, and unrelated working-tree edits SHALL be unchanged (apart from the documented configuration-path alignment); the response SHALL include the 40-character SHA and a timestamp equal to the pushed commit; when the remote advances on a non-configuration path the second attempt SHALL succeed without any merge, rebase, or force argument; when the remote advances on a configuration path the publish SHALL stop with nothing pushed and the files listed; when the push fails the commit SHALL remain reachable from `refs/awg/last-publish-attempt` and a retry SHALL succeed once the cause is removed; and no recorded git invocation SHALL contain `--force`, `-f`, `--force-with-lease`, a `+` refspec, `rebase`, `merge`, `pull`, `checkout`, `stash`, or `reset --hard`.
+
+**Validates: Requirements 26.4, 26.7, 26.9, 26.10, 30.2, 30.3, 30.8**
+
+### Property 57: Cron validation round-trips and always explains rejections (PBT)
+
+*For any* generated five-field cron AST within the supported grammar, `parseCron(formatCron(ast))` SHALL equal `ast`, `describeCron(ast)` SHALL return a non-empty ASCII string, and `minGapMinutes(ast)` SHALL be the same whether computed from the AST or from the re-parsed text; *for any* input string, `parseCron` SHALL either accept it or return a non-empty reason, SHALL reject a wrong field count, out-of-range values, descending ranges, zero steps, unsupported symbols, and macros, and SHALL reject any expression whose smallest gap between runs is under 5 minutes.
+
+**Validates: Requirements 28.2**
+
+### Property 58: A schedule edit changes one value and nothing else (PBT)
+
+*For any* workflow text containing exactly one schedule cron entry (generated with arbitrary surrounding lines, comments, quote styles, indentation, pinned action lines, and LF or CRLF line endings) and *for any* valid cron, the edited text SHALL differ from the original in exactly one line and only within the characters of the cron value, `readSchedule` of the result SHALL return the new value, the end-of-line style and final newline SHALL be preserved, and the pinned action SHAs, `permissions:` blocks, `concurrency:` block, and comments SHALL be byte-identical; *for any* workflow text with zero or more than one cron entry the edit SHALL be refused and the text unchanged; and the console SHALL keep no schedule other than the workflow file.
+
+**Validates: Requirements 28.3, 28.4, 28.5**
+
+### Property 59: The push trigger cannot loop and covers every publish path (example test on the workflow text)
+
+For `.github/workflows/guardian.yml`: the `on:` block SHALL contain `schedule`, `workflow_dispatch`, and `push`; the `push` block SHALL list only the branch `main` and exactly the path patterns `config/**`, `!config/schedule.json`, `baselines/**`, `baselines-visual/**`, and `.github/workflows/guardian.yml`; the text SHALL not contain `runs-data` under any trigger, `pull_request_target`, a wildcard branch, `workflow_run`, or any force flag; `permissions`, pinned SHAs, and `concurrency` SHALL be unchanged from before; and for every path allowed by `CONFIG_PATHSPECS` (sampled with generated file names) the hand-written glob matcher SHALL report a match against the push path patterns, so every console publish starts a run, while sampled paths under `src/`, `dashboard/`, `.kiro/`, `tests/`, and `artifacts/` SHALL not match.
+
+**Validates: Requirements 27.1, 27.2, 27.4, 27.6**
+
+### Property 60: The local-request guard covers every state-changing route (PBT over the route table)
+
+*For any* route in the console route table whose method is not GET (including the retired routes and the Section I routes), *for any* generated headers in which the Host is not `127.0.0.1:<port>` or `localhost:<port>`, or the Origin is present and not the same loopback origin, or the Sec-Fetch-Site is `cross-site` or `same-site`, or the Content-Type is not `application/json`, and *for any* body, `handle` SHALL return 403, and spies on the filesystem port, git port, job port, approval port, and setup log SHALL record zero calls; every route declared in the table SHALL have `mutating: true` if and only if its method is POST; an unknown POST path with a bad guard SHALL return 403 and with a good guard SHALL return 404; every GET with a bad Host SHALL return 403; and the server source SHALL bind only to `127.0.0.1`.
+
+**Validates: Requirements 22.16, 23.9, 24.8, 26.12, 27.7, 28.6, 30.5, 30.6**
+
+### Property 61: Oversized bodies are rejected without side effects (PBT)
+
+*For any* POST route and any body whose byte length exceeds that route's ceiling (including multi-byte characters that make the character count smaller than the byte count), `handle` SHALL return 413, and the filesystem, git, job, approval, and setup log spies SHALL record zero calls; a body at exactly the ceiling SHALL be parsed normally.
+
+**Validates: Requirements 30.7**
+
+### Property 62: Anything shown from outside the console is scrubbed (PBT)
+
+*For any* text containing generated Windows drive paths, UNC paths, POSIX home and project paths, URLs with embedded credentials, token-shaped strings, `Bearer` headers, control characters, and very long lines, `scrubForDisplay` SHALL return text with none of them, SHALL cap line length, SHALL leave 40-character commit SHAs intact, and SHALL be idempotent; and git feedback records, job output tails, run logs, and error messages SHALL pass through it before they leave the pure API layer.
+
+**Validates: Requirements 26.11, 29.6, 30.9**
+
+### Property 63: The run viewer stays inside the runs folder, is bounded, and isolates failures (PBT)
+
+*For any* run id and file parameter (including traversal sequences, absolute paths, encoded separators, and over-long values), the log route SHALL either resolve to a whitelisted file inside `artifacts/runs/<id>/` or return 400 or 404; *for any* log file size, the response SHALL contain at most 128 KB of text, SHALL report `truncated` and offsets consistent with the file size, and paging backwards with `before` SHALL cover the file without gaps or repeats at line boundaries; the output SHALL be plain text; and *for any* run directory in which one source file is missing or corrupt, the other sections SHALL still be returned with `ok: true`.
+
+**Validates: Requirements 29.1, 29.2, 29.4, 29.5, 29.6**
+
+### Property 64: Runs from a different domain are labelled and never rewritten (PBT)
+
+*For any* sequence of runs with arbitrary domains (including unknown), the derived domain of a run SHALL be its recorded domain if present, else the single host shared by all its page URLs, else `null`; a run SHALL be labelled "Different site" if and only if its domain is known and differs from the latest run's domain; the trend series SHALL contain a gap between adjacent runs of different known domains and no gap otherwise; no existing field of any run's published data SHALL change when the optional `domain` field is added; and A11y_History entries and Disposition_Log entries of the old domain SHALL be unchanged by a domain change.
+
+**Validates: Requirements 21.6, 29.1**
+
+### Property 65: Retired and replaced controls do nothing (example tests)
+
+`POST /api/run` SHALL return 410 after the guard and SHALL not spawn a process; the old schedule body SHALL be rejected with 400 and SHALL not write `config/schedule.json` or call the Task Scheduler; no route handler SHALL reference `run-scheduled`, `schedule.json`, or `schtasks`; and the UI source SHALL contain no control that is labelled as having an effect on GitHub unless it calls a publish route.
+
+**Validates: Requirements 26.1, 27.6, 28.5**
+
 ## Error Handling
 
 | Failure | Where | Behaviour |
@@ -1293,6 +2192,37 @@ Worked timeline (same entries): run A finished 2026-10-26T08:00Z applies only th
 | Push of the log fails (offline, auth, non-fast-forward after 3 attempts, no git identity) | Admin GUI | Decisions stay local; entries show "Not yet synced" with the reason; Retry button; no force, no rebase, no change to the Reviewer's branch or working tree; the temporary worktree is always removed (R20.5, R20.6). |
 | `git push` of run data rejected in `commit-runs-data` | CI | Fetch, merge commit (no rebase, no force), push again, at most 3 attempts; if still failing the job fails visibly. |
 | Run is outside the Image_Retention_Window | Publisher / Dashboard | Images not copied; omission recorded with reason `image-retention`; the Dashboard shows "Images not kept for this run (only the latest 10 runs keep images)" instead of an image. |
+| Admin_Console: guard fails (Host, Origin, Content-Type, Sec-Fetch-Site) | Console router | 403 with no detail for any non-GET route (known, unknown, or retired) and for GET with a bad Host; nothing is read, written, run, or logged (R30.6). |
+| Admin_Console: body over the ceiling | Console router and adapter | 413; reading stops; no side effects (R30.7). Malformed JSON returns 400 with the reason. |
+| Admin_Console: reviewer name empty or whitespace | Every approval route | 400 "Reviewer name is missing"; nothing recorded (R22.13, R24.5). Agent identity: 403 from the gate, which writes only `self-approval-rejected`. |
+| Admin_Console: another state-changing request while one runs | Publish, jobs, project lock | 409 `publish-running` or `busy`; the first request is unaffected. |
+| New domain: invalid host (IP, localhost, path, port, bad label, http) | `validateNewHost` | 400 with the reason in plain English; no draft created (R21.4). |
+| New domain: host resolves to a private address, or DNS fails | Draft start and job preflight | The job or draft start is refused with the reason; nothing is stored or crawled. |
+| New domain: confirm with missing URLs, missing baselines, wrong retyped host, or pending URL changes | `POST /api/domain/confirm` | 400 or 409 naming what is missing; no change (R21.8, R21.9). |
+| New domain: failure during the apply transaction | Confirm | Backups restored, created files removed, draft kept, 500 with a scrubbed reason, audit entry `config-change-failed`. Old domain stays active. |
+| Approved URLs: outside the domain, unparseable, slug collision, limit reached | `url-set` | 400 per URL with the reason ("The limit of 10 approved pages is reached. Remove one to free a slot."); nothing staged (R22.3, R22.4). |
+| Approved URLs: approved-scope file overrides the seed | URL routes | Controls disabled with the explanation in J.4.6; POST returns 409. |
+| Pending file or draft unreadable or invalid | URL, Update project, wizard | The section shows "Staged changes could not be read" and offers no write controls; the file is never overwritten; Cancel or discard is offered for the draft. |
+| Discovery or capture or draft job: build missing, browser missing, local Guardian run active | Job preflight | Refused with a plain message ("Run npm run build first", "Install the browser with npx playwright install chromium", "A Guardian run is in progress"); nothing starts. |
+| Job exits non-zero, writes no output, or times out | Job runner | State `failed` or `timed-out` with the scrubbed output tail; whole process tree killed on timeout; Approved_URLs and baselines unchanged (R23.8). |
+| Candidates file missing, invalid, or for another domain | Discovery view | "No usable candidates. Run discovery again." or the other-domain message; approval disabled. |
+| Capture item changed since capture (`sha16` mismatch) or missing | Baseline approval | That item is refused and listed; others proceed; nothing rolled back. |
+| Baseline approval partial failure (disk error on one file) | Baseline approval | The response lists promoted and failed items; audit entries exist only for promoted items; re-approving is safe. |
+| Publish: no `origin` remote, never fetched, or fetch fails | Publish status | Status shows the reason ("Could not check GitHub"); publish is refused when no `origin/main` is known; otherwise the last known tip is used with a visible notice. |
+| Publish: no git name or email | Commit step | "Set your git name and email first" with the two commands as plain text; nothing pushed. |
+| Publish: authentication fails or times out | Push | "GitHub did not accept your sign-in. Run git push once in a terminal to sign in, then retry."; commit kept under `refs/awg/last-publish-attempt`; Retry shown (R26.9). |
+| Publish: credentials lack permission to change workflow files, or `main` is protected | Push | Plain-English message naming the likely cause; nothing changed locally; Retry shown. |
+| Publish: remote changed configuration files since the base | Push (non-fast-forward) | Stop with the file list; nothing pushed; the Reviewer is told to run `git pull` and publish again (no merge, no rebase, no force). |
+| Publish: remote changed only other files | Push (non-fast-forward) | Rebuild the commit on the new tip and push again, three attempts at most. |
+| Publish: delta empty | Publish | 409 `nothing-to-publish`; no git write; buttons disabled with the reason (R26.5, R27.3). |
+| Publish: size above the warning or a file above the limit | Publish | Extra acknowledgement above 25 MB total; refusal for any file above 50 MB (J.8.7). |
+| Local alignment not safe | After push | Skipped with a note; the delta still compares with `origin/main`, so state remains correct. |
+| Schedule: invalid cron, gap under 5 minutes, zero or several cron entries in the workflow | Schedule edit | 400 with the reason or "edit by hand"; the file is not written; the minimal-diff check failing also aborts the write. |
+| Run viewer: run or log unreadable, over-long, or invalid id | Runs API | Section-level `ok: false` with the reason; other sections render; invalid ids return 400 or 404. |
+| Run viewer: no `run-source.json` (older run) | Runs API | "GitHub run not recorded"; no guess is made. |
+| Published domain unknown for a run | Publisher | `domain: null`; no "Different site" label; no inference beyond the shared-host rule. |
+| Setup log line corrupt | Setup log reader | The line is skipped and counted in `skippedLines`; the file is never rewritten. |
+| Setup log or audit append fails | Any setup route | The route fails with 500 before reporting success where the log entry is part of the requirement; no silent success. |
 
 Fail-closed rule carried over from the existing design: when in doubt about safety (secrets or paths), the Publisher omits or withholds and records why; when in doubt about meaning (severity, lifecycle, baseline provenance), the Publisher and Dashboard say "not recorded" rather than guess.
 
@@ -1338,6 +2268,26 @@ PBT applies to the pure layers: sanitization and caps, finding building, severit
 | `tests/unit/dashboard-viewmodels.test.ts` (extended) | unit | Ignored list grouping and wording, regression label text "Reappeared after being marked resolved on <date> by <reviewer>", trend effect text, decisions-unavailable notice, retention message, legacy run without `ignored` or `decisions` |
 | `tests/unit/dashboard-source-scan.test.ts` (extended) | smoke | `dashboard/**` contains no reference to `/api/dispositions`, `127.0.0.1:7787`, `method: "POST"` (or `PUT`/`DELETE`), `<form`, or `issues/new` (R17.7, R18.2) |
 | `tests/unit/guardian-workflow.test.ts` (extended) | smoke | "Restore dispositions" appears before "Run Guardian"; no `git add` line names `dispositions`; push retry uses `git merge` and never `--force`, `-f`, `--force-with-lease`, or `rebase` (R20.7, R20.8) |
+| `tests/property/admin-url-set.test.ts` | property (in-memory `ProjectFs`) | P42, P43, P44 |
+| `tests/property/admin-host-validate.test.ts` | property | P45 |
+| `tests/property/admin-domain-setup.test.ts` | property with fault injection | P46, P47 |
+| `tests/property/admin-approvals.test.ts` | property (fake gate and fake job port) | P48, P49, P51 (idempotence part) |
+| `tests/property/admin-job-runner.test.ts` | property (fake spawner and clock) | P50 |
+| `tests/property/admin-setup-log.test.ts` | property (temp dir) | P52, P53 (canary part, with the fixture publisher) |
+| `tests/property/admin-publish.test.ts` | property (pure delta, path filter, commit message) | P54, P55 |
+| `tests/unit/admin-publish-git.test.ts` | integration (temporary bare remote and clone, spy runner) | P56; also the whitelist of git subcommands, private ref, local alignment cases (on `main` with no local commits, on another branch, with local-only commits) |
+| `tests/property/admin-cron.test.ts` | property | P57 |
+| `tests/property/admin-workflow-schedule.test.ts` | property (generated workflow texts, LF and CRLF) | P58; also runs `replaceCron` on the real `guardian.yml` and asserts a one-line diff |
+| `tests/unit/guardian-workflow.test.ts` (extended) | smoke (text assertions and glob matcher) | P59; `run-source` env entries present; no new `permissions`; pinned SHAs intact |
+| `tests/property/admin-local-guard-routes.test.ts` | property over the real route table with spy ports | P60, P61 |
+| `tests/property/admin-scrub.test.ts` | property | P62 |
+| `tests/property/admin-runs-api.test.ts` | property (temp run folders) | P63 |
+| `tests/property/domain-history.test.ts` | property | P64 (Publisher `runDomainOf`, dashboard label and trend-gap helpers) |
+| `tests/unit/admin-retired-routes.test.ts` | unit | P65 |
+| `tests/unit/admin-console-flows.test.ts` | unit (the real `createConsole` with fake ports) | Example flows: wizard happy path (start, add, discovery results, approve, confirm, publish), rollback, cancel, URL staging then Update project, baseline approval audit shape equal to `approve-visual-baselines.mjs`, schedule edit with and without publish, run list and log pages, publication notices, "nothing to publish" copy, PAT limitation copy |
+| `tests/unit/candidate-urls.test.ts` | unit (golden) | `buildCandidateUrls` equals the old inline algorithm for a recorded assurity.nz link list; new domain defaults to `["/"]`; external-link flag expression equals the old literal for assurity.nz |
+| `tests/unit/admin-source-scan.test.ts` | smoke | Server binds only to `127.0.0.1` (R30.5); no `0.0.0.0`; no `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `eval`, or `new Function` under `admin-ui/`; no references to `setup-activity` or `artifacts/admin` in `src/publish/`, `src/reporting/`, `src/core/`, `scripts/build-office-replay.mjs`, `virtual-office/src/`, or `dashboard/`; `.screenshot(` appears only in `src/agents/screenshot.ts`; no force flags in `src/admin/`; all new `src/admin/`, `admin-ui/`, and script files are ASCII-only; `package.json` dependencies are unchanged (no new runtime dependency, R30.10) |
+| `tests/unit/admin-ui-lib.test.ts` | unit | `usedText`, `deltaSummary`, `jobProgressText`, step labels, copy that must appear (publication notice, PAT limitation, Update project versus Publish explanation) |
 
 Existing tests that must stay green: `tests/unit/analytics.test.ts` (reads the real history through the compat reader), `tests/property/classification.test.ts` (imports `ai-agents.ts`, which is kept), `tests/unit/safety.test.ts`, `tests/unit/schema-validation.test.ts`. Note that `analytics.test.ts` reads `artifacts/a11y-history.json` from the working tree, so a migrated v2 file must satisfy its expectations (`lifecycle total > 0`, severity map non-empty); the compat reader guarantees this for both formats.
 
@@ -1358,6 +2308,34 @@ Existing tests that must stay green: `tests/unit/analytics.test.ts` (reads the r
 ### Verification of CI-only and browser-only behaviour (stated plainly)
 
 These cannot be proven by vitest and are verified differently: the workflow ordering and additive push are checked by text assertions only (a real push to `runs-data` is verified by the first scheduled run after merge, and the design asks that run to be inspected); keyboard operation, focus management, live-region announcements, 200 percent zoom, 320 px reflow, and reduced motion are checked by `scripts/scan-dashboard.mjs` for the machine-checkable part (axe rules such as `scrollable-region-focusable`, `target-size`, `color-contrast`, `landmark-*`, `heading-order`) plus a short manual checklist for the rest. The Dashboard text never claims conformance (R15.12).
+
+### Testing the Admin_Console (Requirements 21 to 30)
+
+**Dependencies and conventions.** The same vitest and fast-check setup; no new dependency (R30.10). The pure API layer is driven through `createConsole(deps)` with fakes for the five ports, so no socket, browser, network, or real GitHub is needed. Property tests carry the tag comment `// Feature: dashboard-usability-overhaul, Property N: <title>` and run at least 100 iterations. Properties 56, 59, and 65 are example or smoke tests by design: git behaviour, workflow text, and retired routes have a handful of meaningful cases and gain nothing from 100 random inputs. Git integration tests create throw-away repositories under the OS temp folder and delete them afterwards.
+
+**Generators added.**
+
+- `arbHost` and `arbBadHost`: labels from `[a-z0-9-]` with edge lengths (1, 63, 64), leading and trailing hyphens, numeric last labels, punycode, IP literals, reserved suffixes, schemes, ports, paths, and user info.
+- `arbApprovedUrl`: URLs in and out of a generated domain, with subdomains, fragments, default ports, trailing-slash variants, query strings, and pairs that share a slug (`/a-b/` and `/a/b/`).
+- `arbSeed`: a seed with `maxUrls`, extra unknown fields, 0 to 10 URLs, LF or CRLF, with and without a final newline.
+- `arbUrlOps`: sequences of add, remove, and edit over a small URL pool so duplicates and re-adds occur.
+- `arbDraft`, `arbFaultPoint`: drafts with complete or incomplete baselines and an injected failure at each step of the confirm transaction.
+- `arbCaptureManifest`: items with matching and mismatching `sha16`, repeated approvals.
+- `arbCronAst` and `arbCronText`: valid ASTs across every field type, plus invalid strings (wrong counts, ranges, steps, macros, names in the wrong field).
+- `arbWorkflowText`: a workflow skeleton with a generated `on:` block, comment lines, one, zero, or two cron entries, quote styles, indentation, pinned-action lines, and LF or CRLF.
+- `arbFileMaps`: local and remote path-to-blob maps over configuration and non-configuration paths, including traversal, absolute, and backslash paths.
+- `arbText`: strings mixing Windows, UNC, and POSIX paths, credential URLs, token shapes, 40-hex SHAs, control characters, surrogate pairs, and very long lines.
+- `arbRunDirs`: temp run folders with partial or corrupt files, large `events.jsonl` files, and run ids with traversal attempts.
+- `arbRunsWithDomains`: run sequences with known, unknown, mixed-host, and changing domains.
+
+**Verified by tests.** Everything in Properties 42 to 65, the golden equivalence of the discovery candidate list for assurity.nz, the one-line diff of a schedule edit applied to the real workflow file, the whitelist of git subcommands, and the source scans.
+
+**Verified differently, stated plainly.**
+
+- A real push to `main` from the admin laptop, the credential flow (Git Credential Manager prompts and the `workflow` permission), and branch protection behaviour are verified manually on the first real publish. Tests use local bare repositories, which prove the git mechanics but not GitHub's policies.
+- That the `push` trigger with path filters starts exactly one run, that a push to `runs-data` starts none, and GitHub's replacement of older pending runs are verified by the first real pushes after merge (the first publish of the edited workflow itself starts a run); the workflow text and glob tests only prove the configuration.
+- Windows process-tree termination (`taskkill`), the Playwright browser location, and the laptop-versus-CI rendering difference (J.6.5) are verified manually on the admin laptop and by comparing the first cloud run's visual differences with the laptop captures.
+- Keyboard operation, focus handling, live-region announcements, zoom, and reflow of the console UI are checked with the same manual checklist as the Dashboard plus the pure helper tests; the UI does not claim conformance.
 
 ## Design Decisions and Open Questions
 
@@ -1390,6 +2368,29 @@ These cannot be proven by vitest and are verified differently: the workflow orde
 16. **Small additive change to the Approval_Gate.** `disposeFinding` gains an optional `detail` object so the audit entry records scope and matcher. Existing callers are unaffected. The decision kinds are reused (`ignore` as dismissed, `resolve` as accepted, `unignore` as rejected); a dedicated set of kinds is cleaner but changes the gate's public type.
 17. **CI push now merges on rejection.** `commit-runs-data` retries a rejected push with a fetch and a merge commit (no rebase, no force) so a Reviewer push to `runs-data` does not cost a CI run. Previously the job simply failed.
 
+### Phase 2 console: decisions needing user confirmation
+
+These three decisions are now confirmed by the user. Each entry shows the options considered and the confirmed choice.
+
+1. **How Visual_Baselines are produced locally (J.6.3).** *Options:* (a) a standalone local capture step that reuses the Guardian's exact screenshot call and writes proposals outside `artifacts/runs/`; (b) the console starts a local Guardian run and uses its `proposed-visual-baselines/`; (c) skip laptop capture and adopt the first cloud run's proposals. *Recommendation: (a), plus the "use the cloud run's screenshots" action from (c) after the first cloud run to remove the Windows-versus-Linux font risk.* Reasons: (b) makes a monitoring run out of setup work and breaks the honesty rule of Requirement 25, and cannot refresh a page that already has a baseline; (c) alone cannot satisfy the wizard's rule that baselines exist before confirm. Cost of (a): one small script, one shared screenshot function, and a manifest. **Confirmed by the user.**
+
+2. **Push-trigger path filters (J.9).** *Options:* (i) `config/**` (minus `config/schedule.json`), `baselines/**`, `baselines-visual/**`, and `.github/workflows/guardian.yml`, on `main` only; (ii) the same plus `src/**` and `dashboard/**`; (iii) no filter, every push to `main`. *Recommendation: (i).* It ensures that only real monitoring configuration changes start a run, so ordinary code, documentation, and the Dashboard-source pushes do not hit the live site or use Actions minutes, and the `runs-data` pushes cannot loop. The trade-off is that Dashboard source changes still wait for the next scheduled or manual run to reach the Pages site, as today; choose (ii) if you want code pushes to redeploy automatically (each such push would also run the full scan). **Confirmed by the user.**
+
+3. **How a mid-history domain change is presented (J.12).** *Options:* (A) keep all runs, label runs from another site "Different site", and break the trend line at the boundary with a visible note; (B) show only the current domain's runs by default with a "Show earlier site" toggle; (C) do nothing. *Recommendation: (A).* It keeps history visible and honest without rewriting anything; (C) would mix two sites in one trend, and (B) hides data by default. (A) needs one additive optional `domain` field in the published data (a Phase 1 published-data change) and a corrected source for the domain label; both are backward compatible. **Confirmed by the user.**
+
+Other choices made in Section J that you may want to change (each is small to reverse):
+
+- **"Update project" scope.** It applies only staged Approved_URL changes; baseline approvals and the schedule edit write their files when submitted, because Requirements 24.3 and 28.3 say so. The Status section lists every unpublished change of any kind.
+- **Old controls retired.** `POST /api/run` returns 410, and the local-only schedule form is replaced by the workflow cron edit. The local Task Scheduler support in `schedule.ts` stays for command-line users but is no longer exposed.
+- **Plumbing-based commit.** Publishing builds a commit from `origin/main` plus the configuration delta, so unrelated work can never be included and the Reviewer's branch and index are untouched. The cost is that plumbing commits do not run local git hooks, and the local branch is realigned only when that is provably safe.
+- **Host check on reads.** A Host-only check is added to every GET to stop DNS-rebinding reads. This also settles Section I's open question about guarding the existing POST routes: the guard now covers all of them centrally.
+- **Wizard requires visual as well as specification baselines** for every URL. The normal Baselines section allows partial sets.
+- **Domain-driven discovery.** New domains default to probing `/` only; the ten assurity.nz paths move to `config/domains/assurity-nz.json` unchanged.
+- **Run-source markers.** Three GitHub-controlled values are added to the run job so the console can map a publish to a cloud run.
+- **Scope-file override.** If an approved-scope file exists, URL edits are disabled with an explanation instead of silently doing nothing.
+- **Conservative 5-minute check.** Some schedules that would be valid only on restricted days may be rejected.
+- **Domain resolution check.** The console refuses a new domain that resolves to a private address; this needs network access at wizard start.
+
 ### Phase status
 
-This document completes the Design phase for `dashboard-usability-overhaul`, revised to include the 10-run image retention (R16.8 to R16.12) and the human Resolve / Ignore decisions (Requirements 18 to 20, Section I, Properties 29 to 41). `tasks.md` has not been created. Please review the design; once approved, the next phase is implementation planning.
+This document completes the Design phase for `dashboard-usability-overhaul`, revised to include the 10-run image retention (R16.8 to R16.12) and the human Resolve / Ignore decisions (Requirements 18 to 20, Section I, Properties 29 to 41), and now the Admin_Console for Requirements 21 to 30 (Section J, the Admin_Console data subsection, Properties 42 to 65, and the console rows in Error Handling and Testing Strategy). The three decisions listed under "Phase 2 console: decisions needing user confirmation" are confirmed by the user: (1) option (a) for Visual_Baselines, plus the later "use the cloud run's screenshots" action; (2) option (i) for the push-trigger path filters; (3) option (A) for a mid-history domain change. The design is approved and the implementation tasks follow in `tasks.md`.

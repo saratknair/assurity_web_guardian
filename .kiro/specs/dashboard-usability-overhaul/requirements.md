@@ -20,6 +20,8 @@ Everything in this feature MUST remain free, deterministic, zero-token, honest (
 
 Two further needs were added after the first review. First, to stay under the GitHub Pages size limit, images are published only for the 10 most recent runs, while Findings and evidence JSON are kept for every run. Second, the Reviewer needs to mark an issue as resolved or ignore it so that it is not flagged again. Those human decisions are made only in the local Admin_GUI (loopback only), pass through the existing Approval_Gate, are stored in an append-only Disposition_Log, and are applied from the decision onward: runs that finished before a decision keep their original counts. The public Dashboard stays read-only and static; it only shows the effect of decisions and lists ignored issues openly.
 
+Phase 2 is expanded beyond decisions into a full local Admin_Console: a control panel the Reviewer runs on a personal laptop ("the admin laptop"). The Admin_Console has no AI chat and makes no large-language-model call, because that would require a paid key and break the zero-token and free guarantees; every setup and review action is performed through GUI buttons and forms so that a non-technical administrator can operate it without a code editor. The console lets the Reviewer see the Guarded_Domain, run a guided new-domain setup, view and add Approved_URLs, run the Discovery_Crawler locally and approve discovered Candidate_Pages, produce and approve visual and spec baselines locally, publish the configuration to GitHub, trigger a run, edit the GitHub Actions schedule, view run details and logs, and watch a terminal-style view of git status and push results. Three facts shape this scope. First, triggering a run is done by publishing (an additive push to the `main` branch) rather than by calling the GitHub API: the GitHub Actions workflow is extended to run on push to `main`, and a pure "run now" with no configuration change would need a stored GitHub personal access token, which this feature deliberately does not use. Second, baselines are produced locally on the admin laptop, where a browser engine is already installed, and approvals are recorded from the console through the same Approval_Gate and audit model as decisions. Third, local setup work (discovery, inventory, baseline production, approvals) is configuration, not a monitoring run, so it is recorded in the Admin_Console's own Setup_Activity_Log and is never published to the public Dashboard or the Virtual Office, which stay honest about live-site health and genuine CI runs. All Phase 2 state-changing routes remain on the loopback interface only and reuse the local-request guard, and all pushes stay additive.
+
 ## Glossary
 
 Terms defined by the existing specifications (for example Guardian, Dashboard, Published_Data, Pages_Site, Run_Data_Branch, Run_ID, Reviewer, Baseline, Evidence_Store, Approved_Domain, Replay_Mode) retain their existing meanings. The following terms are introduced or refined for this feature.
@@ -60,6 +62,19 @@ Terms defined by the existing specifications (for example Guardian, Dashboard, P
 - **Active_Finding**: A detected Finding that is not an Ignored_Finding for the run. Unless a criterion says otherwise, every count, total, chart, KPI card, and filtered view of "Findings" in this document means Active_Findings.
 - **Ignored_Finding**: A detected Finding that is matched by an `ignore` Disposition that is in effect for the run. It is excluded from all Active_Finding counts and shown only in the Ignored count and Ignored list.
 - **Effective_From**: The rule that decides which runs a Disposition applies to: a Disposition applies to a run if and only if its timestamp is earlier than that run's finish time and it was present in the Disposition_Log snapshot the Guardian read when it finalised that run. Runs that finished earlier are never recounted.
+- **Admin_Console**: The local control panel served by `src/admin/admin-server.ts` on `http://127.0.0.1:7787`, bound to the loopback interface only, through which the Reviewer performs every setup and review action using GUI buttons and forms. The Admin_Console is a superset of the Admin_GUI: the Admin_GUI terms and routes used for Dispositions (Requirements 18 to 20) are part of the Admin_Console, and this document uses Admin_Console for the expanded setup scope and Admin_GUI where a requirement is specific to the Disposition decision panels.
+- **Guarded_Domain**: The single site origin that the Guardian is configured to monitor, equal to the Approved_Domain in the loaded configuration. Monitoring, discovery, and baselines are all scoped to the Guarded_Domain.
+- **Approved_URL**: A page URL inside the Guarded_Domain that has been promoted into the approved monitoring scope, stored in the seed (`seed.approvedUrls`). Only Approved_URLs are scanned by a run.
+- **Discovery_Crawler**: The existing local script (`scripts/discover-candidates.mjs`) that crawls the Guarded_Domain homepage's same-domain links and probes a fixed set of paths, writing Candidate_Pages to `artifacts/pending-review/candidates/candidate-pages.json`. The Discovery_Crawler adds nothing to the Approved_URL set on its own.
+- **Candidate_Page**: A page URL inside the Guarded_Domain that the Discovery_Crawler has found but that is not yet an Approved_URL. A Candidate_Page becomes an Approved_URL only when the Reviewer approves it in the Admin_Console.
+- **New_Domain_Setup**: The guided, multi-step Admin_Console flow for changing the Guarded_Domain. Changing the domain is treated as setting up a new site: it requires its own Approved_URL list and fresh baselines. The entered domain is validated only for being a syntactically valid host; setting the new domain is the trust decision itself, recorded as an explicit human authorization through the Approval_Gate rather than checked against a pre-existing allow-list. On confirmation the new domain becomes the approved domain and all later URL and crawl checks are performed against it. The flow does not silently overwrite the current site's configuration until the Reviewer completes and confirms it.
+- **Spec_Baseline**: A text or specification baseline for one Approved_URL, stored at `baselines/<slug>/baseline.v{N}.md`. The existing script `scripts/make-all-drafts.mjs` writes draft Spec_Baselines for Approved_URLs that lack them.
+- **Visual_Baseline**: An approved screenshot baseline for one Approved_URL and viewport, stored at `baselines-visual/<slug>/<viewport>.png` (the same as Baseline_Image). The existing script `scripts/approve-visual-baselines.mjs <reviewer> [runId]` promotes proposed visual baselines from a run directory into `baselines-visual/` and appends audit entries.
+- **Baseline_Production**: The local act of generating proposed baselines on the admin laptop from the installed browser engine, before approval. Baseline_Production is a setup action, not a monitoring run.
+- **Setup_Activity_Log**: The Admin_Console's own append-only record of setup actions, stored locally, each entry holding a timestamp, the Reviewer name, the action, and counts (for example the number of Candidate_Pages discovered or the number of baselines approved). The Setup_Activity_Log is shown only in the Admin_Console and is never published to the Dashboard or the Virtual Office.
+- **Config_Publish**: The Admin_Console action that commits the monitoring configuration (Guarded_Domain, Approved_URLs, seed, baselines, and Schedule_Cron) and pushes it additively to the `main` branch using the Reviewer's local git credentials, so that the daily GitHub Actions run uses the new configuration. Because the workflow also runs on push to `main`, a Config_Publish starts a run.
+- **Schedule_Cron**: The `cron` value inside the `schedule` trigger of `.github/workflows/guardian.yml`. The schedule lives solely in the GitHub workflow file; the Admin_Console edits this value and publishes it through Config_Publish so the change takes effect on GitHub.
+- **Git_Feedback_View**: The Admin_Console's terminal-style, read-only view that shows the result of git status, commit, and push operations performed by Config_Publish and synchronisation, including the last published commit identifier and push timestamp and whether the local project has unpublished changes, so the Reviewer can see whether changes reached GitHub and match the published version to the corresponding GitHub Actions run.
 
 ## Requirements
 
@@ -443,3 +458,173 @@ Terms defined by the existing specifications (for example Guardian, Dashboard, P
 14. THE Guardian SHALL write the Disposition_Log with every non-ASCII character escaped so that the file contains only ASCII characters.
 15. THE Disposition features SHALL remain deterministic, zero-token, and free, and SHALL leave the Virtual Office unchanged.
 16. FOR ALL valid Disposition_Logs, THE Disposition_Log serialised, parsed, and serialised again SHALL be equal (round-trip property).
+
+### Requirement 21: Guarded Domain Display And New-Domain Setup
+
+**User Story:** As the Reviewer, I want to see the current guarded domain and run a guided setup when I change it, so that pointing the Guardian at a new site always comes with its own approved URL list and fresh baselines and never silently repoints monitoring.
+
+#### Acceptance Criteria
+
+1. THE Admin_Console SHALL display the current Guarded_Domain read from the loaded configuration.
+2. THE Admin_Console SHALL provide a control that starts the New_Domain_Setup flow and SHALL NOT provide a free-text domain field that changes the Guarded_Domain without the New_Domain_Setup flow.
+3. WHEN the Reviewer starts the New_Domain_Setup flow, THE Admin_Console SHALL present the steps in order: enter the new domain, build an Approved_URL list for the new domain, produce baselines for the new domain, and confirm and publish.
+4. WHEN the Reviewer enters a new domain, THE Admin_Console SHALL validate that the entered value is a syntactically valid host or domain and SHALL reject an invalid host, SHALL display the reason, and SHALL record nothing.
+5. WHEN the Reviewer confirms the New_Domain_Setup flow, THE Admin_Console SHALL treat setting the new domain as an explicit human authorization recorded through the Approval_Gate with the Reviewer name, and SHALL NOT validate the new domain against any pre-existing approved-domain allow-list.
+6. WHEN the Reviewer confirms the New_Domain_Setup flow, THE Admin_Console SHALL write the confirmed new domain to the domain and application configuration so that the new domain becomes the approved domain, and from that point THE Guardian SHALL perform all URL and crawl checks against the new approved domain.
+7. WHILE the New_Domain_Setup flow is in progress, THE Admin_Console SHALL keep the current Guarded_Domain and its configuration unchanged until the Reviewer completes the confirm-and-publish step.
+8. WHEN the New_Domain_Setup flow reaches the Approved_URL step, THE Admin_Console SHALL require at least one Approved_URL for the new domain before the flow can proceed to the confirm step.
+9. WHEN the New_Domain_Setup flow reaches the baseline step, THE Admin_Console SHALL require the Reviewer to produce or approve baselines for the new domain's Approved_URLs before the flow can proceed to the confirm step.
+10. WHEN the Reviewer confirms the New_Domain_Setup flow, THE Admin_Console SHALL add a Setup_Activity_Log entry naming the previous and new domain.
+11. IF the Reviewer cancels or abandons the New_Domain_Setup flow before confirmation, THEN THE Admin_Console SHALL discard the in-progress new-domain configuration and SHALL leave the current Guarded_Domain, Approved_URLs, and baselines unchanged.
+12. THE New_Domain_Setup flow SHALL involve no large-language-model call and SHALL record a domain change only when a human confirms it.
+
+### Requirement 22: View, Add, Edit, And Remove Approved URLs
+
+**User Story:** As the Reviewer, I want to see the approved URLs for the current domain and add, edit, and remove them, so that I control exactly which pages are monitored.
+
+#### Acceptance Criteria
+
+1. THE Admin_Console SHALL display the current Approved_URLs for the Guarded_Domain, read from the seed.
+2. THE Admin_Console SHALL display how many Approved_URLs are used out of the maximum Approved_URL count, for example "N of 10 used", where N is the current number of Approved_URLs in the seed and the maximum is the fixed value held by `seed.maxUrls` in `config/page-seed.json` and `cfg.limits.pages`, so that the display reflects additions, edits, and removals.
+3. WHEN the Reviewer adds a URL, THE Admin_Console SHALL require the URL to be inside the Guarded_Domain and SHALL reject a URL that is outside the Guarded_Domain, SHALL display the reason, and SHALL record nothing.
+4. IF adding a URL would make the Approved_URL count exceed the maximum Approved_URL count, THEN THE Admin_Console SHALL reject the addition, SHALL display that the limit is reached, and SHALL record nothing.
+5. THE Admin_Console SHALL NOT provide a control to change the maximum Approved_URL count.
+6. WHEN the Reviewer adds a valid URL, THE Admin_Console SHALL normalise the URL, SHALL add it to the Approved_URL set, and SHALL leave the set unchanged when the URL is already present.
+7. THE Admin_Console SHALL provide a control to remove an existing Approved_URL.
+8. WHEN the Reviewer removes an Approved_URL, THE Admin_Console SHALL remove the URL from the Approved_URL set and seed, SHALL leave that URL's baseline files under `baselines/<slug>/` and `baselines-visual/<slug>/` in place so that re-adding the URL later can reuse them, and SHALL NOT alter run history.
+9. WHEN an Approved_URL has been removed, THE Admin_Console SHALL cause that URL to stop being scanned from the next run onward.
+10. WHEN the Reviewer edits an Approved_URL, THE Admin_Console SHALL treat the edit as removing the old URL and adding the new URL, SHALL apply the same Guarded_Domain, normalisation, and maximum-count checks as adding a URL, and SHALL require the new URL to go through Baseline_Production and approval again.
+11. THE Admin_Console SHALL NOT treat an edit as an in-place rename that keeps the old URL's baselines, because the old URL's baselines do not apply to a different URL.
+12. WHEN the Reviewer removes or edits an Approved_URL, THE Admin_Console SHALL require a Reviewer name, SHALL record the action through the Approval_Gate so that the audit log receives an entry, SHALL reject an agent identity, and SHALL add a Setup_Activity_Log entry with the Reviewer name and what changed, including the URL removed and the URL added.
+13. IF the Reviewer name is empty or contains only whitespace, THEN THE Admin_Console SHALL reject the removal or edit, SHALL display that the Reviewer name is missing, and SHALL record nothing.
+14. WHEN the Reviewer adds one or more Approved_URLs, THE Admin_Console SHALL add a Setup_Activity_Log entry with the Reviewer name and the number of URLs added.
+15. THE Admin_Console SHALL write the updated Approved_URL set to the seed after an add, edit, or removal and SHALL preserve the ordering and fields of the seed entries that remain.
+16. WHEN a state-changing request to add, edit, or remove an Approved_URL is received, THE Admin_Console SHALL apply the local-request guard and SHALL reject a request that fails the guard with status 403 and SHALL record nothing.
+17. WHERE the maximum Approved_URL count is reached, THE Admin_Console SHALL allow the Reviewer to free a slot for a new URL by removing an existing Approved_URL, since the maximum Approved_URL count is fixed at 10.
+18. THE Admin_Console SHALL apply an add, edit, or removal to the local project files only when the Reviewer chooses "Update project" and SHALL make the change take effect on GitHub only after the next "Publish to GitHub", as defined in Requirement 26.
+19. FOR ALL Approved_URL sets, THE set after adding the same URL twice SHALL equal the set after adding it once (idempotence).
+
+### Requirement 23: Run Discovery And Approve Candidate Pages
+
+**User Story:** As the Reviewer, I want to run the discovery crawler from the console and approve the pages it finds, so that I can grow the approved scope without editing files by hand.
+
+#### Acceptance Criteria
+
+1. THE Admin_Console SHALL provide a control that runs the Discovery_Crawler.
+2. WHEN the Reviewer activates the discovery control, THE Admin_Console SHALL run the Discovery_Crawler as a local process on the admin laptop against the Guarded_Domain, SHALL report progress while the crawl is running and when it has finished, and SHALL then read the Candidate_Pages the Discovery_Crawler wrote and display them.
+3. THE discovery run SHALL be entirely local and SHALL NOT involve GitHub, GitHub Actions, or any push.
+4. WHEN the Discovery_Crawler finishes, THE Admin_Console SHALL display the Candidate_Pages it wrote, each marked as either already an Approved_URL or not yet approved.
+5. WHEN the Reviewer approves one or more Candidate_Pages, THE Admin_Console SHALL promote each approved Candidate_Page into the Approved_URL set and seed, applying the same Guarded_Domain and normalisation checks as adding a URL directly.
+6. THE Admin_Console SHALL NOT add any Candidate_Page to the Approved_URL set except through an explicit approval by the Reviewer.
+7. WHEN the Reviewer approves Candidate_Pages, THE Admin_Console SHALL add a Setup_Activity_Log entry with the Reviewer name, the number of Candidate_Pages discovered, and the number approved.
+8. IF the Discovery_Crawler fails or writes no Candidate_Pages, THEN THE Admin_Console SHALL display the outcome and SHALL leave the Approved_URL set unchanged.
+9. WHEN a state-changing request to run discovery or approve Candidate_Pages is received, THE Admin_Console SHALL apply the local-request guard and SHALL reject a request that fails the guard with status 403 and SHALL record nothing.
+10. THE discovery and approval actions SHALL involve no large-language-model call and SHALL make no network request other than the Discovery_Crawler crawling the Guarded_Domain.
+
+### Requirement 24: Produce And Approve Baselines Locally
+
+**User Story:** As the Reviewer, I want to produce and approve visual and spec baselines from the console on my own laptop, so that a new or changed site has baselines without a cloud round-trip.
+
+#### Acceptance Criteria
+
+1. WHEN the Reviewer starts Baseline_Production, THE Admin_Console SHALL produce proposed Spec_Baselines for Approved_URLs that lack them and proposed Visual_Baselines for Approved_URLs and viewports, locally on the admin laptop.
+2. THE Admin_Console SHALL display the proposed Spec_Baselines and Visual_Baselines for the Reviewer to approve before they become approved baselines.
+3. WHEN the Reviewer approves baselines, THE Admin_Console SHALL promote the proposed Visual_Baselines into `baselines-visual/<slug>/<viewport>.png` and the proposed Spec_Baselines into `baselines/<slug>/baseline.v{N}.md`.
+4. WHEN the Reviewer approves baselines, THE Admin_Console SHALL require a Reviewer name, SHALL record the approval through the Approval_Gate so that the audit log receives an entry, and SHALL reject an agent identity.
+5. IF the Reviewer name is empty or contains only whitespace, THEN THE Admin_Console SHALL reject the approval, SHALL display that the Reviewer name is missing, and SHALL record nothing.
+6. WHEN the Reviewer approves baselines, THE Admin_Console SHALL add a Setup_Activity_Log entry with the Reviewer name, the number of pages, and the number of viewports approved.
+7. THE Admin_Console SHALL NOT approve any baseline except through an explicit human approval and SHALL involve no large-language-model call.
+8. WHEN a state-changing request to produce or approve baselines is received, THE Admin_Console SHALL apply the local-request guard and SHALL reject a request that fails the guard with status 403 and SHALL record nothing.
+
+### Requirement 25: Setup Activity Log Separate From Published Views
+
+**User Story:** As the Reviewer, I want setup work recorded in the console and kept out of the public views, so that the Dashboard and Virtual Office stay honest about live-site health and real runs.
+
+#### Acceptance Criteria
+
+1. WHEN the Reviewer performs a setup action, including discovery, adding Approved_URLs, Candidate_Page approval, Baseline_Production, baseline approval, a domain change, a schedule change, or a publish, THE Admin_Console SHALL add a Setup_Activity_Log entry with a timestamp, the Reviewer name, the action, and the relevant counts.
+2. THE Admin_Console SHALL display the Setup_Activity_Log with its entries in reverse chronological order.
+3. THE Guardian SHALL NOT publish any Setup_Activity_Log entry or setup action to the Dashboard or to the Published_Data.
+4. THE Guardian SHALL NOT record any Setup_Activity_Log entry or setup action in the Virtual Office.
+5. THE Publisher SHALL continue to publish only genuine run data and SHALL NOT fabricate a run, Finding, image, or state from a setup action.
+6. THE Setup_Activity_Log SHALL be stored locally and SHALL NOT be pushed to GitHub by Config_Publish unless the Reviewer explicitly chooses to include it.
+7. FOR ALL Setup_Activity_Log entries, THE Admin_Console SHALL append entries without deleting or editing any earlier entry.
+8. THE Admin_Console SHALL write the Setup_Activity_Log with every non-ASCII character escaped so that the file contains only ASCII characters.
+
+### Requirement 26: Publish Configuration To GitHub
+
+**User Story:** As the Reviewer, I want to publish my configuration to GitHub from the console, so that the daily cloud run uses the domain, approved URLs, baselines, and schedule I have set.
+
+#### Acceptance Criteria
+
+1. THE Admin_Console SHALL provide two distinct controls: an "Update project" control and a "Publish to GitHub" control.
+2. WHEN the Reviewer chooses "Update project", THE Admin_Console SHALL apply the Reviewer's changes to the local project files only, including the seed Approved_URLs, the baselines, the domain configuration, and the Schedule_Cron, and SHALL NOT commit or push to GitHub.
+3. WHEN the Reviewer chooses "Publish to GitHub", THE Admin_Console SHALL perform Config_Publish by committing the Guarded_Domain configuration, the seed with its Approved_URLs, the baselines, and the Schedule_Cron, and SHALL push them additively to the `main` branch using the Reviewer's local git credentials.
+4. THE Admin_Console SHALL push without force, without rebase of existing commits, and without rewriting history, and SHALL NOT change the Reviewer's current branch or working tree beyond staging and committing the configuration files.
+5. WHEN there are no local changes to publish, THE Admin_Console SHALL disable the "Publish to GitHub" control, SHALL state that there is nothing to publish, and SHALL NOT create an empty or filler commit.
+6. THE Admin_Console SHALL indicate when the local project has changes that have not yet been published.
+7. WHEN Config_Publish completes a push, THE Admin_Console SHALL display the pushed commit identifier (the git commit SHA) and the push timestamp so that the Reviewer can match the published version to the corresponding GitHub Actions run.
+8. WHEN Config_Publish completes, THE Admin_Console SHALL add a Setup_Activity_Log entry with the Reviewer name and a summary of what was published.
+9. IF the push fails, THEN THE Admin_Console SHALL keep the committed configuration locally, SHALL display the failure in the Git_Feedback_View, and SHALL provide a retry control.
+10. THE Admin_Console SHALL display the committed files and the push result in the Git_Feedback_View.
+11. THE Config_Publish action SHALL not leak secrets or local absolute file paths into the committed files or into any message shown in the Admin_Console.
+12. WHEN a state-changing request to publish is received, THE Admin_Console SHALL apply the local-request guard and SHALL reject a request that fails the guard with status 403 and SHALL record nothing.
+13. THE Config_Publish action SHALL involve no large-language-model call.
+
+### Requirement 27: Trigger A Run From The Console
+
+**User Story:** As the Reviewer, I want to trigger a cloud run from the console rather than from the GitHub Actions web interface, so that I can start monitoring after a change without leaving the console.
+
+#### Acceptance Criteria
+
+1. THE workflow `.github/workflows/guardian.yml` SHALL run on push to the `main` branch in addition to its existing schedule and manual dispatch triggers.
+2. WHEN the Reviewer chooses to trigger a run, THE Admin_Console SHALL perform a "Publish to GitHub" push to `main` of the real pending changes so that the push-triggered GitHub Actions run starts.
+3. WHERE the Reviewer has made no configuration change, THE Admin_Console SHALL state that there is nothing to publish and no run is triggered from the console, and SHALL NOT make a filler or minimal change to produce a commit.
+4. THE Admin_Console SHALL state that a run is triggered by publishing real changes to `main` and SHALL state that triggering a run with no change and no push would require a stored GitHub personal access token, which this feature does not use.
+5. THE Admin_Console SHALL display the push result for a triggered run in the Git_Feedback_View.
+6. THE Admin_Console SHALL NOT fabricate a run record or run status locally and SHALL rely on genuine GitHub Actions runs for monitoring results.
+7. WHEN a state-changing request to trigger a run is received, THE Admin_Console SHALL apply the local-request guard and SHALL reject a request that fails the guard with status 403 and SHALL record nothing.
+
+### Requirement 28: Edit The GitHub Actions Schedule
+
+**User Story:** As the Reviewer, I want to edit the cloud run schedule from the console, so that I control how often the Guardian runs without editing the workflow file by hand.
+
+#### Acceptance Criteria
+
+1. THE Admin_Console SHALL display the current Schedule_Cron read from the `schedule` trigger of `.github/workflows/guardian.yml`.
+2. WHEN the Reviewer submits a new Schedule_Cron, THE Admin_Console SHALL validate the value as a five-field cron expression and SHALL reject an invalid value, SHALL display the reason, and SHALL record nothing.
+3. WHEN the Reviewer submits a valid Schedule_Cron, THE Admin_Console SHALL write the new value into the `schedule` trigger of `.github/workflows/guardian.yml` and SHALL leave the rest of the workflow file, including pinned action SHAs and per-job permissions, unchanged.
+4. WHEN the Reviewer submits a valid Schedule_Cron, THE Admin_Console SHALL publish the edited workflow file through Config_Publish so that the change takes effect on GitHub, and SHALL add a Setup_Activity_Log entry with the Reviewer name and the new value.
+5. THE Admin_Console SHALL treat the GitHub workflow file as the only source of the schedule and SHALL NOT keep a separate local-only schedule that does not reach GitHub.
+6. WHEN a state-changing request to edit the schedule is received, THE Admin_Console SHALL apply the local-request guard and SHALL reject a request that fails the guard with status 403 and SHALL record nothing.
+7. THE schedule edit SHALL involve no large-language-model call.
+
+### Requirement 29: View Run Details And Logs In The Console
+
+**User Story:** As the Reviewer, I want to see old and latest run details and their logs in the console, so that I can review what happened without opening GitHub.
+
+#### Acceptance Criteria
+
+1. THE Admin_Console SHALL list the known runs with their Run_ID, date, trigger, and origin.
+2. WHEN the Reviewer selects a run, THE Admin_Console SHALL display that run's details and its available logs.
+3. THE Admin_Console SHALL display the latest run and SHALL allow selecting any earlier run from the list.
+4. IF a selected run's details or logs cannot be read, THEN THE Admin_Console SHALL display which data could not be read and SHALL keep the rest of the view usable.
+5. THE Admin_Console SHALL display run details and logs as plain text and SHALL NOT render them as markup.
+6. THE Admin_Console SHALL NOT display secrets or local absolute file paths in the run details or logs it shows.
+
+### Requirement 30: Git Feedback View And Console Security
+
+**User Story:** As the Reviewer, I want to see whether my commits and pushes reached GitHub and to know the console is protected from other web pages, so that I trust what the console tells me and nothing can forge an action.
+
+#### Acceptance Criteria
+
+1. THE Admin_Console SHALL display a Git_Feedback_View showing the result of git status, commit, and push operations performed by Config_Publish and synchronisation.
+2. WHEN a git operation completes, THE Admin_Console SHALL display in the Git_Feedback_View whether the operation succeeded or failed and the branch and remote involved.
+3. WHEN a push completes, THE Git_Feedback_View SHALL display the last published commit identifier (the git commit SHA) and the push timestamp so that the Reviewer can match the published version to the corresponding GitHub Actions run.
+4. THE Git_Feedback_View SHALL indicate when the local project has changes that have not yet been published.
+5. THE Admin_Console SHALL bind to the loopback interface only and SHALL NOT bind to any non-loopback address.
+6. WHEN a state-changing request is received on any Admin_Console route added for the setup scope, including domain change, add Approved_URL, run discovery, approve Candidate_Pages, produce or approve baselines, publish, trigger a run, and edit the schedule, THE Admin_Console SHALL verify through the local-request guard that the Host header names the loopback address and port, that any Origin header names the same loopback origin, and that the content type is JSON, and IF any check fails, THEN THE Admin_Console SHALL reject the request with status 403 and SHALL record nothing.
+7. WHEN the Admin_Console reads a request body for a setup action, THE Admin_Console SHALL enforce a maximum body size and SHALL reject a body that exceeds the limit and SHALL record nothing.
+8. THE Admin_Console SHALL NOT include a stored GitHub personal access token or other secret, and SHALL use the Reviewer's local git credentials for all pushes.
+9. THE Git_Feedback_View SHALL display git output as plain text and SHALL NOT render it as markup, and SHALL NOT display secrets or local absolute file paths.
+10. THE setup-scope features of the Admin_Console SHALL remain deterministic, zero-token, and free, and SHALL NOT add a runtime dependency without recording its cost and licence.
