@@ -22,6 +22,18 @@ on:
     - cron: "0 17 * * *"
   # manual on-demand dispatch (6.5)
   workflow_dispatch: {}
+  # Publish-path changes on main re-run Guardian (27.1, 27.2, 27.6). Branch is
+  # exactly main (no wildcard); runs-data is never a trigger, so the runs-data
+  # push by commit-runs-data cannot start a run. config/schedule.json is excluded.
+  push:
+    branches:
+      - main
+    paths:
+      - "config/**"
+      - "!config/schedule.json"
+      - "baselines/**"
+      - "baselines-visual/**"
+      - ".github/workflows/guardian.yml"
 
 # Least-privilege default token for the whole workflow (9.2)
 permissions:
@@ -87,6 +99,35 @@ jobs:
           fi
           printf '{"status":"%s"}\n' "$status" > artifacts/a11y-history.status.json
           echo "a11y history status: $status"
+      - name: Restore dispositions
+        # Pull artifacts/dispositions.json from the runs-data branch BEFORE the run
+        # so the Guardian can apply reviewer dispositions. Validates schemaVersion 1;
+        # an invalid file is removed from the workspace only (the branch is untouched).
+        # Writes a status marker (restored | first-run | unavailable) next to it. The
+        # marker and the file are never committed by this workflow. Read-only.
+        run: |
+          set -u
+          mkdir -p artifacts
+          status="first-run"
+          if git fetch origin runs-data --depth=1 2>/dev/null; then
+            if git cat-file -e FETCH_HEAD:artifacts/dispositions.json 2>/dev/null; then
+              if git show FETCH_HEAD:artifacts/dispositions.json > artifacts/dispositions.json 2>/dev/null; then
+                if node -e 'const d=JSON.parse(require("fs").readFileSync("artifacts/dispositions.json","utf8"));process.exit(d&&d.schemaVersion===1?0:1)' 2>/dev/null; then
+                  status="restored"
+                else
+                  rm -f artifacts/dispositions.json; status="unavailable"
+                fi
+              else
+                rm -f artifacts/dispositions.json; status="unavailable"
+              fi
+            fi
+          else
+            git ls-remote --exit-code --heads origin runs-data >/dev/null 2>&1
+            rc=$?
+            if [ "$rc" -eq 2 ]; then status="first-run"; else status="unavailable"; fi
+          fi
+          printf '{"status":"%s"}\n' "$status" > artifacts/dispositions.status.json
+          echo "dispositions status: $status"
       - name: Run Guardian
         # The real orchestrated run entry is scripts/run-guardian.mjs.
         # (dist/index.js "run" only prints a Phase-12 pointer message.)
@@ -99,6 +140,11 @@ jobs:
           AWG_SKIP_LOCAL_PUBLISH: "1"
           # GitHub-controlled enum (schedule | workflow_dispatch | ...), not payload data.
           AWG_RUN_TRIGGER: ${{ github.event_name }}
+          # Run-source markers (GitHub-controlled values only) so the console can
+          # map a publish to a cloud run (27.6, 29.1).
+          AWG_GH_RUN_ID: ${{ github.run_id }}
+          AWG_GH_SHA: ${{ github.sha }}
+          AWG_GH_EVENT_NAME: ${{ github.event_name }}
         run: node scripts/run-guardian.mjs
       - name: Restore run history from runs-data
         # Each CI run checks out a fresh tree, so artifacts/runs/ holds ONLY the
@@ -278,7 +324,7 @@ jobs:
 
       - name: Commit new run(s) to runs-data (additive)
         # ADDITIVE ONLY: path-scope the add to artifacts/runs/<RUN_ID>/ for each run
-        # the run job just produced, commit, and push. No force, no rebase, no
+        # the run job just produced, commit, and push. No forced push, no
         # history rewrite — existing run dirs on runs-data are never touched, and
         # raw artifacts are NEVER committed to main (this job only ever sits on the
         # runs-data branch). RUN_ID(s) are discovered from the downloaded dirs.
@@ -307,5 +353,17 @@ jobs:
             exit 0
           fi
           git commit -m "runs-data: add raw run artifacts (origin=cloud)"
-          # Push additively to runs-data. Create upstream on first push; never -f.
-          git push origin HEAD:runs-data
+          # artifacts/dispositions.json is owned by the local console and is never
+          # staged here (only the paths added above are committed).
+          # Push additively to runs-data. On rejection, fetch, merge the remote tip
+          # (no history rewrite) and push again; max 3 attempts.
+          attempt=1
+          until git push origin HEAD:runs-data; do
+            if [ "$attempt" -ge 3 ]; then
+              echo "push to runs-data failed after $attempt attempts"
+              exit 1
+            fi
+            attempt=$((attempt + 1))
+            git fetch origin runs-data
+            git merge --no-edit FETCH_HEAD
+          done
