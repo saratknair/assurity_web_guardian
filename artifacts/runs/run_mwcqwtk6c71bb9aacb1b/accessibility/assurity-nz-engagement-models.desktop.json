@@ -1,0 +1,267 @@
+{
+  "url": "https://assurity.nz/engagement-models/",
+  "viewport": "desktop",
+  "violations": [
+    {
+      "id": "link-name",
+      "impact": "serious",
+      "tags": [
+        "cat.name-role-value",
+        "wcag2a",
+        "wcag244",
+        "wcag412",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT6.a",
+        "EN-301-549",
+        "EN-9.2.4.4",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-6.2.1"
+      ],
+      "description": "Ensure links have discernible text",
+      "help": "Links must have discernible text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/link-name?application=playwright",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "has-visible-text",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element does not have text that is visible to screen readers"
+            },
+            {
+              "id": "aria-label",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "aria-label attribute does not exist or is empty"
+            },
+            {
+              "id": "aria-labelledby",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty"
+            },
+            {
+              "id": "non-empty-title",
+              "data": {
+                "messageKey": "noAttr"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has no title attribute"
+            }
+          ],
+          "all": [],
+          "none": [
+            {
+              "id": "focusable-no-name",
+              "data": null,
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element is in tab order and does not have accessible text"
+            }
+          ],
+          "impact": "serious",
+          "html": "<a class=\"gsbp-f90fb6c\" href=\"/\">",
+          "target": [
+            ".gsbp-f90fb6c"
+          ],
+          "failureSummary": "Fix all of the following:\n  Element is in tab order and does not have accessible text\n\nFix any of the following:\n  Element does not have text that is visible to screen readers\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute"
+        }
+      ]
+    },
+    {
+      "id": "target-size",
+      "impact": "serious",
+      "tags": [
+        "cat.sensory-and-visual-cues",
+        "wcag22aa",
+        "wcag258"
+      ],
+      "description": "Ensure touch targets have sufficient size and space",
+      "help": "All touch targets must be 24px large, or leave sufficient space",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/target-size?application=playwright",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "target-size",
+              "data": {
+                "minSize": 24,
+                "width": 12,
+                "height": 12
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Target has insufficient size (12px by 12px, should be at least 24px by 24px)"
+            },
+            {
+              "id": "target-offset",
+              "data": {
+                "closestOffset": 16,
+                "minOffset": 24
+              },
+              "relatedNodes": [
+                {
+                  "html": "<span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 3\"></span>",
+                  "target": [
+                    "span[aria-label=\"Go to slide 3\"]"
+                  ]
+                }
+              ],
+              "impact": "serious",
+              "message": "Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 16px instead of at least 24px."
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 2\"></span>",
+          "target": [
+            "span[aria-label=\"Go to slide 2\"]"
+          ],
+          "failureSummary": "Fix any of the following:\n  Target has insufficient size (12px by 12px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 16px instead of at least 24px."
+        },
+        {
+          "any": [
+            {
+              "id": "target-size",
+              "data": {
+                "minSize": 24,
+                "width": 12,
+                "height": 12
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Target has insufficient size (12px by 12px, should be at least 24px by 24px)"
+            },
+            {
+              "id": "target-offset",
+              "data": {
+                "closestOffset": 16,
+                "minOffset": 24
+              },
+              "relatedNodes": [
+                {
+                  "html": "<span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 2\"></span>",
+                  "target": [
+                    "span[aria-label=\"Go to slide 2\"]"
+                  ]
+                },
+                {
+                  "html": "<span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 4\"></span>",
+                  "target": [
+                    "span[aria-label=\"Go to slide 4\"]"
+                  ]
+                }
+              ],
+              "impact": "serious",
+              "message": "Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 16px instead of at least 24px."
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 3\"></span>",
+          "target": [
+            "span[aria-label=\"Go to slide 3\"]"
+          ],
+          "failureSummary": "Fix any of the following:\n  Target has insufficient size (12px by 12px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 16px instead of at least 24px."
+        },
+        {
+          "any": [
+            {
+              "id": "target-size",
+              "data": {
+                "minSize": 24,
+                "width": 12,
+                "height": 12
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Target has insufficient size (12px by 12px, should be at least 24px by 24px)"
+            },
+            {
+              "id": "target-offset",
+              "data": {
+                "closestOffset": 16,
+                "minOffset": 24
+              },
+              "relatedNodes": [
+                {
+                  "html": "<span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 3\"></span>",
+                  "target": [
+                    "span[aria-label=\"Go to slide 3\"]"
+                  ]
+                },
+                {
+                  "html": "<span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 5\"></span>",
+                  "target": [
+                    "span[aria-label=\"Go to slide 5\"]"
+                  ]
+                }
+              ],
+              "impact": "serious",
+              "message": "Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 16px instead of at least 24px."
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 4\"></span>",
+          "target": [
+            "span[aria-label=\"Go to slide 4\"]"
+          ],
+          "failureSummary": "Fix any of the following:\n  Target has insufficient size (12px by 12px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 16px instead of at least 24px."
+        },
+        {
+          "any": [
+            {
+              "id": "target-size",
+              "data": {
+                "minSize": 24,
+                "width": 12,
+                "height": 12
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Target has insufficient size (12px by 12px, should be at least 24px by 24px)"
+            },
+            {
+              "id": "target-offset",
+              "data": {
+                "closestOffset": 16,
+                "minOffset": 24
+              },
+              "relatedNodes": [
+                {
+                  "html": "<span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 4\"></span>",
+                  "target": [
+                    "span[aria-label=\"Go to slide 4\"]"
+                  ]
+                }
+              ],
+              "impact": "serious",
+              "message": "Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 16px instead of at least 24px."
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<span class=\"swiper-pagination-bullet\" tabindex=\"0\" role=\"button\" aria-label=\"Go to slide 5\"></span>",
+          "target": [
+            "span[aria-label=\"Go to slide 5\"]"
+          ],
+          "failureSummary": "Fix any of the following:\n  Target has insufficient size (12px by 12px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 16px instead of at least 24px."
+        }
+      ]
+    }
+  ]
+}
