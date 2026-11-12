@@ -46,6 +46,8 @@ export function safeRelative(urlPath: string): string | null {
   if (!urlPath.startsWith(LOCAL_DASHBOARD_PREFIX)) return null;
   let rest = urlPath.slice(LOCAL_DASHBOARD_PREFIX.length);
   if (rest === "") rest = "index.html";
+  // The published Virtual Office lives at office/ and is opened as /local-dashboard/office/.
+  if (rest === "office/") rest = "office/index.html";
   let decoded: string;
   try {
     decoded = decodeURIComponent(rest);

@@ -9,6 +9,7 @@ import type { ConsoleDeps } from "../../src/admin/console-deps.js";
 import {
   DASHBOARD_ENTRY,
   DASHBOARD_MISSING_TEXT,
+  OFFICE_ENTRY,
   openInBrowser,
   resetBrowserLauncher,
   setBrowserLauncher,
@@ -20,12 +21,12 @@ import { startAdminServer } from "../../src/admin/admin-server.js";
 const PORT = 7787;
 const HEADERS = { host: `127.0.0.1:${PORT}`, contentType: "application/json" };
 
-function deps(built: boolean): ConsoleDeps {
+function deps(built: boolean, entry: string = DASHBOARD_ENTRY): ConsoleDeps {
   return {
     port: PORT,
     fs: {
       root: "C:/proj",
-      exists: (r) => built && r === DASHBOARD_ENTRY,
+      exists: (r) => built && r === entry,
       readText: () => "",
       readBytes: () => new Uint8Array(),
       writeText: () => undefined,
@@ -40,6 +41,15 @@ function deps(built: boolean): ConsoleDeps {
 
 const open = (built: boolean, path: string) =>
   createConsole(deps(built)).handle({ method: "POST", path, query: {}, headers: HEADERS, body: "{}" });
+
+const officeOpen = (built: boolean) =>
+  createConsole(deps(built, OFFICE_ENTRY)).handle({
+    method: "POST",
+    path: "/api/open/office",
+    query: {},
+    headers: HEADERS,
+    body: "{}",
+  });
 
 describe("browser launcher", () => {
   const urls: string[] = [];
@@ -75,9 +85,16 @@ describe("browser launcher", () => {
     expect(DASHBOARD_MISSING_TEXT).not.toContain("dashboard.html");
   });
 
-  it("opens the Virtual Office through the stub exactly once", async () => {
-    await open(false, "/api/open/office");
-    expect(urls).toEqual(["http://localhost:5173"]);
+  it("opens the published Virtual Office through the stub exactly once when built", async () => {
+    const r = await officeOpen(true);
+    expect(urls).toEqual([`http://127.0.0.1:${PORT}/local-dashboard/office/`]);
+    expect(r.json).toMatchObject({ launched: true, built: true });
+  });
+
+  it("launches nothing with the run-once message when the Virtual Office is not published", async () => {
+    const r = await officeOpen(false);
+    expect(urls).toEqual([]);
+    expect(r.json).toMatchObject({ launched: false, built: false, message: DASHBOARD_MISSING_TEXT });
   });
 });
 

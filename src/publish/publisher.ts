@@ -29,9 +29,8 @@ import { buildPublishedData, type RunsIndex } from "./published-data.js";
  *      swap fails midway, the old bundle is restored so previously published
  *      data is left unchanged.
  *
- * The replay-only office build (Vite with `VITE_AWG_MODE=replay`) is NOT
- * produced here — that build wiring is task 13.1 (and the CI publish step). The
- * publish/CI step injects the office bundle into the Pages output alongside the
+ * The office is the static, no-build `office/` app; it is NOT produced here.
+ * The CI publish step copies `office/` into the Pages output alongside the
  * assets this orchestrator copies. This keeps `publisher.ts` focused on the
  * staging build of `Published_Data` plus the static dashboard assets and the
  * atomic-ish swap.
@@ -93,6 +92,37 @@ function copyStaticDashboard(stagingDir: string): void {
   // Copy the whole dashboard folder (index.html, app.js, lib/, views/, vendor/,
   // rule-catalogue.js, ...) so a local publish matches CI's `cp -r dashboard/. ./_site/`.
   cpSync(srcDir, stagingDir, { recursive: true });
+}
+
+/** Resolve the repo's static `office/` directory (CWD first, then walking up from this module). */
+function officeSourceDir(): string {
+  const cwdCandidate = resolve(process.cwd(), "office");
+  if (existsSync(cwdCandidate)) return cwdCandidate;
+  let dir = dirname(new URL(import.meta.url).pathname);
+  if (/^\/[A-Za-z]:\//.test(dir)) dir = dir.slice(1);
+  for (let i = 0; i < 6; i++) {
+    const candidate = join(dir, "office");
+    if (existsSync(join(candidate, "index.html"))) return candidate;
+    const parent = dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return cwdCandidate;
+}
+
+/**
+ * Copy the static Virtual Office (`office/`, incl. vendor/, lib/, views/, diorama/) into
+ * `<staging>/office/`, next to the dashboard files and `data/`, so `../../data/` resolves
+ * from office/lib/data.js. A missing `office/` is skipped silently: it must never fail a publish.
+ */
+function copyStaticOffice(stagingDir: string): void {
+  try {
+    const srcDir = officeSourceDir();
+    if (!existsSync(srcDir)) return;
+    cpSync(srcDir, join(stagingDir, "office"), { recursive: true });
+  } catch {
+    // best effort: the office is optional
+  }
 }
 
 /** Read the newest-first index written by `buildPublishedData` from staging. */
@@ -220,6 +250,7 @@ export async function publish(opts: {
     }
 
     copyStaticDashboard(stagingDir);
+    copyStaticOffice(stagingDir);
   } catch (err) {
     // Build failed: discard staging, leave the previously published bundle as-is.
     try {

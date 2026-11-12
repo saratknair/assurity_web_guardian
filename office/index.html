@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Assurity Web Guardian - Virtual Office</title>
+  <link rel="stylesheet" href="./tokens.css" />
+  <link rel="stylesheet" href="./office.css" />
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/controls/OrbitControls.js":"./vendor/OrbitControls.js"}}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="page">
+    <header class="topbar" role="banner">
+      <div class="topbar__brand">
+        <div class="topbar__dot" aria-hidden="true"></div>
+        <div>
+          <h1 class="topbar__title">Assurity Web Guardian</h1>
+          <p class="topbar__subtitle">Virtual Office: replay of a published run</p>
+        </div>
+      </div>
+      <p class="honesty" id="honesty-statement">Assurity Web Guardian uses zero AI tokens. This replay shows automated steps from a real run. Template steps use fixed text, not AI.</p>
+    </header>
+
+    <nav aria-label="Primary" class="row" id="primary-nav">
+      <a class="btn btn--ghost" href="../" id="back-to-dashboard">Back to Dashboard</a>
+      <a class="btn btn--ghost" href="./" aria-current="page">Virtual Office</a>
+    </nav>
+
+    <main id="main" class="office" tabindex="-1">
+      <h2 class="sr-only">Run replay</h2>
+
+      <section id="office-notices" class="office__notices" aria-label="Notices"></section>
+
+      <section id="office-controls" class="office__controls panel" aria-label="Playback controls">
+        <div id="run-picker" class="run-picker"></div>
+        <div id="playback-controls" class="playback-controls"></div>
+      </section>
+
+      <section id="diorama-region" class="office__diorama panel" aria-label="Diorama">
+        <div id="diorama-host" class="diorama-host"></div>
+        <p id="diorama-help" class="muted diorama-help">Orbit with the arrow keys, zoom with plus and minus, press 0 to reset the view. All information shown here is also in the lists below.</p>
+        <details id="shortcut-help" class="help">
+          <summary>Keyboard shortcuts</summary>
+          <div id="help-content"></div>
+        </details>
+      </section>
+
+      <section id="stations-region" class="office__stations panel" aria-labelledby="stations-heading">
+        <h2 id="stations-heading" class="panel__title">Stations</h2>
+        <div id="stations-list"></div>
+      </section>
+
+      <section id="transcript-region" class="office__transcript panel" aria-labelledby="transcript-heading">
+        <h2 id="transcript-heading" class="panel__title">Transcript</h2>
+        <div id="transcript"></div>
+      </section>
+
+      <section id="telemetry-region" class="office__telemetry panel" aria-labelledby="telemetry-heading">
+        <h2 id="telemetry-heading" class="panel__title">Telemetry</h2>
+        <div id="telemetry-panel"></div>
+      </section>
+
+      <section id="swimlane-region" class="office__swimlane panel" aria-labelledby="swimlane-heading">
+        <h2 id="swimlane-heading" class="panel__title">Swimlane</h2>
+        <div id="swimlane" class="scroll-x"></div>
+      </section>
+
+      <section id="inspector-region" class="office__inspector panel" aria-labelledby="inspector-heading">
+        <h2 id="inspector-heading" class="panel__title">Inspector</h2>
+        <div id="inspector"></div>
+      </section>
+    </main>
+
+    <footer class="footer muted" role="contentinfo">
+      <p>This replay is built from published run data. Steps marked as template steps use fixed text, not AI.</p>
+      <p>Accessibility is a goal for this Virtual Office (WCAG 2.2 AA). Automated checks cannot confirm conformance; manual testing with assistive technologies and expert review are still required.</p>
+    </footer>
+  </div>
+
+  <div id="office-live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

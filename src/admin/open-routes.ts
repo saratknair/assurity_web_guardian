@@ -14,8 +14,8 @@ import { spawn } from "node:child_process";
 import type { ConsoleResponse, HandlerContext, RouteDef } from "./console-routes.js";
 import { LOCAL_DASHBOARD_PREFIX, LOCAL_DASHBOARD_REL } from "./local-dashboard.js";
 
-/** Virtual Office dev/preview URL (Req 4.1). */
-export const OFFICE_URL = "http://localhost:5173";
+/** Entry file of the locally published Virtual Office replay, relative to the project root. */
+export const OFFICE_ENTRY = `${LOCAL_DASHBOARD_REL}/office/index.html`;
 /** Entry file of the locally published Dashboard, relative to the project root. */
 export const DASHBOARD_ENTRY = `${LOCAL_DASHBOARD_REL}/index.html`;
 /** Shown when the Dashboard has not been built yet. */
@@ -62,8 +62,18 @@ export function openInBrowser(url: string): boolean {
   return launcher(url);
 }
 
-async function openOffice(): Promise<ConsoleResponse> {
-  return { status: 200, json: { url: OFFICE_URL, launched: openInBrowser(OFFICE_URL) } };
+async function openOffice(ctx: HandlerContext): Promise<ConsoleResponse> {
+  let built = false;
+  try {
+    built = ctx.deps.fs.exists(OFFICE_ENTRY) === true;
+  } catch {
+    built = false;
+  }
+  if (!built) {
+    return { status: 200, json: { url: "", launched: false, built: false, message: DASHBOARD_MISSING_TEXT } };
+  }
+  const url = `http://127.0.0.1:${ctx.deps.port}${LOCAL_DASHBOARD_PREFIX}office/`;
+  return { status: 200, json: { url, launched: openInBrowser(url), built: true } };
 }
 
 async function openDashboard(ctx: HandlerContext): Promise<ConsoleResponse> {
