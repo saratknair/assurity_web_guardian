@@ -124,4 +124,4 @@ clearly separated as analysis/recommendations, each linked to its finding.
 3. Full run: node scripts\run-guardian.mjs
 4. Verify: node scripts\verify.mjs
 5. Dashboard: open artifacts\dashboard.html
-6. Virtual office: start the event server (port 7788), then in virtual-office/ run install + dev (http://localhost:5173).
+6. Virtual office: the static office/ app, served at /office/ on the published site (the retired React/Vite app was removed).

@@ -12,7 +12,6 @@
     "test:property": "vitest run tests/property",
     "check": "playwright test",
     "run": "node dist/index.js run",
-    "build:office:replay": "node scripts/build-office-replay.mjs",
     "approve": "node dist/index.js approve",
     "list-pending": "node dist/index.js list-pending",
     "report": "node dist/index.js report"

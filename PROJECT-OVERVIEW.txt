@@ -273,7 +273,7 @@ as intended.
   - The engine / all code:   the project folder.
   - Saved runs + evidence:   artifacts/runs/<run-id>/
   - The dashboard:           artifacts/dashboard.html  (open in a browser)
-  - The virtual office:      runs in a browser at http://localhost:5173
+  - The virtual office:      the static office/ app, served at /office/
   - The event service:       a local-only service on port 7788 that the
                              office reads from.
 

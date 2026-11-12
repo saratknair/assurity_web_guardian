@@ -77,8 +77,6 @@ artifacts/published.staging/
 artifacts/published.prev-*/
 # CI Pages staging dir (assembled in the workflow, never committed)
 _site/
-# Virtual_Office Vite build output (replay bundle / local office build)
-virtual-office/dist/
 
 # --- Test / tooling runtime noise ------------------------------------------
 test-results/
@@ -104,11 +102,9 @@ Thumbs.db
 # Phase 2 complete: raw per-run artifacts are published to the runs-data
 # branch by CI and the Pages site; they are large (hundreds of MB) and
 # regenerated each run, so they are NOT committed to main. dist/ is compiled
-# build output (reproducible via 'npm run build'). virtual-office-src/ is a
-# superseded copy of office sources now living under virtual-office/src/.
+# build output (reproducible via 'npm run build').
 dist/
 artifacts/
-virtual-office-src/
 
 # --- Historical per-phase source snapshots (kept OFF main) -----------------
 checkpoints/

@@ -133,7 +133,7 @@ jobs:
         # (dist/index.js "run" only prints a Phase-12 pointer message.)
         # AWG_RUN_ORIGIN=cloud marks published runs as cloud-origin (7.7, 14.x).
         # AWG_SKIP_LOCAL_PUBLISH=1: CI assembles ./_site via its own pipeline
-        # (build-published-data + dashboard copy + replay office build), so the
+        # (build-published-data + dashboard copy + static office copy), so the
         # orchestrator's in-process local publish would be redundant here.
         env:
           AWG_RUN_ORIGIN: cloud
@@ -190,21 +190,21 @@ jobs:
         # a table to the step summary. Not a conformance claim.
         continue-on-error: true
         run: node scripts/scan-dashboard.mjs ./_site
-      - name: Build Virtual Office (replay mode) into site
-        # Build the Virtual_Office for the static Pages_Site in Replay_Mode so it
-        # resolves to replay (no live SSE, no loopback Event_Server, no manual
-        # trigger) per Req 6.10. VITE_AWG_MODE=replay is the build flag that
-        # resolveOfficeMode() keys off; the wrapper emits relative asset URLs
-        # (vite base "./") into ./_site/office so Pages serves the office at /office/
-        # alongside data/ and the dashboard. AWG_OFFICE_REQUIRED=1 makes a failed
-        # office build fail the run in CI (locally it is best-effort/non-fatal).
-        # No ${{ github.event.* }} is interpolated into this run: (9.5).
-        env:
-          VITE_AWG_MODE: replay
-          AWG_OFFICE_REQUIRED: "1"
-        run: |
-          npm --prefix virtual-office ci
-          node scripts/build-office-replay.mjs ./_site
+      - name: Add static virtual office to site
+        # The Virtual_Office is a build-free static app under office/. Copy it
+        # verbatim so Pages serves it at /office/ alongside data/ and the dashboard.
+        run: cp -r office/. ./_site/office/
+      - name: Check site sizes
+        # Blocking size gate. Runs after the office copy and the published data
+        # build (it also checks _site/data/runs/*/events.json) and before the
+        # Pages upload.
+        run: node scripts/check-site-sizes.mjs ./_site
+      - name: Self-scan virtual office
+        # Non-blocking automated axe check of the Virtual Office. Needs the
+        # Playwright chromium browser installed earlier in this job. Not a
+        # conformance claim.
+        continue-on-error: true
+        run: node scripts/scan-office.mjs ./_site
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:

@@ -235,10 +235,9 @@ function loadLatestEvents() {
 }
 
 // 14. no-fabricated-characters: a virtual-office character can only exist
-//     because a genuine agent event backs it (Req 2.11). The office reducer
-//     (`deriveOffice`) lives in the virtual-office sub-app, which the backend
-//     tsconfig intentionally does NOT compile — so rather than add a
-//     cross-package build dependency, assert the invariant over the published/
+//     because a genuine agent event backs it (Req 2.11). The office is a
+//     static ES-module app the backend tsconfig does NOT compile, so rather
+//     than add a cross-package build dependency, assert the invariant over the published/
 //     raw event stream directly: EVERY character-implying event
 //     (`agent.started|working|completed|failed`) carries a non-empty string
 //     `data.agentName` and a KNOWN kind. There is no character-producing event
@@ -282,6 +281,68 @@ try {
   ok("no-fabricated-characters", false, `error: ${e.message}`);
 }
 
+// 14b. step-events-well-formed (virtual-office-replay, Req 1.7, 17.4, 17.5):
+//      every `step.completed` event in every local run's events.jsonl is well
+//      formed, and no event carries agentRole "ai" (template steps are never
+//      AI). STEP_NAMES mirrors src/telemetry/step-model.ts. Legacy runs have no
+//      step events; if none exist the check passes with a note.
+try {
+  const STEP_NAMES = [
+    "test-plan", "load", "screenshot", "visual-compare", "accessibility-scan",
+    "compare", "notes", "triage", "history", "decisions",
+  ];
+  const NO_PAGE = new Set(["history", "decisions"]);
+  const isIso = (s) => typeof s === "string" && !Number.isNaN(Date.parse(s));
+  let stepCount = 0;
+  let evCount = 0;
+  const problems = [];
+  for (const r of runs) {
+    const evPath = join(runsRoot, r, "events.jsonl");
+    if (!existsSync(evPath)) continue;
+    const parsed = [];
+    for (const line of readFileSync(evPath, "utf8").split(/\r?\n/)) {
+      if (line.trim().length === 0) continue;
+      try { const ev = JSON.parse(line); if (ev && typeof ev === "object") parsed.push(ev); } catch { /* skip */ }
+    }
+    // Legacy runs predate step events and legitimately label real AI agents
+    // "ai"; the "no agentRole ai" rule applies to enriched runs only.
+    const enriched = parsed.some((ev) => ev.kind === "step.completed");
+    for (const ev of parsed) {
+      evCount++;
+      const d = ev.data && typeof ev.data === "object" ? ev.data : {};
+      if (enriched && typeof d.agentRole === "string" && d.agentRole.toLowerCase() === "ai") {
+        problems.push(`${r}: event '${ev.kind}' has agentRole 'ai'`);
+      }
+      if (ev.kind !== "step.completed") continue;
+      stepCount++;
+      const tag = `${r}: step seq=${d.seq}`;
+      if (!STEP_NAMES.includes(d.step)) problems.push(`${tag} unknown step '${d.step}'`);
+      if (!Number.isInteger(d.seq)) problems.push(`${tag} seq not an integer`);
+      if (!isIso(d.startedAt) || !isIso(d.endedAt) || Date.parse(d.startedAt) > Date.parse(d.endedAt)) {
+        problems.push(`${tag} bad startedAt/endedAt`);
+      }
+      if (typeof d.durationMs !== "number" || !Number.isFinite(d.durationMs) || d.durationMs < 0) {
+        problems.push(`${tag} bad durationMs`);
+      }
+      if (!NO_PAGE.has(d.step) && (typeof d.pageUrl !== "string" || d.pageUrl.length === 0)) {
+        problems.push(`${tag} (${d.step}) missing pageUrl`);
+      }
+      if (d.findings !== undefined && !(Array.isArray(d.findings) && d.findings.every((f) => typeof f === "string"))) {
+        problems.push(`${tag} findings not an array of strings`);
+      }
+    }
+  }
+  const pass = problems.length === 0;
+  const detail = !pass
+    ? problems.slice(0, 5).join("; ") + (problems.length > 5 ? ` (+${problems.length - 5} more)` : "")
+    : stepCount === 0
+      ? `no step events (legacy runs only); ${evCount} events scanned`
+      : `${stepCount} step events well formed; none with agentRole 'ai'`;
+  ok("step-events-well-formed", pass, detail);
+} catch (e) {
+  ok("step-events-well-formed", false, `error: ${e.message}`);
+}
+
 // 15. static-dashboard-no-network: the STATIC dashboard + office replay paths
 //     make no absolute/off-origin requests (Req 1.5, 6.10). Read the dashboard
 //     app files and the office data source as text and assert:
@@ -293,9 +354,8 @@ try {
 //         `./data/dashboard.json`, and any 127.0.0.1/EventSource reference is
 //         confined to the clearly-labelled LIVE branch (the loopback constant
 //         is only used by loadLive, never the static path);
-//       - virtual-office office dataSource loads replay via a relative
-//         `./data/runs/.../events.json` and never opens an EventSource in the
-//         replay/historical (static) path.
+//       - office/lib/data.js resolves `../../data/` relative to itself, has no
+//         EventSource and no http(s) URL literal.
 try {
   const ABS_URL = /https?:\/\//i;
   const LOOPBACK = /(127\.0\.0\.1|localhost)/i;
@@ -327,14 +387,13 @@ try {
     if (/EventSource/.test(body)) problems.push("loadStatic opens EventSource");
   }
 
-  // Office replay path — relative events.json, no SSE in static modes.
-  const officeDs = readFileSync(resolve("virtual-office/src/office/dataSource.ts"), "utf8");
-  if (!/\.\/data\/runs\//.test(officeDs)) problems.push("office dataSource missing relative replay path");
-  // The static loader (loadStaticRunEvents) must not open an EventSource.
-  const loadStaticOffice = officeDs.match(/export async function loadStaticRunEvents\([\s\S]*?\n}/);
-  if (loadStaticOffice && /EventSource/.test(loadStaticOffice[0])) {
-    problems.push("office static loader opens EventSource");
-  }
+  // Office replay path — office/lib/data.js resolves ../../data/ relative to
+  // itself, never opens an EventSource, and has no "http" literal.
+  const officeDs = readFileSync(resolve("office/lib/data.js"), "utf8");
+  if (!officeDs.includes("../../data/")) problems.push("office data.js missing relative '../../data/' path");
+  if (/EventSource/.test(officeDs)) problems.push("office data.js opens EventSource");
+  // (The error text "HTTP <status>" is not a URL literal, so match http(s):// only.)
+  if (/https?:/i.test(officeDs)) problems.push("office data.js contains an 'http' URL literal");
 
   const pass = problems.length === 0;
   ok("static-dashboard-no-network", pass, pass ? "static paths are relative, no SSE/loopback" : problems.join("; "));

@@ -1,4 +1,4 @@
-﻿# Dependency Ledger
+# Dependency Ledger
 
 This ledger records the cost and licensing of dependencies introduced by the
 Guardian, so that any non-free or restrictively licensed dependency is flagged
@@ -20,22 +20,16 @@ the Pages_Site renders charts with no external requests (Req 1.4, 1.5). The form
 `chart.umd.min.js.NEEDS_VENDORING` placeholder has been removed. Source of the
 pinned bundle: `https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js`.
 
-## Phase 2 Virtual Office runtime dependencies
+## Virtual Office (vendored three.js)
 
-The Virtual Office replay viewer (`virtual-office/`) is a Vite + React + Three.js
-app. Its direct, notable runtime dependencies are recorded below; transitive
-dependencies are not listed. All are permissively licensed (MIT), free, and
-version-pinned via `virtual-office/package.json`.
+The Virtual Office replay viewer (`office/`) is a static, no-build page. It has no
+npm dependency, no bundler, and no CDN. three.js is vendored and loaded
+same-origin through an import map. Sizes and SHA-256 for every vendored file are
+recorded in `office/ASSET-LICENCES.md`.
 
-| Dependency | Version | License | Cost | Pinned | Notes |
-|------------|---------|---------|------|--------|-------|
-| react | ^18.3.1 | MIT | Free | Yes | UI runtime. Well-known, actively maintained. |
-| react-dom | ^18.3.1 | MIT | Free | Yes | React DOM renderer. |
-| three | ^0.169.0 | MIT | Free | Yes | 3D rendering engine for the office scene. |
-| @react-three/fiber | ^8.18.0 | MIT | Free | Yes | React renderer for three.js. |
-| @react-three/drei | ^9.122.0 | MIT | Free | Yes | Helper/abstraction library for @react-three/fiber. |
-| vite | ^5.4.11 | MIT | Free | Yes | Build/dev tooling (devDependency) for the office app. |
-
+| Dependency | Version | License | Cost | Where | Notes |
+|------------|---------|---------|------|-------|-------|
+| three.js | r169 (0.169.0, pinned) | MIT | Free | `office/vendor/three.module.min.js`, `office/vendor/OrbitControls.js` | 3D rendering engine for the office scene. Vendored, committed, loaded via import map (no CDN, no npm dependency). Licence text at `office/vendor/three-LICENSE.txt`. See `office/ASSET-LICENCES.md` for sizes and SHA-256. |
 ## Phase 2 Guardian runtime dependencies (root)
 
 Recorded for completeness; all MIT/ISC-class permissive, free, and pinned via
