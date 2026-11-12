@@ -5,6 +5,7 @@ import type {
   AgentStatus,
   AgentTaskRecord,
   RunRecord,
+  StepEventData,
   TelemetryEvent,
   TelemetryExporter,
 } from "./types.js";
@@ -64,6 +65,11 @@ export class TelemetryEmitter implements AuditSink {
     const kind =
       status === "review_completed" ? "human.review.completed" : `agent.${status}`;
     this.event(kind, { taskId, data: { agentName, agentRole, status } });
+  }
+
+  /** Completed run step; goes through event() so the redactor applies. */
+  step(data: StepEventData): void {
+    this.event("step.completed", { data });
   }
 
   runRecord(record: RunRecord): void {

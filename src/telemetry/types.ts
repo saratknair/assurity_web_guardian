@@ -8,6 +8,8 @@ export type AgentStatus =
   | "completed"
   | "failed";
 
+import type { StepName } from "./step-model.js";
+
 export type FindingClassification =
   | "deterministic-test-evidence"
   | "observed-website-change"
@@ -40,8 +42,38 @@ export interface AgentStatusEvent extends TelemetryEvent {
     | "agent.failed"
     | "human.review.completed";
   agentName: string;
+  /** Documented values include "template" (fixed-text steps, never AI). */
   agentRole: string;
   status: AgentStatus | "review_completed";
+}
+
+/** Result_Summary: numbers, booleans, short strings, string arrays, or nested objects of those. */
+export type StepResultValue =
+  | number
+  | boolean
+  | string
+  | string[]
+  | { [key: string]: number | boolean | string | string[] };
+
+export type StepResult = Record<string, StepResultValue>;
+
+/** Data of a `step.completed` event (virtual-office-replay). */
+export interface StepEventData {
+  seq: number;
+  step: StepName;
+  agent: string;
+  pageUrl?: string;
+  slug?: string;
+  viewport?: "desktop" | "mobile";
+  startedAt: string;
+  endedAt: string;
+  durationMs: number;
+  template: boolean;
+  result: StepResult;
+  findings?: string[];
+  /** Added by the Publisher only. */
+  findingIds?: Record<string, string>;
+  [key: string]: unknown;
 }
 
 export interface RunRecord {

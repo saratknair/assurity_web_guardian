@@ -4,6 +4,7 @@ import {
   mkdirSync,
   readFileSync,
   readdirSync,
+  rmSync,
   statSync,
   writeFileSync,
 } from "node:fs";
@@ -17,6 +18,7 @@ import {
   sanitizeScreenshotName,
 } from "./sanitizer.js";
 import { DEFAULT_CAPS } from "./evidence.js";
+import { buildReplayPublication } from "./replay-trace.js";
 import {
   buildRunFindings,
   finalizeDecisions,
@@ -375,6 +377,56 @@ interface RunOutcome {
 }
 
 /**
+ * Replay publication for one run (virtual-office-replay design B). Reads the
+ * sanitized events.json, rewrites it compact + ASCII, re-validates it and
+ * mutates built.runFindings with replay, producedAt and replayT. Returns the
+ * withheld file name when events.json had to be deleted, otherwise null.
+ */
+function finalizeReplay(outRunDir: string, runId: string, built: BuiltRun): string | null {
+  const eventsPath = join(outRunDir, "events.json");
+  let events: unknown[] = [];
+  let hadFile = false;
+  if (existsSync(eventsPath)) {
+    hadFile = true;
+    try {
+      const parsed: unknown = JSON.parse(readFileSync(eventsPath, "utf8"));
+      if (Array.isArray(parsed)) events = parsed;
+    } catch {
+      events = [];
+    }
+  }
+  const rf = built.runFindings;
+  const pub = buildReplayPublication(events, built, runId);
+
+  rf.replay = pub.replay;
+  for (const f of rf.findings) f.producedAt = pub.producedAtById.get(f.id) ?? null;
+  for (const f of rf.ignored) f.producedAt = pub.producedAtById.get(f.id) ?? null;
+  for (const p of rf.pages) {
+    const t = pub.replayTBySlug.get(p.slug);
+    if (t !== undefined) p.replayT = t;
+  }
+
+  if (!hadFile) return null;
+  let reason: "residual-path" | "sanitize-error" | null = null;
+  try {
+    const reparsed: unknown = JSON.parse(pub.eventsText);
+    const clean = sanitizeJson(reparsed);
+    if (hasResidualPath(clean)) reason = "residual-path";
+    else writeFileSync(eventsPath, pub.eventsText, "utf8");
+  } catch {
+    reason = "sanitize-error";
+  }
+  if (reason === null) return null;
+  try {
+    rmSync(eventsPath, { force: true });
+  } catch {
+    /* ignore */
+  }
+  rf.omissions.push({ path: "events.json", role: "json", reason });
+  return "events.json";
+}
+
+/**
  * Per-run rich publish: findings, evidence, visual, guidance, budgeted images.
  * Every JSON object passes sanitizeJson and a residual-path re-scan; anything
  * that cannot be confirmed clean is omitted and the reason recorded.
@@ -610,6 +662,9 @@ export async function buildPublishedData(opts: {
     const report = sanitizeRun(runDir, outRunDir);
     const withheldNames = [...report.withheld];
     const extraWithheld: string[] = [];
+
+    const replayWithheld = finalizeReplay(outRunDir, facts.runId, built);
+    if (replayWithheld) withheldNames.push(replayWithheld);
 
     const retained = withImages.has(facts.runId);
     publishRunDetail({

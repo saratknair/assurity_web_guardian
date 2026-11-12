@@ -117,6 +117,8 @@ export interface PublishedFinding {
   lifecycle: Lifecycle;
   ignoredNodeCount: number;
   legacyFindingId?: string;
+  /** Replay link (virtual-office-replay): null when the run has no enriched trace. */
+  producedAt?: { entryId: string; t: number; station: string } | null;
   [extra: string]: unknown;
 }
 
@@ -127,6 +129,8 @@ export interface PagePublished {
   title: string | null;
   counts: SeverityCounts & { total: number };
   highest: Severity | null;
+  /** Relative ms of the first replay step for this page, or null. */
+  replayT?: number | null;
 }
 
 export interface RunFindingsFile {
@@ -149,6 +153,8 @@ export interface RunFindingsFile {
   resolved: unknown[];
   ignored: PublishedFinding[];
   omissions: Omission[];
+  /** Added by the Publisher (virtual-office-replay). */
+  replay?: { enriched: boolean; durationMs: number };
 }
 
 export interface EvidenceFile {
