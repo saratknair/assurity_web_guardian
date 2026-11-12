@@ -22,6 +22,7 @@ import {
 } from "./common.js";
 import { renderSeverityChart, renderLifecycleChart, destroyCharts, RUN_DATA_MISSING_TEXT } from "./charts.js";
 import { renderFindingsList } from "./findings-list.js";
+import { officeRunLink } from "../lib/office-link.js";
 
 function isObj(v) {
   return v !== null && typeof v === "object" && !Array.isArray(v);
@@ -180,6 +181,12 @@ export async function render(container, ctx) {
     ["Change versus previous run", changeText(total, prev) + (prev ? " (previous run " + prev.runId + ")" : "")],
   ]);
   container.appendChild(facts);
+  const officeHref = officeRunLink(runId);
+  if (officeHref) {
+    const op = el("p", "office-link");
+    op.appendChild(link("Replay this run", officeHref));
+    container.appendChild(op);
+  }
 
   const decisions = isObj(run.decisions) ? run.decisions : isObj(entry.decisions) ? entry.decisions : {};
   const effectText = decisionEffectText(decisions);

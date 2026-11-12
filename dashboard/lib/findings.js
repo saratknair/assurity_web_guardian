@@ -95,6 +95,36 @@ function normalizeFinding(f) {
   out.hasElementDetail = src.hasElementDetail === true;
   out.group = str(src.group, "") || groupOfUrl(out.pageUrl);
   if (src.detail !== undefined) out.detail = str(src.detail, "");
+  out.producedAt = normalizeProducedAt(src.producedAt);
+  return out;
+}
+
+function finiteNum(v) {
+  return typeof v === "number" && Number.isFinite(v);
+}
+
+/** {entryId, t, station} or null when malformed. */
+function normalizeProducedAt(p) {
+  if (!isObj(p)) return null;
+  if (typeof p.entryId !== "string" || !finiteNum(p.t) || typeof p.station !== "string") return null;
+  return { entryId: p.entryId, t: p.t, station: p.station };
+}
+
+function normalizeReplay(rp) {
+  const src = isObj(rp) ? rp : {};
+  const d = src.durationMs;
+  return {
+    enriched: src.enriched === true,
+    durationMs: finiteNum(d) && d >= 0 && Math.floor(d) === d ? d : null,
+  };
+}
+
+function normalizePage(p) {
+  if (!isObj(p)) return p;
+  if (!("replayT" in p)) return p;
+  const out = Object.assign({}, p);
+  if (finiteNum(p.replayT)) out.replayT = p.replayT;
+  else delete out.replayT;
   return out;
 }
 
@@ -136,7 +166,8 @@ export function normalizeRun(raw) {
     hasImages: typeof r.hasImages === "boolean" ? r.hasImages : true,
     ignoredNodeCount: nonNegInt(r.ignoredNodeCount),
     decisions: normalizeDecisions(r.decisions),
-    pages: asArray(r.pages),
+    pages: asArray(r.pages).map(normalizePage),
+    replay: normalizeReplay(r.replay),
     findings,
     ignored,
     resolved: asArray(r.resolved),

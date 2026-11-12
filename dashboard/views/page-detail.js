@@ -19,6 +19,7 @@ import { evidenceCaption, imageAlt, imageUnavailableText } from "../lib/captions
 import { LIFECYCLE_LABELS, LIFECYCLE_PRESENT } from "../lib/findings.js";
 import { regressionBlockText, humanResolvedText, ignoredElementsText, pageIgnoredText } from "../lib/captions.js";
 import { resolvedItemsForPage, resolvedItemName } from "../lib/ignored.js";
+import { officePageLink } from "../lib/office-link.js";
 
 const VIEWPORT_ORDER = ["desktop", "mobile"];
 const NO_VIEWPORT = "Viewport not recorded";
@@ -463,6 +464,13 @@ export async function render(container, ctx) {
     ]),
   );
   header.appendChild(summary);
+  const pageEntry = run ? arr(run.pages).find((p) => isObj(p) && p.slug === slug) : null;
+  const officeHref = run ? officePageLink(runId, pageEntry, run) : null;
+  if (officeHref) {
+    const op = el("p", "office-link");
+    op.appendChild(link("See this page in the replay", officeHref));
+    header.appendChild(op);
+  }
   layout.appendChild(header);
 
   const main = el("div", "detail-main");

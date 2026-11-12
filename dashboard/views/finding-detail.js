@@ -24,6 +24,7 @@ import {
   ignoredBannerText, regressionBlockText, ignoredElementsText,
 } from "../lib/captions.js";
 import { sameRuleOtherPages } from "../lib/findings.js";
+import { officeFindingLink } from "../lib/office-link.js";
 
 export const VISUAL_NOT_RATED_TEXT = "Not rated - visual changes need human review";
 export const NO_ELEMENT_DETAIL_TEXT = "No element detail was recorded for this finding";
@@ -416,6 +417,15 @@ export async function render(container, ctx) {
   const root = el("div", "view finding-detail");
   root.appendChild(el("h2", "", heading));
   root.appendChild(link("Back to this run", ctx.formatRoute({ view: "run", runId, params: {} })));
+  const officeHref = officeFindingLink(runId, f);
+  if (officeHref) {
+    const op = el("p", "office-link");
+    op.appendChild(link("See how this was found", officeHref));
+    if (!f.producedAt) {
+      op.appendChild(el("span", "muted", " The moment this was found was not recorded for this run."));
+    }
+    root.appendChild(op);
+  }
   root.appendChild(severityBlock(f));
   for (const b of dispositionBlocks(f, hit.ignored)) root.appendChild(b);
 
