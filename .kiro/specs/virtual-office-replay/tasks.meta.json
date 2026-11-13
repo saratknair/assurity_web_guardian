@@ -754,6 +754,275 @@
         "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
         "timestamp": 1794517148376
       }
+    ],
+    "17.1 Show local time in Office and Dashboard": [
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605455266
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605493581
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605633939
+      }
+    ],
+    "17.2 Brighten diorama lighting": [
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605455347
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605493668
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605634038
+      }
+    ],
+    "17.3 Working-state visuals, idle stand-back, and labels": [
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605455404
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605659276
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605722537
+      }
+    ],
+    "17.4 Remove template marker and suffix from the 3D scene": [
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605455458
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605636817
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605657863
+      }
+    ],
+    "17.5 Rename and move the read-aloud toggle": [
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605455540
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605636074
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605658824
+      }
+    ],
+    "17.6 Replace honesty statements and remove accessibility sentences": [
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605455600
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605494424
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605634125
+      }
+    ],
+    "17.7 Inspector shows results only after the entry ends": [
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605455651
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605495056
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605635566
+      }
+    ],
+    "17.8 Checkpoint - run office/dashboard tests, tsc, verify.mjs, office self-scan": [
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605455702
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794605723088
+      },
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794606647621
+      }
+    ],
+    "17. Review feedback refinements (Requirement 19)": [
+      {
+        "executionId": "c48db13d-fc63-4e64-aad5-534584af3581",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794606647718
+      }
+    ],
+    "18.1 Add `highlightAt` and highlighted state to the timeline": [
+      {
+        "executionId": "4303c7e2-3739-4e3c-b870-a0abdd1bc332",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607265965
+      },
+      {
+        "executionId": "4303c7e2-3739-4e3c-b870-a0abdd1bc332",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607273433
+      },
+      {
+        "executionId": "4303c7e2-3739-4e3c-b870-a0abdd1bc332",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607291365
+      },
+      {
+        "executionId": "ce21ce92-2367-4b65-a7ae-d56311e0c83b",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607338949
+      },
+      {
+        "executionId": "ce21ce92-2367-4b65-a7ae-d56311e0c83b",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607436814
+      }
+    ],
+    "18.2 Use highlighted state and home-side idle anchor in the Diorama": [
+      {
+        "executionId": "4303c7e2-3739-4e3c-b870-a0abdd1bc332",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607266086
+      },
+      {
+        "executionId": "4303c7e2-3739-4e3c-b870-a0abdd1bc332",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607291822
+      },
+      {
+        "executionId": "ce21ce92-2367-4b65-a7ae-d56311e0c83b",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607340440
+      },
+      {
+        "executionId": "ce21ce92-2367-4b65-a7ae-d56311e0c83b",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607438016
+      },
+      {
+        "executionId": "ce21ce92-2367-4b65-a7ae-d56311e0c83b",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607580814
+      }
+    ],
+    "18.3 Checkpoint - office tests, full vitest, tsc, verify.mjs, office self-scan, refresh local preview": [
+      {
+        "executionId": "4303c7e2-3739-4e3c-b870-a0abdd1bc332",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607266167
+      },
+      {
+        "executionId": "ce21ce92-2367-4b65-a7ae-d56311e0c83b",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607582521
+      },
+      {
+        "executionId": "ce21ce92-2367-4b65-a7ae-d56311e0c83b",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794608249220
+      }
+    ],
+    "18.4 Remove wasted space between the Transcript and the Swimlane": [
+      {
+        "executionId": "ce21ce92-2367-4b65-a7ae-d56311e0c83b",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607365285
+      },
+      {
+        "executionId": "ce21ce92-2367-4b65-a7ae-d56311e0c83b",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607437794
+      },
+      {
+        "executionId": "ce21ce92-2367-4b65-a7ae-d56311e0c83b",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794607581808
+      }
+    ],
+    "18. Highlight hold and idle placement (Requirement 19.14, 19.15)": [
+      {
+        "executionId": "ce21ce92-2367-4b65-a7ae-d56311e0c83b",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794608249306
+      }
+    ],
+    "19.1 Shorten captions, stack labels per Station, and anchor Station names on the desk": [
+      {
+        "executionId": "10fe078f-7cfe-4370-9361-cbec8b4a570c",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794608647855
+      },
+      {
+        "executionId": "10fe078f-7cfe-4370-9361-cbec8b4a570c",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794608667755
+      }
+    ],
+    "19.2 Checkpoint - full vitest, tsc, verify.mjs, office self-scan, refresh local preview": [
+      {
+        "executionId": "10fe078f-7cfe-4370-9361-cbec8b4a570c",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794608668761
+      },
+      {
+        "executionId": "10fe078f-7cfe-4370-9361-cbec8b4a570c",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794608987223
+      }
+    ],
+    "19. Diorama label tidy-up (Requirement 19.7, 19.8)": [
+      {
+        "executionId": "10fe078f-7cfe-4370-9361-cbec8b4a570c",
+        "chatSessionId": "sess_21c63670-8177-4c42-9b20-ea86feb3b969",
+        "timestamp": 1794608987317
+      }
     ]
   }
 }

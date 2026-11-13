@@ -20,12 +20,12 @@ The following decisions are locked:
 - The office becomes an orbitable 3D diorama: a 3D office the viewer can rotate, zoom, and pan around with mouse, touch, and keyboard, and click a station to fly the camera to it. There is no first-person walking in this feature.
 - Agents are shown as figures that move between six Stations; station screens show the current page, viewport, and the individual Step_Name.
 - The office replays only genuine published run data. Setup and admin-console agents are removed from the run and from the office.
-- The office never labels anything AI, model output, or autonomous agent intelligence. Template steps are labelled as automated template steps.
+- The office never labels anything AI, model output, or autonomous agent intelligence. Template steps are explained as fixed-wording automated steps in the Inspector only.
 - The office never invents events, pages, timings, or findings. When data is missing (older runs without enriched events) it shows a coarser replay and states what is not recorded. Enriched detail is never reconstructed for older runs.
 - The solution is free and deterministic. A 3D library is allowed only if it has a free open licence (three.js, MIT) and is vendored as a static ES module like Chart.js, with no CDN and no npm build step for the office. Any 3D models are procedural or free CC0 assets with licences recorded.
 - The office is plain static files (ES modules) served from `/office/`. CI no longer needs `npm ci` and Vite for the office. `scripts/build-office-replay.mjs` and the React app are retired.
 - Fixed size caps apply: each published Run_Events file is capped at 256 KB, and the office's own files plus the vendored three.js stay under 1.5 MB in total.
-- A synchronized plain-text transcript beside the 3D view is the accessible equivalent. Controls are keyboard operable, the office supports reduced motion and works without WebGL. WCAG 2.2 AA is a goal, and this document states honestly that full conformance requires manual testing with assistive technologies and expert review.
+- A synchronized plain-text transcript beside the 3D view is the accessible equivalent. Controls are keyboard operable, the office supports reduced motion and works without WebGL. WCAG 2.2 AA is a design goal; full conformance requires manual testing with assistive technologies and expert review, but the pages do not display a statement about it.
 - The Dashboard link to the Virtual Office is mandatory. Specific keyboard shortcuts are decided in the design.
 
 Out of scope for this feature: first-person walking (a possible later extension), a live mode that streams from a local Event_Server, any admin console activity (discovery, baseline capture, approvals, publish), and CI-level steps around the run (restore history, build published data, deploy Pages, commit runs-data) as recorded telemetry. That last item is a possible later extension and would require CI to record its own step timings.
@@ -62,6 +62,7 @@ Terms defined by the existing specifications (for example Guardian, Dashboard, P
 - **Camera_Bounds**: The limits on camera distance, pan range, and vertical angle that keep the Diorama in view.
 - **Run_Index**: The file `data/index.json`, the newest-first list of published runs.
 - **Office_Deep_Link**: A URL of the form `/office/#/run/<runId>?t=<ms>`, optionally followed by `&station=<id>`, where `<runId>` is a Run_ID, `<ms>` is the playback position in milliseconds, and `<id>` is a Station identifier. It uses a hash route like the Dashboard and restores that view when opened directly.
+- **Highlight_Hold**: The presentation-only minimum of 1500 ms of playback position for which the Diorama keeps an Agent_Figure highlighted and its caption shown after a short Timeline_Entry starts. It never changes recorded timings.
 - **Reduced_Motion**: The user preference reported by `prefers-reduced-motion: reduce`.
 - **Fallback_Mode**: The Virtual_Office state when WebGL is unavailable or fails to initialise, in which the Diorama is replaced by a message and the Transcript and controls remain fully usable.
 - **Setup_Placeholder_Agent**: One of "Discovery crawler", "Inventory_Agent", or "Specification_Agent" as emitted at the start of a run by `runGuardian`.
@@ -159,7 +160,7 @@ Terms defined by the existing specifications (for example Guardian, Dashboard, P
 4. WHILE a Timeline_Entry is active, THE Station screen SHALL display the page URL (or slug), the viewport, and the individual Step_Name of that entry, and the Transcript SHALL name the same Step_Name.
 5. WHEN a step with a Result_Summary finishes, THE Station screen SHALL display the recorded finding counts by severity, HTTP status, or visual difference result.
 6. WHEN the `run.started` position is reached, THE Diorama SHALL show a visual run-started indication, and WHEN the `run.finished` position is reached, THE Diorama SHALL show a run-finished indication that includes the recorded health.
-7. THE Diorama SHALL label Automated_Template_Steps as automated template steps.
+7. THE Inspector SHALL label Automated_Template_Steps as automated template steps and SHALL explain that their text is fixed wording, and THE Diorama SHALL NOT show a paper-sheet marker or a "(template)" suffix on any Agent_Figure (see Requirement 19).
 8. THE Diorama SHALL NOT display the words "AI", "model", "LLM", or "autonomous" as a description of any Station, Agent_Figure, or step.
 9. WHEN the playback position is set by scrubbing or jumping, THE Diorama SHALL show the state implied by the Timeline_Entries up to that position without playing intermediate animations.
 10. THE Diorama SHALL derive every displayed value from the Replay_Timeline and SHALL NOT display a page, count, duration, or result that is absent from the supplied Run_Events.
@@ -209,10 +210,10 @@ Terms defined by the existing specifications (for example Guardian, Dashboard, P
 2. WHILE Playback_State changes, THE Transcript SHALL highlight the current Timeline_Entry and SHALL mark entries after the playback position as not yet reached.
 3. WHEN the viewer activates a Transcript entry, THE Virtual_Office SHALL set the playback position to the start of that entry.
 4. THE Transcript SHALL contain the same facts that the Diorama shows for each Timeline_Entry.
-5. THE Virtual_Office SHALL announce step changes through a polite live region only WHILE the viewer has enabled announcements, and SHALL default announcements to off.
+5. THE Virtual_Office SHALL announce step changes through a polite live region only WHILE the viewer has enabled the toggle labelled "Read steps aloud (screen reader)", SHALL default announcements to off, and SHALL place that toggle next to the Keyboard shortcuts help.
 6. IF WebGL is unavailable or the Renderer_Library fails to initialise, THEN THE Virtual_Office SHALL enter Fallback_Mode, SHALL show a message stating that the 3D view is unavailable, and SHALL keep the Transcript, playback controls, run selection, Telemetry_Panel, Swimlane_View, and Inspector fully usable.
 7. WHILE Reduced_Motion is active, THE Virtual_Office SHALL avoid auto-scrolling animations and SHALL scroll the Transcript to the current entry without smooth scrolling.
-8. THE Virtual_Office SHALL state on the page that WCAG 2.2 AA is a goal and that full conformance requires manual testing with assistive technologies and expert review.
+8. THE Virtual_Office SHALL meet WCAG 2.2 AA as a design goal and SHALL NOT display a statement about WCAG conformance or expert review on the page.
 9. THE Virtual_Office SHALL display the Not_Recorded_Notice in the Transcript WHEN a Legacy_Run is loaded.
 10. WHERE a Result_Summary in the Transcript has a corresponding Dashboard finding, page, or run view, THE Transcript SHALL show a link to that view (Deep_Link) next to the Result_Summary.
 
@@ -312,7 +313,7 @@ Terms defined by the existing specifications (for example Guardian, Dashboard, P
 3. THE Virtual_Office SHALL provide a layout that is usable from a 320 CSS pixel width to a 1920 CSS pixel width, without horizontal scrolling of the page at 320 CSS pixel width.
 4. WHEN the viewport width is below a documented breakpoint, THE Virtual_Office SHALL stack the Diorama above the Transcript.
 5. THE Virtual_Office SHALL meet a text contrast ratio of at least 4.5:1 for body text and 3:1 for large text and interactive component boundaries.
-6. THE Virtual_Office SHALL display a statement that the Guardian uses zero AI tokens and that template steps are automated, not AI.
+6. THE Virtual_Office SHALL display exactly one footer line, "Built from published run data. No AI is used.", and SHALL NOT display a header statement about AI tokens or template steps, or any other honesty or accessibility-goal paragraph (see Requirement 19).
 7. THE Virtual_Office SHALL include a page title, a language attribute, and landmark regions for header, main, and navigation.
 
 ### Requirement 16: Performance and Size
@@ -357,6 +358,28 @@ Terms defined by the existing specifications (for example Guardian, Dashboard, P
 4. THE Virtual_Office source files and the published event files SHALL contain ASCII characters only.
 5. THE Virtual_Office source code SHALL NOT use `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, or `eval`, and SHALL insert data into the page only as text.
 6. THE Virtual_Office SHALL NOT display setup or admin-console activity, including discovery, baseline capture, approvals, or publish actions.
-7. THE Dashboard SHALL remain unchanged except for the mandatory link to the Virtual_Office (Requirement 12.8) and the read-only traceability links (Requirement 12.1 to 12.4).
+7. THE Dashboard SHALL remain unchanged except for the mandatory link to the Virtual_Office (Requirement 12.8), the read-only traceability links (Requirement 12.1 to 12.4), local-time display of run dates and times (Requirement 19.1), and removal of the accessibility-goal sentence from its footer (Requirement 19.12).
 8. THE Asset_Licence_Record SHALL list the name, version, licence, source, and actual size of every vendored library and every non-procedural asset, and every listed licence SHALL be a free open licence.
 9. THE Virtual_Office SHALL keep the coarse replay of every Legacy_Run permanently and SHALL NOT reconstruct enriched detail for any Legacy_Run.
+
+### Requirement 19: Review Feedback Refinements
+
+**User Story:** As a viewer reviewing the live office, I want local dates and times, a clearly lit scene, obvious working states, and a clean footer, so that the office is accurate, readable, and uncluttered.
+
+#### Acceptance Criteria
+
+1. THE Virtual_Office and THE Dashboard SHALL display run dates and times in the viewer's local time zone, each with the time zone abbreviation or UTC offset, and SHALL NOT display them in UTC, so that a run made on 13 November in New Zealand is labelled 13 November.
+2. THE Diorama SHALL be lit with ambient and key lighting bright enough that the scene is clearly visible, SHALL use a light-coloured floor, and SHALL include one lamp at each desk.
+3. WHILE an Agent_Figure has an active Timeline_Entry, THE Diorama SHALL visually highlight that Agent_Figure.
+4. WHILE an Agent_Figure has an active Timeline_Entry, THE Diorama SHALL make the screen of that Agent_Figure's Station glow.
+5. WHILE an Agent_Figure has an active Timeline_Entry, THE Diorama SHALL show a short caption naming the step, the page path, and the viewport, for example "Scanning /careers (mobile)".
+6. WHILE an Agent_Figure has no active Timeline_Entry, THE Diorama SHALL show that Agent_Figure dimmed and standing back from the desk.
+7. WHEN several Agent_Figures are at the same Station, THE Diorama SHALL position them apart so that their labels do not overlap.
+8. THE Diorama SHALL show a name label only on working Agent_Figures, and THE Virtual_Office SHALL make the name of an idle Agent_Figure available on hover and in the Inspector.
+9. THE Diorama SHALL NOT show the paper-sheet marker or the "(template)" suffix on any Agent_Figure, and THE Inspector SHALL be the only place that explains that template steps use fixed wording.
+10. THE Virtual_Office SHALL label the announcements toggle "Read steps aloud (screen reader)" and SHALL place it next to the Keyboard shortcuts help.
+11. THE Virtual_Office SHALL replace the header statement about AI tokens and template steps and the two footer paragraphs with one footer line, "Built from published run data. No AI is used."
+12. THE Virtual_Office footer and THE Dashboard footer SHALL NOT contain the accessibility-goal sentence about WCAG 2.2 AA and expert review.
+13. THE Virtual_Office SHALL NOT label any Station, Agent_Figure, or step as AI, model output, or autonomous.
+14. Highlight hold: WHEN a Timeline_Entry whose recorded duration is shorter than the Highlight_Hold (1500 ms of playback position) becomes active, THE Diorama SHALL keep the responsible Agent_Figure highlighted and its caption shown until the playback position passes the entry start plus the Highlight_Hold or the figure's next entry starts, whichever is first; the caption SHALL state the real recorded duration (for example "Reviewed results for /careers/ (took 1 ms)"); the Replay_Timeline, Transcript, Telemetry_Panel, Swimlane_View, and Inspector SHALL keep the recorded timings unchanged (the hold is presentation only and SHALL NOT alter any displayed duration or count). WHILE scrubbing or jumping, the state SHALL be the same as for continuous playback at that position (a deterministic function of position).
+15. Idle position: WHILE an Agent_Figure is idle, THE Diorama SHALL place it beside its home Station (the Station of its most recent entry, or of its first entry before any entry), on the ring side of the desk and offset so it does not stand in the scene centre, and figures at the same Station SHALL be spread so they do not overlap.

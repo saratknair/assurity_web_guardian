@@ -380,6 +380,87 @@ Implementation languages are TypeScript (Guardian, Publisher, scripts tests) and
   - Ensure all tests pass, ask the user if questions arise.
   - Run `npx tsc --noEmit`, `npx vitest --run`, and `node scripts/verify.mjs`.
 
+- [x] 17. Review feedback refinements (Requirement 19)
+  - [x] 17.1 Show local time in Office and Dashboard
+    - Add `formatLocalDateTime(iso, timeZone?)` to `office/lib/format.js` using `Intl.DateTimeFormat` with `timeZoneName: "short"` in the viewer's zone
+    - Update `formatDateTime` in `dashboard/views/common.js` the same way and use the helper wherever Office views show times
+    - Add unit tests with a fixed time zone and invalid input
+    - _Requirements: 19.1, 18.7_
+
+  - [x] 17.2 Brighten diorama lighting
+    - In `office/diorama/scene.js` raise hemisphere and key light intensity, lighten the floor colour, and add a small point or spot lamp per desk
+    - Dispose the lamps with the scene
+    - _Requirements: 19.2_
+
+  - [x] 17.3 Working-state visuals, idle stand-back, and labels
+    - Add `activityCaption(entry)` to `office/lib/timeline.js` returning `"<verb> <page path> (<viewport>)"`
+    - Add an emissive highlight on working figures (`figures.js`), a screen glow (`screens.js`), and a caption overlay label (`scene.js`)
+    - Dim idle figures and place them at a "stand back" anchor in `layout.js`; use `layout.assignSlots` to spread figures per station
+    - Show a name label only for working figures; expose idle names through hover/title text and the Inspector
+    - Add unit tests for `activityCaption` and the idle/working anchors
+    - _Requirements: 19.3, 19.4, 19.5, 19.6, 19.7, 19.8_
+
+  - [x] 17.4 Remove template marker and suffix from the 3D scene
+    - Remove the paper-sheet marker and "(template)" from figure labels in `office/diorama/figures.js`
+    - Keep `TEMPLATE_LABEL` in the Inspector and Transcript
+    - _Requirements: 19.9, 5.7_
+
+  - [x] 17.5 Rename and move the read-aloud toggle
+    - Rename the toggle in `office/views/controls.js` and move it into the diorama help area in `office/index.html`
+    - Update affected office-views tests
+    - _Requirements: 19.10, 8.5_
+
+  - [x] 17.6 Replace honesty statements and remove accessibility sentences
+    - Set the Office footer to "Built from published run data. No AI is used." and remove the header honesty paragraph in `office/index.html`
+    - Remove the accessibility sentence from the footer in `dashboard/index.html`
+    - Update `HONESTY_STATEMENT` in `office/lib/honesty.js`
+    - Update tests asserting old strings: office honesty and source scans, scan-office fallback text, dashboard tests
+    - _Requirements: 19.11, 19.12, 19.13, 8.8, 15.6, 18.7_
+
+  - [x] 17.7 Inspector shows results only after the entry ends
+    - Show `Result_Summary` only when the entry has ended at the playhead; otherwise show the in-progress description
+    - Add a unit test for before-end and after-end states
+    - _Requirements: 7.3, 5.5_
+
+  - [x] 17.8 Checkpoint - run office/dashboard tests, tsc, verify.mjs, office self-scan
+    - Run `npx vitest --run` for office and dashboard tests, `npx tsc --noEmit`, and `node scripts/verify.mjs`
+    - Run the office self-scan against a locally built site
+    - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 18. Highlight hold and idle placement (Requirement 19.14, 19.15)
+
+  - [x] 18.1 Add `highlightAt` and highlighted state to the timeline
+    - Add pure `highlightAt(tl, t, holdMs)` (default 1500 ms) to `office/lib/timeline.js` returning per-agent `{ working, held, entry, caption }`; `held` means `t` in `[start, min(start + hold, next start for the same agent))` and `t >= end`
+    - Captions append " (took <formatDuration>)" when held or when the duration is shorter than the hold
+    - Add `highlighted` (`working || held`) to the `stateAt` figures
+    - Unit tests: hold start and end, cut-off by the next entry, caption text, scrub determinism (state at `t` is the same by jump or continuous playback), and recorded durations and telemetry unchanged
+    - _Requirements: 19.14, 2.5_
+
+  - [x] 18.2 Use highlighted state and home-side idle anchor in the Diorama
+    - `office/diorama/figures.js` and `screens.js` use `highlighted` for glow, name label, and caption
+    - `office/diorama/layout.js` adds `homeAnchor(index, count, slot)` on the ring side of the desk, replaces the centre stand-back anchor for idle figures, and spreads figures at one Station into distinct slots
+    - Unit tests: highlighted drives glow and caption, idle anchor is not at the scene centre, and figures at the same Station do not overlap
+    - _Requirements: 19.14, 19.15, 5.7_
+
+  - [x] 18.4 Remove wasted space between the Transcript and the Swimlane
+    - In `office/office.css` the Transcript (max-height 480px, left) and the taller Telemetry panel (right) share a grid row, leaving an empty area under the Transcript. Fix the layout so no large empty area remains: e.g. let the Transcript panel stretch to the row height (`align-items: stretch` for that row, Transcript list fills its panel with internal scrolling) or cap the Telemetry panel height with internal scrolling so both panels are about equal height; keep the stacked layout below 900 px and no horizontal scroll at 320 px
+    - _Requirements: 15.2, 15.3_
+
+  - [x] 18.3 Checkpoint - office tests, full vitest, tsc, verify.mjs, office self-scan, refresh local preview
+    - Run the office tests, `npx vitest --run`, `npx tsc --noEmit`, and `node scripts/verify.mjs`
+    - Run the office self-scan against a locally built site and refresh the local preview
+    - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 19. Diorama label tidy-up (Requirement 19.7, 19.8)
+  - [x] 19.1 Shorten captions, stack labels per Station, and anchor Station names on the desk
+    - In `office/lib/timeline.js` `activityCaption`: shorten long page paths to the last path segment with a leading ".../" (e.g. "/capability/software-quality-accelerators/exmonitoring/" -> ".../exmonitoring/"; "/" and single-segment paths unchanged); full URLs stay in Transcript and Inspector
+    - In `office/diorama/figures.js` / `scene.js` / `layout.js`: lit figures at the same Station get one stacked label block (name line, caption line under it, entries stacked vertically with fixed spacing) anchored at the Station, so labels never overlap; Station name labels sit at the front edge of their desk at low height instead of floating high above
+    - Unit tests for the path shortening and the stack offsets
+    - _Requirements: 19.7, 19.8_
+
+  - [ ] 19.2 Checkpoint - full vitest, tsc, verify.mjs, office self-scan, refresh local preview
+    - Ensure all tests pass, ask the user if questions arise.
+
 ## Notes
 
 - Tasks marked with `*` are optional and can be skipped for faster MVP.
@@ -405,7 +486,16 @@ Implementation languages are TypeScript (Guardian, Publisher, scripts tests) and
     { "id": 9, "tasks": ["13.4", "14.1", "14.3", "14.4"] },
     { "id": 10, "tasks": ["15.1"] },
     { "id": 11, "tasks": ["15.2", "15.3"] },
-    { "id": 12, "tasks": ["15.4"] }
+    { "id": 12, "tasks": ["15.4"] },
+    { "id": 13, "tasks": ["17.1", "17.2", "17.5", "17.6", "17.7"] },
+    { "id": 14, "tasks": ["17.4"] },
+    { "id": 15, "tasks": ["17.3"] },
+    { "id": 16, "tasks": ["17.8"] },
+    { "id": 17, "tasks": ["18.1", "18.4"] },
+    { "id": 18, "tasks": ["18.2"] },
+    { "id": 19, "tasks": ["18.3"] },
+    { "id": 20, "tasks": ["19.1"] },
+    { "id": 21, "tasks": ["19.2"] }
   ]
 }
 ```

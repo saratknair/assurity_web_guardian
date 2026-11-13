@@ -797,6 +797,44 @@ Ordering keeps the live site from ever being left without an office, and keeps e
 4. **Stage 4: Dashboard links.** Add the main navigation link and the traceability links after Stage 3 has deployed and `/office/` loads, so no Dashboard link points at the retired app. Ship `run-findings.json` fields (already in Stage 1) first so links have data. Legacy runs show links at `t=0` with the "not recorded" note.
 5. **Rollback.** Stage 3 is the only change touching `_site/office`; reverting it restores the Vite step (the folder remains in git history). Stages 1 and 4 are additive and harmless to revert.
 
+## Review feedback refinements (Requirement 19)
+
+These are small, local changes to existing modules. No new data fields or published files are needed.
+
+**Local time.** `office/lib/format.js` gains a `formatLocalDateTime(iso, timeZone?)` helper, and `dashboard/views/common.js` `formatDateTime` uses the same approach. Both use `Intl.DateTimeFormat` with `timeZoneName: "short"` in the viewer's zone. The optional `timeZone` argument exists only so tests can fix a zone. Invalid input returns the existing "not recorded" text.
+
+**Lighting.** `office/diorama/scene.js` raises the hemisphere and key light intensities, uses a lighter floor colour, and adds one small point (or spot) lamp above each desk. Lamps are created per station and disposed with the scene.
+
+**Working-state visuals.**
+- `figures.js` applies an emissive highlight to working figures and dims idle ones.
+- `screens.js` adds a screen glow while the station is working.
+- `scene.js` shows a caption overlay label for the working station. Its text comes from the pure helper `activityCaption(entry)` in `office/lib/timeline.js`, which returns `"<verb> <page path> (<viewport>)"` and degrades gracefully when the page or viewport is missing.
+- `layout.js` exposes a "stand back" anchor further from the desk for idle figures. Working figures use the desk anchor. `layout.assignSlots` spreads several figures at one station into distinct slots.
+- Name labels are drawn only for working figures. An idle figure's name is available through hover/title text and the Inspector.
+
+**Label cleanup.** The paper-sheet marker and the "(template)" suffix are removed from figure labels in the 3D scene. `TEMPLATE_LABEL` remains in the Inspector and Transcript, so the "not AI" disclosure is kept where details are read.
+
+**Controls and text.**
+- The read-aloud toggle is renamed in `office/views/controls.js` and moved into the diorama help area in `office/index.html`.
+- The Office footer becomes the single line "Built from published run data. No AI is used." and the header honesty paragraph is removed. `HONESTY_STATEMENT` in `office/lib/honesty.js` is updated to match.
+- The accessibility sentence is removed from the footer in `dashboard/index.html`.
+- Existing tests that assert the old strings are updated: office honesty and source scans, the scan-office fallback text, dashboard tests, and office-views tests.
+
+**Inspector consistency.** The Inspector shows `Result_Summary` only when the entry has ended (`ended_at` is present and not later than the playhead), matching requirements 7.3 and 5.5. Before that it shows the in-progress description only.
+
+**Testing.** Unit tests cover `activityCaption`, local time formatting with a fixed time zone, and the working/idle anchor choice. These are example-based; no new Correctness Properties are added.
+
+**Highlight hold (19.14).** Real runs show most non-browser steps (Comparator, Quality_Analysis_Agent, Triage_Agent, Test_Generator, Lifecycle_Tracker, Decision_Recorder) lasting 0 to 24 ms, so at 1x they never visibly work. A presentation-only hold fixes this without touching recorded timings.
+- `office/lib/timeline.js` gains a pure `highlightAt(tl, t, holdMs)` (default `HIGHLIGHT_HOLD_MS = 1500`), or an equivalent field computed inside `stateAt`. It returns, per agent, `{ working, held, entry, caption }`.
+- `working` is true while `t` is within the entry's recorded `[start, end)`. `held` is true when `t` is in `[start, min(start + holdMs, nextStartForSameAgent))` and `t >= end`. `entry` is the entry that is working or held.
+- The caption is `activityCaption(entry)` and appends ` (took <formatDuration>)` when held or when the entry's duration is shorter than `holdMs`, for example "Reviewed results for /careers/ (took 1 ms)". The duration is the real recorded value.
+- `stateAt` figures gain `highlighted` (`working || held`). `figures.js` uses it for the emissive glow and name label, and `screens.js` uses it for the screen glow and caption. Telemetry, Transcript, Swimlane_View, and Inspector keep reading recorded entries and are unchanged.
+- The result is a pure function of `t` (and the timeline), so scrubbing or jumping gives the same state as continuous playback. Render-on-demand is unaffected because nothing needs a timer.
+
+**Idle placement (19.15).** `layout.js` gains `homeAnchor(index, count, slot)`, the side anchor beside the home Station's desk on the ring side. It replaces the centre stand-back anchor for idle figures. The home Station is the Station of the figure's most recent entry at `t`, or of its first entry before any entry. `assignSlots` spreads figures sharing a home Station across distinct slots so they do not overlap. Working figures keep the desk anchor.
+
+**Testing (refinement).** Unit tests cover `highlightAt` (hold start and end, cut-off by the next entry for the same agent, caption text), scrub determinism (stateAt at `t` equals the state reached by stepping forward), unchanged telemetry and recorded durations, and `homeAnchor` (not at the scene centre, distinct slots). Example-based; no new Correctness Properties.
+
 ## Decisions needing user confirmation
 
 | # | Decision | Recommendation |
