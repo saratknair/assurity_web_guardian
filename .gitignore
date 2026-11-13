@@ -6,10 +6,8 @@
 # public repository. Any value the Cloud_Runner needs is supplied only as a
 # GitHub Actions encrypted secret (Action_Secret) — never a committed file.
 #
-# NOTE: dist/ and artifacts/ are intentionally NOT ignored here. Their
-# handling is governed by other in-flight phase-2 work (e.g. raw run
-# artifacts move to the runs-data branch later). Do not add them without
-# coordinating with that work.
+# NOTE: dist/ and artifacts/ ARE ignored here (see the generated build
+# section below). Raw run artifacts are published to the runs-data branch.
 # ==========================================================================
 
 # --- Secrets / credentials / environment (Req 8.1, 8.3, 8.4) --------------
