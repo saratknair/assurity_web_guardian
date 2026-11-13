@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { existsSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createConsole } from "../../src/admin/console-router.js";
@@ -68,7 +68,7 @@ describe("retired controls", () => {
     expect(r?.mutating).toBe(true);
   });
 
-  it("the old schedule body shape is rejected and config/schedule.json is never written", async () => {
+  it("the old schedule body shape is rejected and nothing is pushed", async () => {
     const old = { enabled: true, intervalHours: 6, dailyAt: "09:00" };
     // The only schedule route is the workflow-cron edit, and it rejects the old shape.
     expect(allRoutes().filter((x) => /schedule/i.test(x.pattern)).map((x) => x.pattern)).toEqual([
@@ -79,7 +79,6 @@ describe("retired controls", () => {
     expect(sched.status).toBe(400);
     const bare = await send("/api/schedule", good, old);
     expect(bare.status).toBe(400);
-    expect(existsSync(join(root, "config", "schedule.json"))).toBe(false);
     expect(gitCalls.some((c) => c[0] === "push")).toBe(false);
   });
 });

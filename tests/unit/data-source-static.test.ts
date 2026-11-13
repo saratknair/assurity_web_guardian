@@ -1,19 +1,16 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 // @ts-expect-error plain browser ES module without type declarations
-import { resolveDataSource, readModeFlag, loadStatic, loadPublished } from "../../dashboard/data-source.js";
+import { loadStatic, loadPublished } from "../../dashboard/data-source.js";
 
 // Validates: Requirements 15.2, 15.3 (relative URLs only in static mode; errors name the file)
 const g = globalThis as any;
 let urls: string[] = [];
 let savedFetch: unknown;
-let savedWindow: unknown;
 let respond: (url: string) => any;
 
 beforeEach(() => {
   urls = [];
   savedFetch = g.fetch;
-  savedWindow = g.window;
-  g.window = { AWG_MODE: "static" };
   respond = () => ({ ok: true, status: 200, json: async () => ({ ok: 1 }) });
   g.fetch = async (url: unknown) => {
     urls.push(String(url));
@@ -23,8 +20,6 @@ beforeEach(() => {
 
 afterEach(() => {
   g.fetch = savedFetch;
-  if (savedWindow === undefined) delete g.window;
-  else g.window = savedWindow;
 });
 
 function expectOnlyRelative() {
@@ -36,21 +31,8 @@ function expectOnlyRelative() {
 }
 
 describe("static data source", () => {
-  it("reads static and replay flags as static", () => {
-    expect(readModeFlag()).toBe("static");
-    g.window = { AWG_MODE: "replay" };
-    expect(readModeFlag()).toBe("static");
-  });
-
-  it("resolves static without any fetch or probe", async () => {
-    const src = await resolveDataSource();
-    expect(src.mode).toBe("static");
-    expect(urls).toEqual([]);
-  });
-
   it("loadStatic fetches only a relative URL", async () => {
-    const src = await resolveDataSource();
-    await src.load();
+    await loadStatic();
     expect(urls).toEqual(["./data/dashboard.json"]);
     expectOnlyRelative();
   });

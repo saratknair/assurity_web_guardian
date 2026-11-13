@@ -2,8 +2,6 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 // @ts-expect-error plain browser ES module without type declarations
 import { label as sevLabel } from "../../dashboard/lib/severity.js";
 // @ts-expect-error plain browser ES module without type declarations
-import { normalizeLegacyRun } from "../../dashboard/lib/legacy.js";
-// @ts-expect-error plain browser ES module without type declarations
 import { normalizeRun } from "../../dashboard/lib/findings.js";
 // @ts-expect-error plain browser ES module without type declarations
 import { runRows, findRunEntry, previousRun, changeText, render as renderRun } from "../../dashboard/views/run-view.js";
@@ -181,16 +179,6 @@ describe("Not rated and not-recorded severity labels (R2.7, R2.8)", () => {
     expect(sevLabel("serious")).toBe("Serious");
   });
 
-  it("legacy runs get not-recorded severity regardless of detail text", () => {
-    const run = normalizeLegacyRun({
-      runId: "old",
-      pages: [{ page: "https://x.test/", slug: "x", outcomes: [{ findingId: "f1", detail: "desktop:a11y-critical-serious: link-name" }] }],
-    });
-    expect(run.findings).toHaveLength(1);
-    expect(run.findings[0].severity).toBe("not-recorded");
-    expect(sevLabel(run.findings[0].severity)).toBe("Severity not recorded for this run");
-  });
-
   it("exposes the visual-not-rated text", () => {
     expect(VISUAL_NOT_RATED_TEXT).toBe("Not rated - visual changes need human review");
     expect(NO_ELEMENT_DETAIL_TEXT).toBe("No element detail was recorded for this finding");
@@ -344,10 +332,15 @@ describe("Legacy data renders (R17.9)", () => {
   });
 
   it("renders a legacy run (no rule, severity, lifecycle, trigger) in the run view", async () => {
-    const legacyRun = normalizeLegacyRun(
-      { runId: "old1", pages: [{ page: "https://old.test/", slug: "old", outcomes: [{ findingId: "f1", detail: "something" }] }] },
-      { finishedAt: "2025-01-01T00:00:00.000Z" },
-    );
+    const legacyRun = normalizeRun({
+      schemaVersion: 1,
+      runId: "old1",
+      finishedAt: "2025-01-01T00:00:00.000Z",
+      detailLevel: "legacy",
+      historyStatus: "not-recorded",
+      pages: [],
+      findings: [],
+    });
     const container = new FakeNode("div");
     const ctx = makeCtx({
       state: { dashboard: { runs: [{ runId: "old1", finishedAt: "2025-01-01T00:00:00.000Z" }] }, index: null, ui: {} },

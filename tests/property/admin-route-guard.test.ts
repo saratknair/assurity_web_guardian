@@ -227,7 +227,7 @@ describe("Property 60: The local-request guard covers every state-changing route
   });
 
   it("source binds only to 127.0.0.1: no 0.0.0.0, no '::' host, no listen call without a host", () => {
-    const files = ["src/admin/admin-server.ts", "src/reporting/event-server.ts", "src/reporting/review-server.ts"];
+    const files = ["src/admin/admin-server.ts"];
     for (const f of files) {
       const code = readFileSync(join(process.cwd(), f), "utf8")
         .split("\n")

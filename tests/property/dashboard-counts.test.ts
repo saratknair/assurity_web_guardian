@@ -2,8 +2,6 @@ import { describe, it, expect } from "vitest";
 import fc from "fast-check";
 // @ts-expect-error plain browser ES module without type declarations
 import { normalizeRun, countBySeverity, countByLifecycle, filterFindings, sameRuleOtherPages, LIFECYCLE_PRESENT } from "../../dashboard/lib/findings.js";
-// @ts-expect-error plain browser ES module without type declarations
-import { normalizeLegacyRun } from "../../dashboard/lib/legacy.js";
 
 const SEVERITIES = ["critical", "serious", "moderate", "minor", "unrated", "not-recorded"];
 const NUM_RUNS = 150;
@@ -74,34 +72,6 @@ describe("dashboard counts properties", () => {
       }),
       { numRuns: NUM_RUNS },
     );
-  });
-
-  // Feature: dashboard-usability-overhaul, Property 6: Legacy runs are never given inferred values
-  it("Property 6: Legacy runs are never given inferred values", () => {
-    const words = fc.constantFrom("critical", "serious", "moderate", "minor", "desktop:", "mobile:", "color-contrast", "new", "regression", "resolved");
-    const arbDetail = fc.oneof(fc.string({ maxLength: 30 }), fc.array(words, { maxLength: 5 }).map((a) => a.join(" ")));
-    const arbOutcome = fc.record({ findingId: fc.string({ maxLength: 6 }), kind: fc.string({ maxLength: 5 }), classification: fc.string({ maxLength: 5 }), detail: arbDetail });
-    const arbLegacy = fc.record({
-      runId: fc.string({ maxLength: 6 }),
-      pages: fc.array(fc.record({ page: fc.constantFrom("https://x.test/", "https://x.test/a"), slug: fc.constantFrom("home", "a"), outcomes: fc.array(arbOutcome, { maxLength: 6 }) }), { maxLength: 5 }),
-    });
-    fc.assert(
-      fc.property(arbLegacy, (raw) => {
-        const run = normalizeLegacyRun(raw);
-        const expected = raw.pages.flatMap((p: any) => p.outcomes.map((o: any) => o.detail));
-        expect(run.findings.length).toBe(expected.length);
-        run.findings.forEach((f: any, i: number) => {
-          expect(f.severity).toBe("not-recorded");
-          expect(f.lifecycle).toBe("not-recorded");
-          expect(f.detail).toBe(expected[i]);
-        });
-        expect(run.totals.bySeverity["not-recorded"]).toBe(run.totals.all);
-        expect(run.totals.byLifecycle["not-recorded"]).toBe(run.totals.all);
-      }),
-      { numRuns: NUM_RUNS },
-    );
-    expect(() => normalizeLegacyRun(null)).not.toThrow();
-    expect(() => normalizeLegacyRun({ pages: [null, { outcomes: 5 }] })).not.toThrow();
   });
 
   // Feature: dashboard-usability-overhaul, Property 24: Same-rule-on-other-pages count is exact

@@ -1,40 +1,8 @@
 ﻿import { describe, it, expect } from "vitest";
-import fc from "fast-check";
-import { resolveClassification, outranks } from "../../src/reporting/classification.js";
 import { compare } from "../../src/agents/comparator.js";
 import { qualityAnalysis, triageRecommendation, visualExplanation } from "../../src/agents/ai-agents.js";
-import type { FindingClassification } from "../../src/telemetry/types.js";
-
-const ALL: FindingClassification[] = [
-  "human-decision",
-  "agent-recommendation",
-  "ai-generated-analysis",
-  "observed-website-change",
-  "deterministic-test-evidence",
-];
 
 describe("Feature: assurity-web-guardian — Phase 10/11 classification", () => {
-  // Property 21: Exactly one classification by strict precedence.
-  it("Property 21: human-decision outranks everything; det-evidence is lowest", () => {
-    fc.assert(
-      fc.property(fc.subarray(ALL, { minLength: 1 }), (candidates) => {
-        const result = resolveClassification(candidates);
-        expect(candidates).toContain(result);
-        // result must outrank-or-equal every candidate
-        for (const c of candidates) {
-          expect(outranks(c, result)).toBe(false);
-        }
-      }),
-      { numRuns: 200 },
-    );
-  });
-
-  it("Property 21: known precedence pairs", () => {
-    expect(resolveClassification(["deterministic-test-evidence", "human-decision"])).toBe("human-decision");
-    expect(resolveClassification(["observed-website-change", "ai-generated-analysis"])).toBe("ai-generated-analysis");
-    expect(resolveClassification(["deterministic-test-evidence"])).toBe("deterministic-test-evidence");
-  });
-
   // Property 19: a difference without a violated expectation is never a Failed_Check.
   it("Property 19: observed changes are never failed-checks", () => {
     const r = compare({

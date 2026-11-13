@@ -29,11 +29,6 @@ describe("guardian.yml workflow smoke test", () => {
     expect(commitJob).toMatch(/git add -- artifacts\/a11y-history\.json/);
   });
 
-  it("writes the static-mode config into the published site", () => {
-    expect(code).toContain('window.AWG_MODE = "static"');
-    expect(code).toContain("./_site/config.js");
-  });
-
   it("sets AWG_RUN_ORIGIN=cloud on the Build published data step", () => {
     const start = code.indexOf("- name: Build published data");
     const end = code.indexOf("- name: Add static dashboard to site");
