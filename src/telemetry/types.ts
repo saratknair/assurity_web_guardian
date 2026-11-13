@@ -31,22 +31,6 @@ export interface TelemetryEvent {
   data?: Record<string, unknown>;
 }
 
-/** Truthful agent-status event for a future virtual office (Req 19.7, 23). */
-export interface AgentStatusEvent extends TelemetryEvent {
-  kind:
-    | "agent.queued"
-    | "agent.started"
-    | "agent.working"
-    | "agent.awaiting_review"
-    | "agent.completed"
-    | "agent.failed"
-    | "human.review.completed";
-  agentName: string;
-  /** Documented values include "template" (fixed-text steps, never AI). */
-  agentRole: string;
-  status: AgentStatus | "review_completed";
-}
-
 /** Result_Summary: numbers, booleans, short strings, string arrays, or nested objects of those. */
 export type StepResultValue =
   | number

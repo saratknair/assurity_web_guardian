@@ -15,14 +15,9 @@ function mint(prefix: IdPrefix): string {
 export const newRunId = () => mint("run");
 export const newCorrelationId = () => mint("cor");
 export const newTaskId = () => mint("task");
-export const newCheckId = () => mint("chk");
 export const newFindingId = () => mint("fnd");
 export const newEvidenceId = () => mint("evd");
 export const newReviewId = () => mint("rev");
-
-export interface CorrelatedEntity {
-  correlationId: string;
-}
 
 /** A run mints one runId and one shared correlationId for all children. */
 export interface RunIds {

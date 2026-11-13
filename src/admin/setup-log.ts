@@ -5,7 +5,7 @@
  * Exports append and read only: no edit, truncate, or delete exists. No AI, no network.
  */
 import { createHash } from "node:crypto";
-import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
+import { appendFileSync, mkdirSync } from "node:fs";
 import { resolveInside } from "./atomic-file.js";
 import { scrubForDisplay } from "./scrub.js";
 
@@ -120,10 +120,4 @@ export function parseSetupLog(text: string, opts: { limit?: number; before?: str
   const before = opts.before;
   if (typeof before === "string" && before !== "") entries = entries.filter((e) => e.at < before);
   return { entries: entries.slice(0, limit), skippedLines };
-}
-
-export function readSetupEntries(root: string, opts: { limit?: number; before?: string } = {}): SetupLogPage {
-  const file = resolveInside(root, ...SETUP_LOG_REL.split("/"));
-  if (!existsSync(file)) return { entries: [], skippedLines: 0 };
-  return parseSetupLog(readFileSync(file, "utf8"), opts);
 }

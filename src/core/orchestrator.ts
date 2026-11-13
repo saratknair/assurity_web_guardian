@@ -22,7 +22,6 @@ import { compareScreenshot, type VisualResult } from "../agents/visual-compare.j
 import { writeReport, writeDashboard, type ReportModel, type PageReport } from "../reporting/report.js";
 import { buildDashboard } from "../reporting/dashboard-builder.js";
 import { recordStep, summariseStep, createStepSeq } from "../telemetry/step-recorder.js";
-import { LocalOtelExporter } from "../telemetry/otel-adapter.js";
 import { computeLifecycleForRun } from "./run-lifecycle.js";
 import { publish } from "../publish/publisher.js";
 import { runOriginMarker } from "../publish/published-data.js";
@@ -132,11 +131,6 @@ export function sanitizeVisual(
   return out;
 }
 
-export interface RunTrigger {
-  readonly kind: "manual" | "scheduled";
-  start(cfg: AppConfig): Promise<string>;
-}
-
 /**
  * Orchestrator (Req 28, 29, 31.4). Coordinates the full multi-page workflow
  * under one correlationId across ALL approved pages, emits truthful agent-status
@@ -158,12 +152,7 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
   const store = new EvidenceStore(runId);
   const exporter = new FileExporter(store.eventsPath);
   const auditLog = new AppendOnlyLog(store.auditPath);
-  // Optional local OpenTelemetry adapter — DISABLED by default. Enable with
-  // AWG_OTEL=1 (writes OTel-shaped spans/metrics to local files only; no SDK,
-  // no collector, no network). Export failure never stops the Guardian.
-  const otelEnabled = process.env.AWG_OTEL === "1";
-  const otel = new LocalOtelExporter({ enabled: otelEnabled, outDir: "artifacts/otel" });
-  const tel = new TelemetryEmitter(runId, correlationId, exporter, auditLog, otelEnabled ? [otel] : []);
+  const tel = new TelemetryEmitter(runId, correlationId, exporter, auditLog);
   const gateway = new SiteGateway(cfg);
   const seq = createStepSeq();
 
@@ -507,13 +496,5 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
 
   return runId;
 }
-
-export class ManualTrigger implements RunTrigger {
-  readonly kind = "manual" as const;
-  start(cfg: AppConfig): Promise<string> {
-    return runGuardian(cfg);
-  }
-}
-
 
 

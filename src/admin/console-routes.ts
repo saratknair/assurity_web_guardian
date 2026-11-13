@@ -62,7 +62,6 @@ export interface RouteDef {
 }
 
 export const SETUP_BODY_MAX = 16 * 1024;
-export const DISPOSITION_BODY_MAX = 8 * 1024;
 
 function readJsonFile(deps: ConsoleDeps, rel: string): Record<string, unknown> | null {
   try {

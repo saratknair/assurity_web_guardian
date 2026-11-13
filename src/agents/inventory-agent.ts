@@ -16,14 +16,6 @@ export interface PageInventory {
   forms: FormInfo[];
 }
 
-export interface InventoryHandoff {
-  correlationId: string;
-  taskId: string;
-  partial: boolean;
-  failedViewport: string | null;
-  pages: PageInventory[];
-}
-
 /**
  * Inventory_Agent (Req 2, 31.3). Deterministic extraction of objective page
  * elements. Never submits a form; never records a field VALUE (no PII, Req 2.5).

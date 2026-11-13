@@ -28,12 +28,6 @@ export interface DomainConfig {
   probePaths?: string[];
 }
 
-export interface ScheduleConfig {
-  enabled: boolean;
-  intervalHours: number;
-  dailyAt: string;
-}
-
 const DOMAINS_DIR = "config/domains";
 
 /**

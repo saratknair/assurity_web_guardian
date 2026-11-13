@@ -4,8 +4,6 @@
  */
 import type { Page } from "@playwright/test";
 
-export const SCREENSHOT_SETTINGS_ID = "fullPage=true";
-
 export async function takeScreenshot(page: Page, path: string): Promise<void> {
   await page.screenshot({ path, fullPage: true });
 }

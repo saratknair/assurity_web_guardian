@@ -37,8 +37,6 @@ export interface AppLimits {
 export const DEFAULT_MAX_APPROVED_PAGES = 500;
 /** Sane hard upper bound on the approved-page cap (Req 5.7). */
 export const MAX_APPROVED_PAGES_HARD_CAP = 500;
-/** Default BFS discovery cap when not configured (Req 5.1). */
-export const DEFAULT_MAX_DISCOVERY_COUNT = 500;
 /** Default Large_Scope_Threshold for grouped Scope_Approval (Req 5.6). */
 export const DEFAULT_LARGE_SCOPE_THRESHOLD = 25;
 
