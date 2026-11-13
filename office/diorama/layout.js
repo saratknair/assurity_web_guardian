@@ -62,6 +62,47 @@ export function stationAnchor(index, count, slot) {
   return { x: base.x + Math.cos(a) * side, y: 0, z: base.z + Math.sin(a) * side };
 }
 
+// Idle figures wait nearer the ring centre, further from the desk.
+export const STAND_BACK_RADIUS = 2.9;
+
+export function standBackAnchor(index, count, slot) {
+  const a = stationAngle(index, count);
+  const base = polar(STAND_BACK_RADIUS, a);
+  const s = slot && slot > 0 ? slot : 0;
+  if (s === 0) return base;
+  const side = (s % 2 === 1 ? 1 : -1) * Math.ceil(s / 2) * 0.9;
+  return { x: base.x + Math.cos(a) * side, y: 0, z: base.z + Math.sin(a) * side };
+}
+
+// Idle figures wait beside their home Station, on the ring (outer) side of the
+// desk and offset sideways, so they are neither in the scene centre nor on the
+// working spot. Slots spread further along the tangent so figures never overlap.
+export const HOME_RADIUS = 8.4;
+export const HOME_SIDE_OFFSET = 2.0;
+export const HOME_SLOT_SPACING = 1.1;
+
+export function homeAnchor(index, count, slot) {
+  const a = stationAngle(index, count);
+  const base = polar(HOME_RADIUS, a);
+  const s = slot && slot > 0 ? slot : 0;
+  const side = HOME_SIDE_OFFSET + s * HOME_SLOT_SPACING;
+  return { x: base.x + Math.cos(a) * side, y: 0, z: base.z + Math.sin(a) * side };
+}
+
+// Highlighted figures stand at the desk anchor; idle ones wait at their home spot.
+export function anchorFor(index, count, slot, highlighted) {
+  return highlighted ? stationAnchor(index, count, slot) : homeAnchor(index, count, slot);
+}
+
+// Pure visual state of a figure: lit (emissive, glow ring), name label, caption.
+// Driven by `highlighted` (working or held), not by `working`.
+export function figureVisual(fig) {
+  const f = fig || {};
+  const lit = !!f.highlighted;
+  const text = typeof f.caption === "string" ? f.caption : "";
+  return { lit, showName: lit, caption: lit ? text : "" };
+}
+
 export function distance(a, b) {
   const dx = a.x - b.x, dy = (a.y || 0) - (b.y || 0), dz = a.z - b.z;
   return Math.sqrt(dx * dx + dy * dy + dz * dz);
@@ -114,10 +155,40 @@ export function bobOffset(working, t) {
   return BOB_AMPLITUDE * Math.sin(t * 2 * Math.PI * 0.8);
 }
 
-// Label text for a figure: the component name, plus "(template)" for
-// Automated_Template_Steps figures.
-export function figureLabel(agent, template) {
-  return String(agent) + (template ? " (template)" : "");
+// Label text for a figure: the component name only.
+export function figureLabel(agent) {
+  return String(agent);
+}
+
+// Fixed pixel height of one line in a stacked activity block.
+export const STACK_LINE_PX = 18;
+// World height at which the stacked block's bottom edge is anchored above a desk.
+export const STACK_ANCHOR_Y = 2.9;
+// Station name labels sit low on the front edge of their desk, toward the centre.
+export const STATION_LABEL_RADIUS = 7.0;
+export const STATION_LABEL_Y = 0.9;
+
+// Vertical pixel offset of line i from the top of a stacked block.
+export function stackOffset(i) {
+  return (i > 0 ? Math.floor(i) : 0) * STACK_LINE_PX;
+}
+
+// Group lit figures by station: [{station, lines:[{agent, caption, text}]}].
+// Stations sorted by id, lines by agent name, so the order is stable.
+export function stackLines(figures) {
+  const list = Array.isArray(figures) ? figures : [];
+  const by = {};
+  for (let i = 0; i < list.length; i++) {
+    const f = list[i];
+    if (!f || !f.highlighted) continue;
+    const caption = typeof f.caption === "string" ? f.caption : "";
+    if (!by[f.station]) by[f.station] = [];
+    by[f.station].push({ agent: f.agent, caption, text: caption ? f.agent + " - " + caption : String(f.agent) });
+  }
+  return Object.keys(by).sort().map(function (st) {
+    const lines = by[st].slice().sort(function (a, b) { return a.agent < b.agent ? -1 : a.agent > b.agent ? 1 : 0; });
+    return { station: st, lines };
+  });
 }
 
 // Slot index for each agent at its station (sorted by agent name, stable).

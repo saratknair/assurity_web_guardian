@@ -20,6 +20,7 @@
 import { LIFECYCLE_PRESENT, LIFECYCLE_LABELS, decisionEffectText, DECISIONS_UNAVAILABLE_TEXT } from "../lib/findings.js";
 import { SEVERITY_ORDER, label as sevLabel, symbol as sevSymbol } from "../lib/severity.js";
 import { runDomain, differentSiteLabel, trendGaps, gapNote } from "../lib/domain.js";
+import { formatDateTime } from "./common.js";
 
 export const RUN_DATA_MISSING_TEXT = "Run data not published";
 
@@ -42,11 +43,9 @@ function pick(obj, key) {
   return count(obj[key] !== undefined ? obj[key] : obj[camel(key)]);
 }
 
-/** "2026-10-26T08:00:00.000Z" -> "2026-10-26 08:00 UTC"; unparseable -> "Date not recorded". */
-export function formatRunDate(iso) {
-  if (typeof iso !== "string") return "Date not recorded";
-  const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(iso);
-  return m ? m[1] + " " + m[2] + " UTC" : "Date not recorded";
+/** ISO -> local "2026-10-26 21:00 NZDT"; unparseable -> "Date not recorded". timeZone is for tests. */
+export function formatRunDate(iso, timeZone) {
+  return formatDateTime(iso, timeZone);
 }
 
 function plural(n, one, many) {

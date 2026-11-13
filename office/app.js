@@ -45,6 +45,7 @@ export function boot() {
     notices: byId("office-notices"),
     picker: byId("run-picker"),
     controls: byId("playback-controls"),
+    readAloud: byId("read-aloud-host"),
     diorama: byId("diorama-host"),
     help: byId("help-content"),
     stations: byId("stations-list"),
@@ -138,7 +139,7 @@ export function boot() {
   const viewDefs = [
     { name: "notices", host: hosts.notices, make: createNotices, model: buildNoticesModel },
     { name: "run picker", host: hosts.picker, make: createRunPicker, model: buildRunPickerModel },
-    { name: "playback controls", host: hosts.controls, make: createControls, model: buildControlsModel },
+    { name: "playback controls", host: hosts.controls, make: createControls, model: buildControlsModel, extra: hosts.readAloud },
     { name: "help", host: hosts.help, make: createHelp, model: () => ({}) },
     { name: "stations list", host: hosts.stations, make: createStationsList, model: buildStationsModel },
     { name: "transcript", host: hosts.transcript, make: createTranscript, model: (s) => ({ timeline: s.timeline, runId: s.runId, t: s.t }) },
@@ -163,7 +164,7 @@ export function boot() {
       return;
     }
     try {
-      if (!v.inst) v.inst = d.make(d.host, handlers);
+      if (!v.inst) v.inst = d.make(d.host, handlers, d.extra);
       v.inst.update(d.model(s));
     } catch (err) {
       viewErrors[d.name] = true;
@@ -198,7 +199,7 @@ export function boot() {
     maybeAnnounce(s);
   }
 
-  // Polite live region: written only while "Announce steps" is on, at most once per 1.5 s.
+  // Polite live region: written only while "Read steps aloud" is on, at most once per 1.5 s.
   function maybeAnnounce(s) {
     if (!hosts.live) return;
     const d = announceDecision(s, lastAnnounceCount, lastAnnounceAt, Date.now(), ANNOUNCE_MIN_MS);

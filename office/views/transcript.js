@@ -22,6 +22,13 @@ import { entryFindingLinks, entryLink, runLink } from "../lib/links.js";
 import { formatClock } from "../lib/format.js";
 import { stationById, TEMPLATE_LABEL } from "../lib/stations.js";
 
+const IN_PROGRESS_TEXT = "In progress";
+
+/** True when the entry has ended at playhead t (not open and endMs <= t). */
+export function entryEnded(entry, t) {
+  return !!entry && entry.open !== true && typeof entry.endMs === "number" && entry.endMs <= t;
+}
+
 /**
  * Pure row model for one entry. Only recorded values are included.
  * Returns { id, startMs, time, summary, lines, links: [{text, href}] }.
@@ -128,8 +135,10 @@ export function createTranscript(host, handlers) {
           if (h.onSeek) h.onSeek(row.startMs);
         });
         const extra = [];
+        let resultEl = null;
         if (row.lines.length) {
-          extra.push(el("span", { class: "transcript__result" }, row.lines.join("; ")));
+          resultEl = el("span", { class: "transcript__result" }, IN_PROGRESS_TEXT);
+          extra.push(resultEl);
         }
         for (let k = 0; k < row.links.length; k++) {
           extra.push(" ");
@@ -137,7 +146,7 @@ export function createTranscript(host, handlers) {
         }
         const li = el("li", { class: "transcript__item", "data-reached": "false" }, [button, extra.length ? el("div", { class: "transcript__extra" }, extra) : null]);
         lis.push(li);
-        items.push({ li, button, suffix });
+        items.push({ li, button, suffix, resultEl, resultText: row.lines.join("; "), entry: entries[i], shown: false });
       }
       kids.push(el("ol", { class: "transcript__list", "aria-label": "Run transcript" }, lis));
     }
@@ -156,6 +165,17 @@ export function createTranscript(host, handlers) {
     if (!tl) return;
     const reached = countAt(tl, m.t);
     const cur = reached - 1;
+    const t = typeof m.t === "number" && isFinite(m.t) ? m.t : 0;
+    // Results appear only once the entry has ended at the playhead.
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      if (!it.resultEl) continue;
+      const ended = i < reached && entryEnded(it.entry, t);
+      if (ended !== it.shown) {
+        it.shown = ended;
+        setText(it.resultEl, ended ? it.resultText : IN_PROGRESS_TEXT);
+      }
+    }
     if (reached === lastReached && cur === lastCurrent) return;
     for (let i = 0; i < items.length; i++) {
       const it = items[i];

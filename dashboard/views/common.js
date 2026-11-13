@@ -32,7 +32,7 @@
 //   differentSiteBadge(run, latest) <span> "Different site: host" or null.
 //   loading(text?)                 <p class="loading" role="status">.
 //   plural(n, one, many)           "1 page" / "2 pages".
-//   formatDateTime(iso)            "2026-10-26 08:00 UTC" or "Date not recorded".
+//   formatDateTime(iso)            "2026-10-26 21:00 NZDT" (local) or "Date not recorded".
 //   shortSeverityLabel(sev)        short lowercase phrase for sentences.
 //   uniqueId(prefix)               unique DOM id such as "kpi-def-3".
 
@@ -52,11 +52,27 @@ export function plural(n, one, many) {
   return n + " " + (n === 1 ? one : many);
 }
 
-/** "2026-10-26T08:00:00.000Z" -> "2026-10-26 08:00 UTC". */
-export function formatDateTime(iso) {
-  if (typeof iso !== "string") return "Date not recorded";
-  const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(iso);
-  return m ? m[1] + " " + m[2] + " UTC" : "Date not recorded";
+/** "2026-10-26T08:00:00.000Z" -> "2026-10-26 21:00 NZDT" (viewer's zone; timeZone is for tests). */
+export function formatDateTime(iso, timeZone) {
+  if (typeof iso !== "string" || !iso) return "Date not recorded";
+  const t = Date.parse(iso);
+  if (!isFinite(t)) return "Date not recorded";
+  try {
+    const opts = {
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+      timeZoneName: "short",
+    };
+    if (timeZone) opts.timeZone = timeZone;
+    const parts = {};
+    new Intl.DateTimeFormat("en-NZ", opts).formatToParts(new Date(t)).forEach((p) => {
+      parts[p.type] = p.value;
+    });
+    return parts.year + "-" + parts.month + "-" + parts.day + " " + parts.hour + ":" + parts.minute +
+      " " + (parts.timeZoneName || "");
+  } catch (e) {
+    return "Date not recorded";
+  }
 }
 
 const SHORT = {

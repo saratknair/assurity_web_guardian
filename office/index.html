@@ -19,7 +19,6 @@
           <p class="topbar__subtitle">Virtual Office: replay of a published run</p>
         </div>
       </div>
-      <p class="honesty" id="honesty-statement">Assurity Web Guardian uses zero AI tokens. This replay shows automated steps from a real run. Template steps use fixed text, not AI.</p>
     </header>
 
     <nav aria-label="Primary" class="row" id="primary-nav">
@@ -44,6 +43,7 @@
           <summary>Keyboard shortcuts</summary>
           <div id="help-content"></div>
         </details>
+        <div id="read-aloud-host" class="row"></div>
       </section>
 
       <section id="stations-region" class="office__stations panel" aria-labelledby="stations-heading">
@@ -56,7 +56,7 @@
         <div id="transcript"></div>
       </section>
 
-      <section id="telemetry-region" class="office__telemetry panel" aria-labelledby="telemetry-heading">
+      <section id="telemetry-region" class="office__telemetry panel" aria-labelledby="telemetry-heading" tabindex="0">
         <h2 id="telemetry-heading" class="panel__title">Telemetry</h2>
         <div id="telemetry-panel"></div>
       </section>
@@ -73,8 +73,7 @@
     </main>
 
     <footer class="footer muted" role="contentinfo">
-      <p>This replay is built from published run data. Steps marked as template steps use fixed text, not AI.</p>
-      <p>Accessibility is a goal for this Virtual Office (WCAG 2.2 AA). Automated checks cannot confirm conformance; manual testing with assistive technologies and expert review are still required.</p>
+      <p>Built from published run data. No AI is used.</p>
     </footer>
   </div>
 

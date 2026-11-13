@@ -538,7 +538,7 @@ function liveOnlyPanel(host) {
 function fmtTs(v) {
   if (typeof v !== "string" || !v) return "";
   const d = new Date(v);
-  return isNaN(d.getTime()) ? v : d.toLocaleString();
+  return isNaN(d.getTime()) ? v : d.toLocaleString(undefined, { timeZoneName: "short" });
 }
 
 // ---------------------------------------------------------------------------

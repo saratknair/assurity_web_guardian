@@ -51,7 +51,7 @@ export function figuresSignature(figures, scrubbed) {
   const parts = [];
   for (let i = 0; i < list.length; i++) {
     const f = list[i] || {};
-    parts.push([f.agent, f.station, f.working ? 1 : 0, f.template ? 1 : 0].join("|"));
+    parts.push([f.agent, f.station, f.working ? 1 : 0, f.highlighted ? 1 : 0, f.template ? 1 : 0, f.highlighted && f.caption ? f.caption : ""].join("|"));
   }
   return (scrubbed ? "s:" : "p:") + parts.join(";");
 }
@@ -207,11 +207,24 @@ export async function createDiorama(host, handlers) {
         }
       }
     }
+    // Hover: the native tooltip (title) names the figure under the pointer, so an
+    // idle figure's name stays available without a visible label. No rendering.
+    function onPointerMove(ev) {
+      if (ev.buttons) return;
+      const ndc = pointerToNdc(canvas.getBoundingClientRect(), ev.clientX, ev.clientY);
+      raycaster.setFromCamera(new THREE.Vector2(ndc.x, ndc.y), rig.camera);
+      const hits = raycaster.intersectObjects(figures.meshes(), false);
+      const name = hits.length && hits[0].object.userData ? hits[0].object.userData.agent : "";
+      const next = name || "";
+      if (canvas.title !== next) canvas.title = next;
+    }
     canvas.addEventListener("pointerdown", onPointerDown);
     canvas.addEventListener("pointerup", onPointerUp);
+    canvas.addEventListener("pointermove", onPointerMove);
     cleanups.push(() => {
       canvas.removeEventListener("pointerdown", onPointerDown);
       canvas.removeEventListener("pointerup", onPointerUp);
+      canvas.removeEventListener("pointermove", onPointerMove);
     });
 
     // Context loss: stop drawing; fall back unless it restores within 3 s.

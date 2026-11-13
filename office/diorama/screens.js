@@ -61,6 +61,13 @@ export function fitLines(lines, maxChars, maxLines) {
   return out;
 }
 
+// A Station glows while its latest entry is still in progress.
+export function isStationWorking(screen) {
+  if (!screen) return false;
+  if (typeof screen.highlighted === "boolean") return screen.highlighted;
+  return screen.done === false;
+}
+
 // Which lines a station shows. Records room shows the Step_Name only.
 export function linesForStation(stationId, screen) {
   if (!screen || !Array.isArray(screen.lines)) return [];
@@ -187,8 +194,13 @@ export function createScreens(sceneApi, opts) {
   // screens: stateAt(tl, t).screens. Returns true when any texture was redrawn.
   function update(screens) {
     const src = screens || {};
-    items.forEach(function (it, id) { it.screen = src[id] || null; });
-    return refresh();
+    let glowChanged = false;
+    items.forEach(function (it, id) {
+      it.screen = src[id] || null;
+      const on = isStationWorking(it.screen);
+      if (it.st.glow && it.st.glow.visible !== on) { it.st.glow.visible = on; glowChanged = true; }
+    });
+    return refresh() || glowChanged;
   }
 
   function dispose() {

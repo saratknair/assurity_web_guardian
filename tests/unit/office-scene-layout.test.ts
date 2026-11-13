@@ -24,6 +24,56 @@ describe("office diorama layout", () => {
     expect(L.distance(a0, a1)).toBeGreaterThan(0.5);
   });
 
+  it("idle figures wait beside their own station, away from the scene centre and the working spot", () => {
+    for (let i = 0; i < 6; i++) {
+      const desk = L.stationPosition(i, 6);
+      const work = L.anchorFor(i, 6, 0, true);
+      const idle = L.anchorFor(i, 6, 0, false);
+      expect(work).toEqual(L.stationAnchor(i, 6, 0));
+      expect(idle).toEqual(L.homeAnchor(i, 6, 0));
+      expect(Math.hypot(idle.x, idle.z)).toBeGreaterThan(4);
+      expect(L.distance(idle, desk)).toBeLessThan(3);
+      expect(L.distance(idle, work)).toBeGreaterThan(2);
+      // closer to its own desk than to any other desk
+      for (let j = 0; j < 6; j++) {
+        if (j !== i) expect(L.distance(idle, L.stationPosition(j, 6))).toBeGreaterThan(L.distance(idle, desk));
+      }
+    }
+  });
+  it("figureVisual: highlighted (not working) drives the lit look, name and caption", () => {
+    const held = L.figureVisual({ working: false, highlighted: true, caption: "Comparing (took 12 ms)" });
+    expect(held).toEqual({ lit: true, showName: true, caption: "Comparing (took 12 ms)" });
+    const idle = L.figureVisual({ working: false, highlighted: false, caption: "stale" });
+    expect(idle).toEqual({ lit: false, showName: false, caption: "" });
+    const workingOnly = L.figureVisual({ working: true, highlighted: false });
+    expect(workingOnly.lit).toBe(false);
+  });
+  it("highlighted and idle figures at one station never overlap", () => {
+    const figs = ["A", "B", "C", "D"].map((agent) => ({ agent, station: "review-desk" }));
+    const slots = L.assignSlots(figs);
+    const pts = figs.map((f, k) => L.anchorFor(4, 6, slots[f.agent], k % 2 === 0));
+    const all = pts.concat(figs.map((f) => L.homeAnchor(4, 6, slots[f.agent])), figs.map((f) => L.stationAnchor(4, 6, slots[f.agent])));
+    for (const working of [true, false]) {
+      const set = figs.map((f) => L.anchorFor(4, 6, slots[f.agent], working));
+      for (let a = 0; a < set.length; a++) for (let b = a + 1; b < set.length; b++) expect(L.distance(set[a], set[b])).toBeGreaterThan(0.8);
+    }
+    expect(all.length).toBe(12);
+    for (let a = 0; a < pts.length; a++) for (let b = a + 1; b < pts.length; b++) expect(L.distance(pts[a], pts[b])).toBeGreaterThan(0.8);
+  });
+  it("spreads three figures at the review desk without overlap, working or idle", () => {
+    const figs = [
+      { agent: "Triage_Agent", station: "review-desk" },
+      { agent: "Comparator", station: "review-desk" },
+      { agent: "Quality_Analysis_Agent", station: "review-desk" },
+    ];
+    const slots = L.assignSlots(figs);
+    for (const working of [true, false]) {
+      const pts = figs.map((f) => L.anchorFor(4, 6, slots[f.agent], working));
+      for (let a = 0; a < pts.length; a++) {
+        for (let b = a + 1; b < pts.length; b++) expect(L.distance(pts[a], pts[b])).toBeGreaterThan(0.8);
+      }
+    }
+  });
   it("bezier path starts and ends at the endpoints and bows toward the centre", () => {
     const from = L.stationAnchor(0, 6, 0);
     const to = L.stationAnchor(3, 6, 0);
@@ -50,8 +100,8 @@ describe("office diorama layout", () => {
     expect(L.shouldSnap({ reducedMotion: false, scrubbed: false, hasPrevious: true })).toBe(false);
   });
 
-  it("labels template figures and bobs only while working", () => {
-    expect(L.figureLabel("Triage_Agent", true)).toBe("Triage_Agent (template)");
+  it("labels figures with the component name only and bobs only while working", () => {
+    expect(L.figureLabel("Triage_Agent", true)).toBe("Triage_Agent");
     expect(L.figureLabel("Comparator", false)).toBe("Comparator");
     expect(L.bobOffset(false, 1.3)).toBe(0);
     expect(Math.abs(L.bobOffset(true, 0.3))).toBeLessThanOrEqual(0.08);
@@ -70,5 +120,28 @@ describe("office diorama layout", () => {
     const names = Object.keys(L.AGENT_COLOURS);
     const set = new Set(names.map((n) => L.agentColour(n)));
     expect(set.size).toBe(names.length);
+  });
+});
+
+describe("office diorama stacked labels (19.8)", () => {
+  it("stackOffset spaces lines by a fixed pixel step", () => {
+    expect(L.stackOffset(0)).toBe(0);
+    expect(L.stackOffset(1)).toBe(L.STACK_LINE_PX);
+    expect(L.stackOffset(3) - L.stackOffset(2)).toBe(L.STACK_LINE_PX);
+  });
+  it("stackLines groups lit figures by station in stable order and skips idle ones", () => {
+    const figs = [
+      { agent: "Triage_Agent", station: "review-desk", highlighted: true, caption: "Triaging /a/" },
+      { agent: "Comparator", station: "review-desk", highlighted: true, caption: "Reviewing /a/" },
+      { agent: "Lifecycle_Tracker", station: "records-room", highlighted: true, caption: "" },
+      { agent: "Observation_Runner", station: "browser-bay", highlighted: false, caption: "stale" },
+    ];
+    const g = L.stackLines(figs);
+    expect(g.map((x: { station: string }) => x.station)).toEqual(["records-room", "review-desk"]);
+    expect(g[1].lines.map((l: { text: string }) => l.text)).toEqual([
+      "Comparator - Reviewing /a/", "Triage_Agent - Triaging /a/",
+    ]);
+    expect(g[0].lines[0].text).toBe("Lifecycle_Tracker");
+    expect(L.stackLines(figs.slice().reverse())).toEqual(g);
   });
 });

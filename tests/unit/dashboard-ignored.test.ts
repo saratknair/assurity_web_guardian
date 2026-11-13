@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 import { groupIgnoredByDecision, groupPagesText, ignoredCountBySlug, resolvedItemsForPage, resolvedItemName } from "../../dashboard/lib/ignored.js";
 import {
   scopeInWords, ignoredBannerText, regressionLabelText, regressionBlockText, humanResolvedText,
-  ignoredElementsText, pageIgnoredText, IGNORED_FOOTER_TEXT, REGRESSION_SYMBOL,
+  ignoredElementsText, pageIgnoredText, formatRunDate, IGNORED_FOOTER_TEXT, REGRESSION_SYMBOL,
   // @ts-expect-error plain browser ES module without type declarations
 } from "../../dashboard/lib/captions.js";
 
@@ -24,7 +24,7 @@ describe("dashboard ignored helpers (R19.4, 19.8, 19.10, 19.11, 19.23)", () => {
     expect(groups[0].scopeText).toBe("This element only");
     expect(groups[1].scopeText).toBe("This rule on every page");
     expect(groups[1].findings.map((f: any) => f.id)).toEqual(["f1", "f2"]);
-    expect(groups[1].byText).toBe("Ignored by Sam on 1 Jan 2026 00:00 UTC");
+    expect(groups[1].byText).toBe("Ignored by Sam on " + formatRunDate("2026-01-01T00:00:00Z"));
     expect(groupPagesText(groups[1])).toBe("Covers 2 pages in this run");
     expect(groupPagesText(groups[0])).toBe("");
     expect(groups.reduce((n: number, g: any) => n + g.findings.length, 0)).toBe(ignored.length);
@@ -40,14 +40,14 @@ describe("dashboard ignored helpers (R19.4, 19.8, 19.10, 19.11, 19.23)", () => {
     expect(scopeInWords("page-rule")).toBe("This rule on this page, all viewports");
     expect(scopeInWords("bogus")).toBe("Scope not recorded");
     expect(ignoredBannerText(disp("d1", "element", "2026-01-01T00:00:00Z"))).toBe(
-      "Ignored by Sam on 1 Jan 2026 00:00 UTC. Reason: Third-party widget. Scope: This element only.",
+      "Ignored by Sam on " + formatRunDate("2026-01-01T00:00:00Z") + ". Reason: Third-party widget. Scope: This element only.",
     );
     const reg = { decisionId: "r1", at: "2026-03-04T05:06:00Z", reviewer: "Ana", reason: "Fixed in CMS" };
-    expect(regressionLabelText(reg)).toBe("Reappeared after being marked resolved on 4 Mar 2026 05:06 UTC by Ana");
+    expect(regressionLabelText(reg)).toBe("Reappeared after being marked resolved on " + formatRunDate("2026-03-04T05:06:00Z") + " by Ana");
     expect(regressionBlockText(reg)).toBe(
-      REGRESSION_SYMBOL + " Regression: Reappeared after being marked resolved on 4 Mar 2026 05:06 UTC by Ana. Original reason: Fixed in CMS.",
+      REGRESSION_SYMBOL + " Regression: Reappeared after being marked resolved on " + formatRunDate("2026-03-04T05:06:00Z") + " by Ana. Original reason: Fixed in CMS.",
     );
-    expect(humanResolvedText({ at: "2026-03-04T05:06:00Z", reviewer: "Ana" })).toBe("Marked resolved by Ana on 4 Mar 2026 05:06 UTC");
+    expect(humanResolvedText({ at: "2026-03-04T05:06:00Z", reviewer: "Ana" })).toBe("Marked resolved by Ana on " + formatRunDate("2026-03-04T05:06:00Z"));
     expect(ignoredElementsText(3)).toBe("3 elements ignored");
     expect(ignoredElementsText(1)).toBe("1 element ignored");
     expect(ignoredElementsText(0)).toBe("");

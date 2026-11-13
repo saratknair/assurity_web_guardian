@@ -24,6 +24,8 @@ describe("office diorama entry helpers", () => {
 
   it("figuresSignature changes with station, working and scrub flag", () => {
     const a = [{ agent: "a", station: "s1", working: true, template: false }];
+    const held = [{ agent: "a", station: "s1", working: true, highlighted: true, caption: "x", template: false }];
+    expect(figuresSignature(a, false)).not.toBe(figuresSignature(held, false));
     const b = [{ agent: "a", station: "s2", working: true, template: false }];
     expect(figuresSignature(a, false)).toBe(figuresSignature(a.slice(), false));
     expect(figuresSignature(a, false)).not.toBe(figuresSignature(b, false));

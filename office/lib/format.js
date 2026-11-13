@@ -55,4 +55,28 @@ export function truncate(s, max) {
   return t.slice(0, Math.max(0, max - 3)) + "...";
 }
 
+// "2026-11-13 12:00 NZDT" in the viewer's time zone (timeZone is for tests).
+// Invalid or missing input returns "date not recorded".
+export function formatLocalDateTime(iso, timeZone) {
+  if (typeof iso !== "string" || !iso) return "date not recorded";
+  const t = Date.parse(iso);
+  if (!isFinite(t)) return "date not recorded";
+  try {
+    const opts = {
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+      timeZoneName: "short",
+    };
+    if (timeZone) opts.timeZone = timeZone;
+    const parts = {};
+    new Intl.DateTimeFormat("en-NZ", opts).formatToParts(new Date(t)).forEach(function (p) {
+      parts[p.type] = p.value;
+    });
+    return parts.year + "-" + parts.month + "-" + parts.day + " " + parts.hour + ":" + parts.minute +
+      " " + (parts.timeZoneName || "");
+  } catch (e) {
+    return "date not recorded";
+  }
+}
+
 export { NOT_RECORDED };

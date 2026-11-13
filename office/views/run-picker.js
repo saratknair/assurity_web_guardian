@@ -14,15 +14,12 @@
  * No DOM access at import time. DOM is built with office/lib/dom.js only.
  */
 import { el, setChildren } from "../lib/dom.js";
+import { formatLocalDateTime } from "../lib/format.js";
 
-/** Pure: option text with date, time (UTC) and health. */
-export function runOptionLabel(run) {
+/** Pure: option text with date, local time (zone shown) and health. timeZone is for tests. */
+export function runOptionLabel(run, timeZone) {
   const r = run || {};
-  let when = "date not recorded";
-  if (typeof r.finishedAt === "string") {
-    const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(r.finishedAt);
-    when = m ? m[1] + " " + m[2] + " UTC" : r.finishedAt;
-  }
+  const when = formatLocalDateTime(r.finishedAt, timeZone);
   const health = typeof r.health === "string" && r.health ? r.health : "not recorded";
   return when + ", health " + health;
 }

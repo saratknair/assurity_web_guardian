@@ -2,7 +2,8 @@
 //
 // Requirements 4.7, 5.6, 5.9, 6.1 to 6.6, 16.11. A missing run id or run date
 // is rendered as the literal RUN_NOT_RECORDED; no value is ever assumed.
-// Dates are formatted in UTC so the output is deterministic everywhere.
+// Dates are formatted in the viewer's local time zone with the zone shown.
+// An optional timeZone argument lets tests fix the zone.
 //
 // Diff_Image colours come from pixelmatch defaults as called by
 // src/agents/visual-compare.ts ({ threshold: 0.1 } only): changed pixels are
@@ -32,32 +33,27 @@ function isObj(v) {
 function str(v) {
   return typeof v === "string" ? v.trim() : "";
 }
-function pad2(n) {
-  return (n < 10 ? "0" : "") + n;
-}
 function roleOf(r) {
   return r === "baseline" || r === "diff" ? r : "current";
 }
 
 /** "27 Oct 2026 08:15 UTC", or RUN_NOT_RECORDED when absent or unparseable. */
-export function formatRunDate(iso) {
+export function formatRunDate(iso, timeZone) {
   const s = str(iso);
   if (!s) return RUN_NOT_RECORDED;
   const t = Date.parse(s);
   if (!Number.isFinite(t)) return RUN_NOT_RECORDED;
-  const d = new Date(t);
-  return (
-    d.getUTCDate() +
-    " " +
-    MONTHS[d.getUTCMonth()] +
-    " " +
-    d.getUTCFullYear() +
-    " " +
-    pad2(d.getUTCHours()) +
-    ":" +
-    pad2(d.getUTCMinutes()) +
-    " UTC"
-  );
+  try {
+    const opts = { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZoneName: "short" };
+    if (timeZone) opts.timeZone = timeZone;
+    const p = {};
+    new Intl.DateTimeFormat("en-NZ", opts).formatToParts(new Date(t)).forEach((x) => {
+      p[x.type] = x.value;
+    });
+    return Number(p.day) + " " + MONTHS[Number(p.month) - 1] + " " + p.year + " " + p.hour + ":" + p.minute + " " + (p.timeZoneName || "");
+  } catch (e) {
+    return RUN_NOT_RECORDED;
+  }
 }
 
 function facts(ctx) {

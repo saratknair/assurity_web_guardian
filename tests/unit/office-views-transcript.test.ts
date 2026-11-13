@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 // @ts-expect-error plain browser ES module without type declarations
-import { rowModel, currentIndex } from "../../office/views/transcript.js";
+import { rowModel, currentIndex, entryEnded } from "../../office/views/transcript.js";
 // @ts-expect-error plain browser ES module without type declarations
 import { noticeItems } from "../../office/views/notices.js";
 
@@ -32,6 +32,12 @@ describe("office transcript row model", () => {
   it("shows no links when nothing links", () => {
     const r = rowModel({ id: "e2", startMs: 0, agent: "A" }, "run1");
     expect(r.links).toEqual([]);
+  });
+
+  it("entryEnded is true only once the entry is closed and endMs <= t", () => {
+    expect(entryEnded({ startMs: 0, endMs: 500 }, 300)).toBe(false);
+    expect(entryEnded({ startMs: 0, endMs: 500 }, 500)).toBe(true);
+    expect(entryEnded({ startMs: 0, endMs: 0, open: true }, 900)).toBe(false);
   });
 
   it("currentIndex is -1 before the first entry", () => {

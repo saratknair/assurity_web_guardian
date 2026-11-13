@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 // @ts-expect-error plain browser ES module without type declarations
 import { buildInspectorModel, describeSelection, EMPTY_TEXT } from "../../office/views/inspector.js";
 // @ts-expect-error plain browser ES module without type declarations
+import { TEMPLATE_STATEMENT } from "../../office/lib/honesty.js";
+// @ts-expect-error plain browser ES module without type declarations
 import { SHORTCUTS } from "../../office/views/help.js";
 
 function entry(over: Record<string, unknown>) {
@@ -45,8 +47,27 @@ describe("office inspector model", () => {
   it("flags template steps and uses not recorded for missing results", () => {
     const m = buildInspectorModel({ timeline: tl, t: 1000, selection: { type: "agent", id: "Quality_Analysis_Agent" }, index });
     expect(m.isTemplate).toBe(true);
-    expect(m.templateText).toContain("Template steps use fixed text, not AI.");
+    expect(m.templateText).toContain(TEMPLATE_STATEMENT);
     expect(m.rows[0].result).toEqual(["not recorded"]);
+  });
+
+  it("hides results and final duration until the entry has ended", () => {
+    const sel = { type: "station", id: "browser-bay" };
+    const during = buildInspectorModel({ timeline: tl, t: 300, selection: sel, index });
+    expect(during.rows.length).toBe(1);
+    expect(during.rows[0].result).toEqual(["In progress"]);
+    expect(during.rows[0].duration).toBe("running");
+    expect(during.evidence).toBeNull();
+    const after = buildInspectorModel({ timeline: tl, t: 600, selection: sel, index });
+    expect(after.rows[0].result).toEqual(["Screenshot saved: yes"]);
+    expect(after.rows[0].duration).toBe("500 ms");
+  });
+
+  it("treats open entries as in progress even past their endMs", () => {
+    const open = { ...tl, entries: [entry({ id: "o", startMs: 100, endMs: 100, open: true, result: { saved: true } })] };
+    const m = buildInspectorModel({ timeline: open, t: 4000, selection: { type: "station", id: "browser-bay" }, index });
+    expect(m.rows[0].result).toEqual(["In progress"]);
+    expect(m.rows[0].duration).toBe("running");
   });
 
   it("ignores unknown selections", () => {

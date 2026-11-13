@@ -2,6 +2,7 @@
 // No DOM access, no clock, no randomness. buildTimeline never throws.
 // Nothing is inferred: a Legacy_Run yields a coarse timeline only.
 
+import { formatDuration } from "./format.js";
 import { STEP_STATION, STEP_AGENT, STEP_IS_TEMPLATE, TEMPLATE_LABEL, isStepName } from "./stations.js";
 
 export const SETUP_PLACEHOLDER_AGENTS = Object.freeze(["Discovery crawler", "Inventory_Agent", "Specification_Agent"]);
@@ -475,7 +476,96 @@ export function resultLines(entry) {
   return out;
 }
 
+const CAPTION_VERB = Object.freeze({
+  "load": "Loading",
+  "screenshot": "Taking screenshot of",
+  "visual-compare": "Comparing",
+  "accessibility-scan": "Scanning",
+  "test-plan": "Planning tests for",
+  "compare": "Reviewing results for",
+  "notes": "Writing notes for",
+  "triage": "Triaging",
+  "history": "Updating history",
+  "decisions": "Applying decisions",
+});
+
+// Multi-segment paths keep only the last segment: "/a/b/c/" -> ".../c/".
+function shortenPath(p) {
+  const segs = p.split("/").filter(function (s) { return s !== ""; });
+  if (segs.length <= 1) return p;
+  return ".../" + segs[segs.length - 1] + (p.charAt(p.length - 1) === "/" ? "/" : "");
+}
+
+// URL pathname ("/" for home); falls back to the slug, or "" when neither is usable.
+function captionPath(pageUrl, slug) {
+  if (typeof pageUrl === "string" && pageUrl) {
+    try {
+      const p = new URL(pageUrl, "http://office.invalid").pathname;
+      return shortenPath(p === "" ? "/" : p);
+    } catch (_err) { /* fall through to slug */ }
+  }
+  return typeof slug === "string" ? slug : "";
+}
+
+/**
+ * Short plain-text caption for a working entry: "<verb> <page path> (<viewport>)".
+ * Pure. Coarse (agent) entries have no step, page or viewport, so they read
+ * "Working: <agent>".
+ */
+export function activityCaption(entry) {
+  if (!entry || typeof entry !== "object") return "";
+  if (entry.kind === "skip") {
+    const sp = captionPath(entry.pageUrl, entry.slug);
+    return sp ? "Skipping " + sp : "Skipping page";
+  }
+  const verb = typeof entry.step === "string" && Object.prototype.hasOwnProperty.call(CAPTION_VERB, entry.step)
+    ? CAPTION_VERB[entry.step] : null;
+  if (!verb) return entry.agent ? "Working: " + entry.agent : "Working";
+  let s = verb;
+  const path = PAGE_LEVEL_FREE[entry.step] ? "" : captionPath(entry.pageUrl, entry.slug);
+  if (path) s += " " + path;
+  if (entry.viewport) s += " (" + entry.viewport + ")";
+  return s;
+}
+
 const EVIDENCE_STEPS = Object.freeze({ "screenshot": true, "visual-compare": true, "accessibility-scan": true });
+
+// Presentation-only minimum time (ms of playback position) a short entry stays highlighted.
+export const HIGHLIGHT_HOLD_MS = 1500;
+
+/**
+ * Per-agent highlight state at t: { [agent]: { working, held, entry, caption } }.
+ * Considers each agent's latest entry started at or before t. `working` is true
+ * while t is inside the recorded [start, end); `held` is true when t >= end and t is
+ * before min(start + holdMs, next start of the same agent). Agents whose latest
+ * entry is neither working nor held are omitted. Pure function of (tl, t, holdMs).
+ */
+export function highlightAt(tl, t, holdMs) {
+  const hold = typeof holdMs === "number" && Number.isFinite(holdMs) && holdMs >= 0 ? holdMs : HIGHLIGHT_HOLD_MS;
+  const pos = clampT(tl, t);
+  const n = countAt(tl, pos);
+  const latest = Object.create(null);
+  for (let i = 0; i < n; i++) {
+    const e = tl.entries[i];
+    if (e.kind === "marker" || e.id === "run-finished" || !e.agent) continue;
+    latest[e.agent] = e; // entries are sorted, so the last one wins
+  }
+  const out = Object.create(null);
+  const names = Object.keys(latest);
+  for (let i = 0; i < names.length; i++) {
+    const e = latest[names[i]];
+    const working = pos < e.endMs || (e.startMs === pos && e.endMs === pos);
+    // The next entry of the same agent starts after pos (e is the latest started), so
+    // it cuts the hold off by construction; start + hold is the only other limit.
+    const held = !working && pos >= e.endMs && pos < e.startMs + hold;
+    if (!working && !held) continue;
+    let caption = activityCaption(e);
+    const duration = Math.max(0, e.endMs - e.startMs);
+    if (!e.open && (held || duration < hold)) caption += " (took " + formatDuration(duration) + ")";
+    out[names[i]] = { working, held, entry: e, caption };
+  }
+  return out;
+}
 
 /**
  * Snapshot of the office at position t. Pure function of (tl, t).
@@ -502,9 +592,14 @@ export function stateAt(tl, t) {
     latestByStation[e.station] = e;
   }
 
+  const hl = highlightAt(tl, pos);
+  const highlightedIdx = Object.create(null);
   const figures = figureOrder.map((name) => {
     const e = figureMap[name];
-    return { agent: name, template: e.template, station: e.station, working: activeIds[e.index] === true, entryId: e.id };
+    const h = hl[name];
+    if (h) highlightedIdx[h.entry.index] = true;
+    return { agent: name, template: e.template, station: e.station, working: activeIds[e.index] === true, entryId: e.id,
+      highlighted: !!h && (h.working || h.held), caption: h ? h.caption : "" };
   });
 
   const screens = {};
@@ -514,7 +609,7 @@ export function stateAt(tl, t) {
     const done = e.endMs <= pos && !e.open;
     const lines = [];
     if (e.step) {
-      lines.push("Step: " + e.step + (e.template ? " (" + TEMPLATE_LABEL + ")" : ""));
+      lines.push("Step: " + e.step);
       if (e.pageUrl || e.slug) lines.push("Page: " + (e.pageUrl || e.slug));
       if (e.viewport) lines.push("Viewport: " + e.viewport);
       if (done) Array.prototype.push.apply(lines, resultLines(e));
@@ -522,13 +617,14 @@ export function stateAt(tl, t) {
       lines.push("Page: " + (e.pageUrl || e.slug));
       Array.prototype.push.apply(lines, resultLines(e));
     } else {
-      lines.push("Component: " + e.agent + (e.template ? " (" + TEMPLATE_LABEL + ")" : ""));
+      lines.push("Component: " + e.agent);
       lines.push("Step, page and viewport: not recorded");
     }
     const ref = e.step && EVIDENCE_STEPS[e.step] && e.slug && e.viewport
       ? { pageUrl: e.pageUrl, slug: e.slug, viewport: e.viewport, step: e.step }
       : null;
-    screens[stationKeys[i]] = { entryId: e.id, step: e.step, done, lines, evidenceRef: ref };
+    screens[stationKeys[i]] = { entryId: e.id, step: e.step, done, lines, evidenceRef: ref,
+      highlighted: activeIds[e.index] === true || highlightedIdx[e.index] === true };
   }
 
   const started = tl.mode !== "empty";

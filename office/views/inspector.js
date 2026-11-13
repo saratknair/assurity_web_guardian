@@ -84,16 +84,18 @@ export function buildInspectorModel(model) {
 
   const listed = entriesAt(tl, t).filter((e) => (e.kind === "step" || e.kind === "agent" || e.kind === "skip") && belongs(e, d));
   const rows = listed.map((e) => {
-    const lines = resultLines(e);
+    const ended = e.open !== true && e.endMs <= t;
+    const lines = ended ? resultLines(e) : [];
     return {
+      ended,
       id: e.id,
       step: e.step || e.label || NOT_RECORDED,
       page: pageText(e),
       viewport: e.viewport || NOT_RECORDED,
       start: formatClock(e.startMs),
-      duration: e.kind === "skip" ? NOT_RECORDED : formatDuration(e.endMs - e.startMs),
-      result: lines.length ? lines : [NOT_RECORDED],
-      hasResult: lines.length > 0,
+      duration: e.kind === "skip" ? NOT_RECORDED : (ended ? formatDuration(e.endMs - e.startMs) : "running"),
+      result: !ended ? ["In progress"] : (lines.length ? lines : [NOT_RECORDED]),
+      hasResult: !ended || lines.length > 0,
       pageLink: entryLink(runId, e),
       findings: entryFindingLinks(runId, e).map((f) => ({ key: f.key, ruleId: f.ruleId || f.key, link: f.link })),
     };
@@ -205,7 +207,7 @@ export function createInspector(host, handlers) {
     const nodes = [
       el("h3", { text: vm.name + " (" + vm.kind + ")" }),
       el("p", { text: vm.description }),
-      el("p", { text: "Automated template steps: " + vm.templateText }),
+      vm.isTemplate ? el("p", { text: vm.templateText }) : null,
       el("p", { text: "Steps: " + vm.stepsText }),
     ];
     if (vm.notice) nodes.push(el("p", { class: "notice", text: vm.notice }));

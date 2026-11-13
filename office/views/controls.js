@@ -1,7 +1,7 @@
 /**
  * Playback controls view.
  *
- * createControls(host, handlers) -> { update(model), dispose() }
+ * createControls(host, handlers, readAloudHost?) -> { update(model), dispose() }
  *
  * model: {
  *   hasRun: boolean,            // false disables everything
@@ -26,6 +26,8 @@ import { SPEEDS } from "../lib/clock.js";
 
 export const LEGACY_JUMP_NOTE = "Pages were not recorded for this run, so jump to page is unavailable.";
 
+export const READ_ALOUD_LABEL = "Read steps aloud (screen reader)";
+
 /** Pure: aria-valuetext for the scrubber, e.g. "00:12.3 of 01:35.0, step accessibility-scan". */
 export function scrubberValueText(t, durationMs, step) {
   const base = formatClock(t) + " of " + formatClock(durationMs);
@@ -39,7 +41,7 @@ export function playButtonLabel(playing) {
 
 let uid = 0;
 
-export function createControls(host, handlers) {
+export function createControls(host, handlers, readAloudHost) {
   const h = handlers || {};
   const id = "ctl" + (uid++);
   const last = {};
@@ -77,7 +79,7 @@ export function createControls(host, handlers) {
 
   const announceBox = el("input", { type: "checkbox", id: id + "-announce" });
   const announceField = el("div", { class: "row" }, [
-    announceBox, el("label", { for: id + "-announce", text: "Announce steps" }),
+    announceBox, el("label", { for: id + "-announce", text: READ_ALOUD_LABEL }),
   ]);
 
   const scrubber = el("input", {
@@ -91,7 +93,13 @@ export function createControls(host, handlers) {
     role: "toolbar", "aria-label": "Playback", class: "playback-controls__bar",
   }, [playBtn, prevBtn, nextBtn, speedField, resetBtn]);
 
-  setChildren(host, [toolbar, scrubField, jumpField, jumpNote, announceField]);
+  // The read-aloud toggle lives beside the keyboard shortcuts help when a host is given.
+  if (readAloudHost) {
+    setChildren(host, [toolbar, scrubField, jumpField, jumpNote]);
+    setChildren(readAloudHost, announceField);
+  } else {
+    setChildren(host, [toolbar, scrubField, jumpField, jumpNote, announceField]);
+  }
 
   on(playBtn, "click", function () {
     call(last.playing ? "onPause" : "onPlay");
@@ -149,6 +157,7 @@ export function createControls(host, handlers) {
     for (let i = 0; i < cleanups.length; i++) cleanups[i]();
     cleanups.length = 0;
     setChildren(host, null);
+    if (readAloudHost) setChildren(readAloudHost, null);
   }
 
   update({});
