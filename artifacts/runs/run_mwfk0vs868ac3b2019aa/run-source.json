@@ -1,0 +1,6 @@
+{
+  "trigger": "workflow_dispatch",
+  "githubRunId": "43520307783",
+  "sha": "a076228e9c7e129b3dcb4f28387661726b722339",
+  "eventName": "workflow_dispatch"
+}
