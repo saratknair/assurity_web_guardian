@@ -22,8 +22,6 @@
   "dependencies": {
     "@axe-core/playwright": "^4.10.0",
     "@playwright/test": "^1.48.0",
-    "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1",
     "pixelmatch": "^6.0.0",
     "pngjs": "^7.0.0"
   },

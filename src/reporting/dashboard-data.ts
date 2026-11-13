@@ -37,8 +37,7 @@ export interface DashboardAiItem {
 }
 
 /**
- * The data contract read by the dashboard in both static (Pages) and live
- * (Event_Server) modes. Shape matches design.md → Data Models → DashboardData.
+ * The data contract read by the dashboard (static, published data). Shape matches design.md → Data Models → DashboardData.
  */
 export interface DashboardData {
   generatedAt: string;

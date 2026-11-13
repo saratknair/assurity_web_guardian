@@ -24,13 +24,12 @@ on:
   workflow_dispatch: {}
   # Publish-path changes on main re-run Guardian (27.1, 27.2, 27.6). Branch is
   # exactly main (no wildcard); runs-data is never a trigger, so the runs-data
-  # push by commit-runs-data cannot start a run. config/schedule.json is excluded.
+  # push by commit-runs-data cannot start a run.
   push:
     branches:
       - main
     paths:
       - "config/**"
-      - "!config/schedule.json"
       - "baselines/**"
       - "baselines-visual/**"
       - ".github/workflows/guardian.yml"
@@ -179,11 +178,7 @@ jobs:
         run: node dist/publish/build-published-data.js ./_site
       - name: Add static dashboard to site
         # Copy the static dashboard app alongside the sanitized data.
-        # config.js selects static mode so the published site never probes the
-        # loopback Event_Server (local dev keeps the shipped no-op config.js).
-        run: |
-          cp -r dashboard/. ./_site/
-          printf 'window.AWG_MODE = "static";\n' > ./_site/config.js
+        run: cp -r dashboard/. ./_site/
       - name: Self-scan dashboard
         # Non-blocking automated axe check of the built Dashboard (loopback only,
         # not routed through the SiteGateway). Writes _site/data/self-scan.json and
