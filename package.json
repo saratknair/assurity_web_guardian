@@ -14,7 +14,8 @@
     "run": "node dist/index.js run",
     "approve": "node dist/index.js approve",
     "list-pending": "node dist/index.js list-pending",
-    "report": "node dist/index.js report"
+    "report": "node dist/index.js report",
+    "scan:history": "node scripts/dev/scan-history-comments.mjs"
   },
   "engines": {
     "node": ">=20"
