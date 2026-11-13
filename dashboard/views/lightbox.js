@@ -32,12 +32,6 @@ function getDialog() {
   return d;
 }
 
-/** Close the lightbox if open; focus returns to the opener via the close event. */
-export function closeLightbox() {
-  const d = dialogEl || document.getElementById("lightbox");
-  if (d && d.open) d.close();
-}
-
 /**
  * Open the lightbox with a full-size image and its caption.
  * img: { src, alt, caption }; openerEl: the control that gets focus back.

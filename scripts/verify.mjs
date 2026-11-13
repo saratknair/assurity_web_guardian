@@ -350,10 +350,8 @@ try {
 //         no 127.0.0.1/localhost);
 //       - dashboard/app.js (the render path) contains no absolute URL,
 //         127.0.0.1/localhost, or EventSource;
-//       - dashboard/data-source.js STATIC loader fetches only the relative
-//         `./data/dashboard.json`, and any 127.0.0.1/EventSource reference is
-//         confined to the clearly-labelled LIVE branch (the loopback constant
-//         is only used by loadLive, never the static path);
+//       - dashboard/data-source.js loadStatic fetches only the relative
+//         `./data/dashboard.json` and never references loopback or EventSource;
 //       - office/lib/data.js resolves `../../data/` relative to itself, has no
 //         EventSource and no http(s) URL literal.
 try {
@@ -372,8 +370,7 @@ try {
   if (LOOPBACK.test(appJs)) problems.push("app.js references loopback");
   if (/EventSource/.test(appJs)) problems.push("app.js opens EventSource");
 
-  // data-source.js — static loader must use the relative data URL; any loopback
-  // use must be inside the live loader, never the static one.
+  // data-source.js — the static loader must use the relative data URL.
   const dsJs = readFileSync(resolve("dashboard/data-source.js"), "utf8");
   if (!dsJs.includes("./data/dashboard.json")) problems.push("data-source.js missing relative static data URL");
   // The static loader function body must not reference loopback or EventSource.

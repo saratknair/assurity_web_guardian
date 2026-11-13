@@ -39,11 +39,6 @@ export function formatPercent(p) {
   return v.toFixed(1) + "%";
 }
 
-export function formatCount(n) {
-  const v = num(n);
-  return v === null ? NOT_RECORDED : String(Math.round(v));
-}
-
 export function plural(n, one, many) {
   return n + " " + (n === 1 ? one : (many || one + "s"));
 }

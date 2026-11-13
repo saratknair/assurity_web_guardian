@@ -62,18 +62,6 @@ export function stationAnchor(index, count, slot) {
   return { x: base.x + Math.cos(a) * side, y: 0, z: base.z + Math.sin(a) * side };
 }
 
-// Idle figures wait nearer the ring centre, further from the desk.
-export const STAND_BACK_RADIUS = 2.9;
-
-export function standBackAnchor(index, count, slot) {
-  const a = stationAngle(index, count);
-  const base = polar(STAND_BACK_RADIUS, a);
-  const s = slot && slot > 0 ? slot : 0;
-  if (s === 0) return base;
-  const side = (s % 2 === 1 ? 1 : -1) * Math.ceil(s / 2) * 0.9;
-  return { x: base.x + Math.cos(a) * side, y: 0, z: base.z + Math.sin(a) * side };
-}
-
 // Idle figures wait beside their home Station, on the ring (outer) side of the
 // desk and offset sideways, so they are neither in the scene centre nor on the
 // working spot. Slots spread further along the tangent so figures never overlap.

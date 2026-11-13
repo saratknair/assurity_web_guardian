@@ -67,7 +67,7 @@
 // - Loaders reject with an Error whose message names the failing file.
 // ---------------------------------------------------------------------------
 
-import { resolveDataSource, loadPublished } from "./data-source.js";
+import { loadPublished } from "./data-source.js";
 import { parseRoute, formatRoute } from "./lib/route.js";
 import { normalizeRun } from "./lib/findings.js";
 
@@ -93,7 +93,6 @@ const IMPORTERS = {
 const TITLE = "Assurity Web Guardian";
 
 const state = {
-  mode: "static",
   dashboard: null,
   index: null,
   runCache: new Map(),
@@ -117,20 +116,12 @@ async function boot() {
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
   const view = viewEl();
   try {
-    const src = await resolveDataSource();
-    state.mode = src.mode;
-    if (src.mode === "static") {
-      const [index, dashboard] = await Promise.all([
-        loadPublished("index.json"),
-        loadPublished("dashboard.json"),
-      ]);
-      state.index = index;
-      state.dashboard = dashboard;
-    } else {
-      state.dashboard = await src.load();
-      try { state.index = await loadPublished("index.json"); } catch (e) { state.index = null; }
-      showLiveNotice();
-    }
+    const [index, dashboard] = await Promise.all([
+      loadPublished("index.json"),
+      loadPublished("dashboard.json"),
+    ]);
+    state.index = index;
+    state.dashboard = dashboard;
   } catch (err) {
     console.error("[dashboard] boot failed:", err);
     bootFailed = true;
@@ -144,18 +135,6 @@ async function boot() {
   wireNavigation();
   state.route = parseRoute(location.hash);
   await dispatch(state.route, null, true);
-}
-
-function showLiveNotice() {
-  const nav = document.getElementById("primary-nav");
-  if (!nav || document.getElementById("mode-notice")) return;
-  const n = document.createElement("p");
-  n.id = "mode-notice";
-  n.className = "notice notice--warn";
-  n.textContent =
-    "Live mode: the overview shows data from the local Event Server. " +
-    "Run, page, finding and visual comparison views need the published site.";
-  nav.insertAdjacentElement("afterend", n);
 }
 
 function renderHeader(data) {
@@ -271,44 +250,37 @@ async function dispatch(route, restore, initial) {
   const ctx = makeCtx(route, token);
   let announceText = "";
 
-  if (state.mode === "live" && route.view !== "overview" && !state.index) {
-    view.textContent = "";
-    liveOnlyPanel(view);
-  } else {
-    let mod = null;
-    let loadErr = null;
-    try { mod = await IMPORTERS[route.view](); } catch (err) { loadErr = err; }
-    if (token !== renderToken) return;
-    view.textContent = "";
-    if (mod && typeof mod.render === "function") {
-      try {
-        const out = await mod.render(view, ctx);
-        if (token !== renderToken) return;
-        if (out && typeof out.announce === "string") announceText = out.announce;
-      } catch (err) {
-        if (token !== renderToken) return;
-        console.error("[dashboard] view failed:", route.view, err);
-        view.textContent = "";
-        if (err && err.file) {
-          loadErrorPanel(view, err);
-          alertMsg("The data file " + err.file + " could not be loaded" + (err.status ? " (HTTP " + err.status + ")" : "") + ". Retry or go to the overview.");
-        } else {
-          errorPanel(view, "This view could not be shown", errMsg(err));
-          alertMsg("Something went wrong: " + errMsg(err) + ". Use the link to go to the overview.");
-        }
+  let mod = null;
+  let loadErr = null;
+  try { mod = await IMPORTERS[route.view](); } catch (err) { loadErr = err; }
+  if (token !== renderToken) return;
+  view.textContent = "";
+  if (mod && typeof mod.render === "function") {
+    try {
+      const out = await mod.render(view, ctx);
+      if (token !== renderToken) return;
+      if (out && typeof out.announce === "string") announceText = out.announce;
+    } catch (err) {
+      if (token !== renderToken) return;
+      console.error("[dashboard] view failed:", route.view, err);
+      view.textContent = "";
+      if (err && err.file) {
+        loadErrorPanel(view, err);
+        alertMsg("The data file " + err.file + " could not be loaded" + (err.status ? " (HTTP " + err.status + ")" : "") + ". Retry or go to the overview.");
+      } else {
+        errorPanel(view, "This view could not be shown", errMsg(err));
+        alertMsg("Something went wrong: " + errMsg(err) + ". Use the link to go to the overview.");
       }
-    } else if (route.view === "overview") {
-      // FALLBACK ONLY: used when views/overview.js cannot be loaded (it is
-      // added by a later task). Replace-by-module: once the module exists this
-      // branch is never taken.
-      console.warn("[dashboard] overview module unavailable, using built-in fallback:", loadErr);
-      fallbackOverview(view);
-    } else {
-      const file = VIEW_MODULES[route.view];
-      const msg = "The view module " + file + " could not be loaded" + (loadErr && loadErr.message ? " (" + loadErr.message + ")" : "") + ".";
-      errorPanel(view, "This view is not available", msg);
-      alertMsg(msg);
     }
+  } else if (route.view === "overview") {
+    // Fallback used only when views/overview.js cannot be loaded.
+    console.warn("[dashboard] overview module unavailable, using built-in fallback:", loadErr);
+    fallbackOverview(view);
+  } else {
+    const file = VIEW_MODULES[route.view];
+    const msg = "The view module " + file + " could not be loaded" + (loadErr && loadErr.message ? " (" + loadErr.message + ")" : "") + ".";
+    errorPanel(view, "This view is not available", msg);
+    alertMsg(msg);
   }
 
   prevViewKey = key;
@@ -515,22 +487,6 @@ function notFound(host) {
   const a = document.createElement("a");
   a.href = "#/";
   a.textContent = "Go to the overview";
-  q.appendChild(a);
-  host.appendChild(q);
-}
-
-function liveOnlyPanel(host) {
-  const h = document.createElement("h2");
-  h.textContent = "Needs the published site";
-  host.appendChild(h);
-  const p = document.createElement("p");
-  p.className = "notice notice--warn";
-  p.textContent = "This view needs the published site. Live mode only shows the overview.";
-  host.appendChild(p);
-  const q = document.createElement("p");
-  const a = document.createElement("a");
-  a.href = "#/";
-  a.textContent = "Back to the overview";
   q.appendChild(a);
   host.appendChild(q);
 }
