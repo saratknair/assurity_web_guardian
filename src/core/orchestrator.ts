@@ -14,7 +14,7 @@ import { AppendOnlyLog } from "../telemetry/audit-log.js";
 import { TelemetryEmitter } from "../telemetry/telemetry-emitter.js";
 import { SiteGateway } from "./site-gateway.js";
 import { compare, type DeterministicCheck, type Outcome } from "../agents/comparator.js";
-import { qualityAnalysis, visualExplanation, triageRecommendation, type AiItem } from "../agents/ai-agents.js";
+import { qualityAnalysis, visualExplanation, triageRecommendation, type AiItem } from "../agents/template-text.js";
 import { latestBaselineVersion, generateTestFromBaseline, writeTestManifest, type GeneratedTest } from "../agents/test-generator.js";
 import { slugify } from "../agents/spec-generator.js";
 import { takeScreenshot } from "../agents/screenshot.js";

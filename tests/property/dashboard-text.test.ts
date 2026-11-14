@@ -8,7 +8,7 @@ import { plainEnglishSummary, shownElementsText, scopeSentence } from "../../das
 import { isGenericGuidance, visibleGuidance, GENERIC_GUIDANCE_CORES } from "../../dashboard/lib/guidance.js";
 // @ts-expect-error plain browser ES module without type declarations
 import { RULE_CATALOGUE } from "../../dashboard/rule-catalogue.js";
-import { qualityAnalysis, visualExplanation } from "../../src/agents/ai-agents.js";
+import { qualityAnalysis, visualExplanation } from "../../src/agents/template-text.js";
 import { isGenericGuidance as tsIsGeneric, GENERIC_GUIDANCE_CORES as tsCores } from "../../src/publish/guidance.js";
 
 const RUNS = { numRuns: 100 };
@@ -196,7 +196,7 @@ describe("Property 22: Automated guidance is specific, linked, and honest (visib
     );
   });
 
-  it("every legacy template text from src/agents/ai-agents.ts is generic", () => {
+  it("every legacy template text from src/agents/template-text.ts is generic", () => {
     fc.assert(
       fc.property(arbLegacyOutcome, (o) => {
         const outcome = o as never;

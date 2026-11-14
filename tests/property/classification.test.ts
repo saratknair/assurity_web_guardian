@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { compare } from "../../src/agents/comparator.js";
-import { qualityAnalysis, triageRecommendation, visualExplanation } from "../../src/agents/ai-agents.js";
+import { qualityAnalysis, triageRecommendation, visualExplanation } from "../../src/agents/template-text.js";
 
 describe("classification", () => {
   // Property 19: a difference without a violated expectation is never a Failed_Check.

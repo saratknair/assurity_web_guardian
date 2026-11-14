@@ -3,7 +3,7 @@ import { buildGuidance, isGenericGuidance } from "../../src/publish/guidance.js"
 import { DEFAULT_CAPS } from "../../src/publish/evidence.js";
 import type { BuiltRun } from "../../src/publish/run-findings.js";
 import type { VisualItem } from "../../src/publish/visual.js";
-import * as aiAgents from "../../src/agents/ai-agents.js";
+import * as aiAgents from "../../src/agents/template-text.js";
 
 const URL1 = "https://example.test/a";
 

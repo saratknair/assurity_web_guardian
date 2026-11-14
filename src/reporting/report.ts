@@ -1,7 +1,7 @@
 import { writeFileSync } from "node:fs";
 import { join, relative, isAbsolute } from "node:path";
 import type { Outcome, DeterministicCheck } from "../agents/comparator.js";
-import type { AiItem } from "../agents/ai-agents.js";
+import type { AiItem } from "../agents/template-text.js";
 import type { VisualResult } from "../agents/visual-compare.js";
 
 /**
