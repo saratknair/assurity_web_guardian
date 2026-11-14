@@ -1,16 +1,16 @@
 # ==========================================================================
-# Assurity Web Guardian — root .gitignore
+# Web Guardian - root .gitignore
 #
-# Primary purpose (Requirement 8 "No Secrets In The Public Repository"):
-# keep tokens, keys, credentials, and local environment files out of the
-# public repository. Any value the Cloud_Runner needs is supplied only as a
-# GitHub Actions encrypted secret (Action_Secret) — never a committed file.
+# Keeps tokens, keys, credentials and local environment files out of the
+# repository. Any value the Cloud_Runner needs is supplied only as a GitHub
+# Actions encrypted secret, never a committed file.
 #
-# NOTE: dist/ and artifacts/ ARE ignored here (see the generated build
-# section below). Raw run artifacts are published to the runs-data branch.
+# Generated output is ignored too: dist/ (compiled build), artifacts/ (raw
+# run output, published to the runs-data branch instead), _site/ (CI Pages
+# staging), test-results/ and checkpoints/.
 # ==========================================================================
 
-# --- Secrets / credentials / environment (Req 8.1, 8.3, 8.4) --------------
+# --- Secrets / credentials / environment -----------------------------------
 # Environment files
 .env
 .env.*
@@ -63,8 +63,8 @@ pnpm-debug.log*
 _*.log
 _*.txt
 
-# --- Generated publish bundle (task 13.1) ----------------------------------
-# The local published Pages bundle (Req 6.7) is build output assembled from
+# --- Generated publish bundle ----------------------------------------------
+# The local published Pages bundle is build output assembled from
 # artifacts/runs + dashboard/ + the replay office build. It is generated on
 # every successful local run and must never be committed. Staging/backup
 # siblings created during the atomic swap are also transient.
@@ -97,12 +97,12 @@ Thumbs.db
 *.local
 
 # --- Generated build + raw run artifacts (kept OFF main) -------------------
-# Phase 2 complete: raw per-run artifacts are published to the runs-data
-# branch by CI and the Pages site; they are large (hundreds of MB) and
-# regenerated each run, so they are NOT committed to main. dist/ is compiled
-# build output (reproducible via 'npm run build').
+# Raw per-run artifacts are published to the runs-data branch by CI and the
+# Pages site; they are large (hundreds of MB) and regenerated each run, so
+# they are NOT committed to main. dist/ is compiled build output
+# (reproducible via 'npm run build').
 dist/
 artifacts/
 
-# --- Historical per-phase source snapshots (kept OFF main) -----------------
+# --- Local source snapshots (kept OFF main) --------------------------------
 checkpoints/

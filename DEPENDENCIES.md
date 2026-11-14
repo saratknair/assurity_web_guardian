@@ -2,22 +2,20 @@
 
 This ledger records the cost and licensing of dependencies introduced by the
 Guardian, so that any non-free or restrictively licensed dependency is flagged
-before adoption (Requirements 13.1, 13.2, 13.3). Versions are pinned
-(Requirement 13.1) and new dependencies prefer well-known, actively maintained
-libraries (Requirement 13.2). This is the final Phase 2 ledger.
+before adoption. Versions are pinned and new dependencies prefer well-known,
+actively maintained libraries.
 
 ## Vendored (committed, offline) libraries
 
 | Dependency | Version | License | Cost | Where | Notes |
 |------------|---------|---------|------|-------|-------|
-| Chart.js | 4.4.6 (pinned) | MIT | Free | `dashboard/vendor/chart.umd.min.js` | Charting_Library for the static Dashboard. Vendored as a committed UMD bundle and loaded same-origin (no CDN), so the Pages_Site renders with no external requests (Req 1.4, 1.5). Well-known, actively maintained. Source: `https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js`. |
+| Chart.js | 4.4.6 (pinned) | MIT | Free | `dashboard/vendor/chart.umd.min.js` | Charting_Library for the static Dashboard. Vendored as a committed UMD bundle and loaded same-origin (no CDN), so the Pages_Site renders with no external requests. Well-known, actively maintained. Source: `https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js`. |
 
 ### Chart.js vendoring status
 
-Chart.js v4.4.6 (MIT) is now VENDORED: the real pinned UMD build is committed at
+Chart.js v4.4.6 (MIT) is VENDORED: the real pinned UMD build is committed at
 `dashboard/vendor/chart.umd.min.js` (~201 KB) and loaded same-origin (no CDN), so
-the Pages_Site renders charts with no external requests (Req 1.4, 1.5). The former
-`chart.umd.min.js.NEEDS_VENDORING` placeholder has been removed. Source of the
+the Pages_Site renders charts with no external requests. Source of the
 pinned bundle: `https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js`.
 
 ## Virtual Office (vendored three.js)
@@ -30,7 +28,7 @@ recorded in `office/ASSET-LICENCES.md`.
 | Dependency | Version | License | Cost | Where | Notes |
 |------------|---------|---------|------|-------|-------|
 | three.js | r169 (0.169.0, pinned) | MIT | Free | `office/vendor/three.module.min.js`, `office/vendor/OrbitControls.js` | 3D rendering engine for the office scene. Vendored, committed, loaded via import map (no CDN, no npm dependency). Licence text at `office/vendor/three-LICENSE.txt`. See `office/ASSET-LICENCES.md` for sizes and SHA-256. |
-## Phase 2 Guardian runtime dependencies (root)
+## Guardian runtime dependencies (root)
 
 Recorded for completeness; all MIT/ISC-class permissive, free, and pinned via
 the root `package.json`.
@@ -44,11 +42,11 @@ the root `package.json`.
 | pixelmatch | ^6.0.0 | ISC | Free | Yes | Visual diff comparison. |
 | pngjs | ^7.0.0 | MIT | Free | Yes | PNG encode/decode for visual diffs. |
 
-## License summary (Req 13.2)
+## License summary
 
-No non-free or restrictively licensed dependency was introduced in Phase 2. All
+No non-free or restrictively licensed dependency is used. All
 direct runtime dependencies are under permissive or weak-copyleft licenses
 (MIT, Apache-2.0, ISC, MPL-2.0) that permit free use, redistribution, and
-vendoring. All versions are pinned (Req 13.1) and sourced from well-known,
-actively maintained libraries (Req 13.2).
+vendoring. All versions are pinned and sourced from well-known,
+actively maintained libraries.
 

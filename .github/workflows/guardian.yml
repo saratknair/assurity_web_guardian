@@ -1,15 +1,14 @@
-# Guardian Cloud_Runner (guardian-phase2-overhaul: design -> GitHub Actions Cloud_Runner)
-# Requirements: 6.2, 6.3, 6.4, 6.5, 6.6, 6.8, 7.1, 7.2, 9.1-9.5, 14.1, 14.3
+# Guardian Cloud_Runner (GitHub Actions)
 #
 # Hardening summary:
-#   - top-level permissions default to read-only (least privilege, 9.2)
-#   - every third-party action pinned to a commit SHA with a version comment (9.1)
-#   - write scope is granted per-job and never to the run job (9.3):
+#   - top-level permissions default to read-only (least privilege)
+#   - every third-party action pinned to a commit SHA with a version comment
+#   - write scope is granted per-job and never to the run job:
 #       * publish job: pages:write / id-token:write (Pages deploy only)
 #       * commit-runs-data job: contents:write (additive push of one run dir to runs-data only)
-#   - raw run artifacts are committed ONLY to the runs-data branch, never to main (7.2)
-#   - fork-PR privileged execution blocked via the `if:` guard; no pull_request_target (9.4)
-#   - no untrusted ${{ github.event.* }} interpolation into any run: shell (9.5)
+#   - raw run artifacts are committed ONLY to the runs-data branch, never to main
+#   - fork-PR privileged execution blocked via the `if:` guard; no pull_request_target
+#   - no untrusted ${{ github.event.* }} interpolation into any run: shell
 #
 # NOTE: the pinned commit SHAs below should be re-verified by a human against the
 # upstream release tags before merging. The VERSION in each trailing comment is the
@@ -18,11 +17,11 @@ name: guardian
 
 on:
   schedule:
-    # 17:00 UTC daily — satisfies the >= once/24h independent guarantee (6.3, 6.4)
+    # 17:00 UTC daily - satisfies the >= once/24h independent guarantee
     - cron: "0 17 * * *"
-  # manual on-demand dispatch (6.5)
+  # manual on-demand dispatch
   workflow_dispatch: {}
-  # Publish-path changes on main re-run Guardian (27.1, 27.2, 27.6). Branch is
+  # Publish-path changes on main re-run Guardian. Branch is
   # exactly main (no wildcard); runs-data is never a trigger, so the runs-data
   # push by commit-runs-data cannot start a run.
   push:
@@ -34,7 +33,7 @@ on:
       - "baselines-visual/**"
       - ".github/workflows/guardian.yml"
 
-# Least-privilege default token for the whole workflow (9.2)
+# Least-privilege default token for the whole workflow
 permissions:
   contents: read
 
@@ -46,14 +45,14 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    # Hard cap so a stuck run cannot hold the runner or replace published data (6.8)
+    # Hard cap so a stuck run cannot hold the runner or replace published data
     timeout-minutes: 30
-    # Fork-PR guard (9.4): run on schedule / manual dispatch / same-repo push only;
+    # Fork-PR guard: run on schedule / manual dispatch / same-repo push only;
     # for a pull_request event, require the head repo to be this repository (never a fork).
     if: >-
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository
-    # Read-only token for the run job — it never needs to write to the repo (9.2)
+    # Read-only token for the run job - it never needs to write to the repo
     permissions:
       contents: read
     steps:
@@ -65,10 +64,10 @@ jobs:
           # Node 22: pinned via the committed .nvmrc (project targets Node 22)
           node-version-file: ".nvmrc"
       - name: Install dependencies
-        # Deterministic install pinned by package-lock.json (12.1)
+        # Deterministic install pinned by package-lock.json
         run: npm ci
       - name: Install Playwright browser
-        # CI browser + OS deps install (6.2)
+        # CI browser + OS deps install
         run: npx playwright install --with-deps chromium
       - name: Build
         # Compile TypeScript -> dist/
@@ -129,8 +128,8 @@ jobs:
           echo "dispositions status: $status"
       - name: Run Guardian
         # The real orchestrated run entry is scripts/run-guardian.mjs.
-        # (dist/index.js "run" only prints a Phase-12 pointer message.)
-        # AWG_RUN_ORIGIN=cloud marks published runs as cloud-origin (7.7, 14.x).
+        # (dist/index.js "run" is not used in CI.)
+        # AWG_RUN_ORIGIN=cloud marks published runs as cloud-origin.
         # AWG_SKIP_LOCAL_PUBLISH=1: CI assembles ./_site via its own pipeline
         # (build-published-data + dashboard copy + static office copy), so the
         # orchestrator's in-process local publish would be redundant here.
@@ -140,7 +139,7 @@ jobs:
           # GitHub-controlled enum (schedule | workflow_dispatch | ...), not payload data.
           AWG_RUN_TRIGGER: ${{ github.event_name }}
           # Run-source markers (GitHub-controlled values only) so the console can
-          # map a publish to a cloud run (27.6, 29.1).
+          # map a publish to a cloud run.
           AWG_GH_RUN_ID: ${{ github.run_id }}
           AWG_GH_SHA: ${{ github.sha }}
           AWG_GH_EVENT_NAME: ${{ github.event_name }}
@@ -207,7 +206,7 @@ jobs:
       - name: Upload raw run artifacts
         # Jobs don't share a filesystem, so hand the FULL RAW per-run artifacts
         # (artifacts/runs/<id>/) to the downstream commit-runs-data job as a
-        # workflow artifact. This keeps the run job read-only (9.2) while still
+        # workflow artifact. This keeps the run job read-only while still
         # letting a narrowly-scoped job push full fidelity to the runs-data branch.
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
@@ -230,7 +229,7 @@ jobs:
   publish:
     needs: run
     runs-on: ubuntu-latest
-    # Write scope granted ONLY here, and ONLY what Pages deployment needs (9.3)
+    # Write scope granted ONLY here, and ONLY what Pages deployment needs
     permissions:
       pages: write
       id-token: write
@@ -244,29 +243,29 @@ jobs:
 
   # Dedicated job that commits the run's FULL RAW artifacts to the `runs-data`
   # branch so the local machine can later pull full-fidelity cloud runs via
-  # Cloud_Sync (Req 7.1, 7.2). It is a separate job — not part of `run` — so the
-  # `run` job keeps its read-only token (9.2/9.3 hardening). This is the ONLY job
+  # Cloud_Sync. It is a separate job, not part of `run`, so the
+  # `run` job keeps its read-only token (hardening). This is the ONLY job
   # (besides Pages publish) granted `contents: write`, and even here write is the
   # single capability needed to push one new run directory.
   #
   # Filesystem flow between jobs (jobs don't share a workspace):
-  #   run  ──upload-artifact "raw-runs" (artifacts/runs/)──▶  commit-runs-data
-  #   commit-runs-data: checkout runs-data (additive) → download raw-runs →
-  #                     discover RUN_ID(s) → path-scoped add → commit → push.
+  #   run  --upload-artifact "raw-runs" (artifacts/runs/)-->  commit-runs-data
+  #   commit-runs-data: checkout runs-data (additive) -> download raw-runs ->
+  #                     discover RUN_ID(s) -> path-scoped add -> commit -> push.
   commit-runs-data:
     needs: run
     runs-on: ubuntu-latest
-    # Only this job may write repo contents, and only to push one run dir (9.3).
+    # Only this job may write repo contents, and only to push one run dir.
     permissions:
       contents: write
-    # Fork-PR guard mirrors the run job: never push from an untrusted fork (9.4).
+    # Fork-PR guard mirrors the run job: never push from an untrusted fork.
     if: >-
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository
     steps:
       # Normal checkout (default branch). This always succeeds and gives us a
       # working .git with the GITHUB_TOKEN persisted for the later push. We do NOT
-      # modify the default branch here — the next step switches onto runs-data (or
+      # modify the default branch here; the next step switches onto runs-data (or
       # creates it as an orphan) before anything is staged or committed, so no raw
       # artifact is ever added to main.
       - name: Checkout repository
@@ -320,7 +319,7 @@ jobs:
       - name: Commit new run(s) to runs-data (additive)
         # ADDITIVE ONLY: path-scope the add to artifacts/runs/<RUN_ID>/ for each run
         # the run job just produced, commit, and push. No forced push, no
-        # history rewrite — existing run dirs on runs-data are never touched, and
+        # history rewrite; existing run dirs on runs-data are never touched, and
         # raw artifacts are NEVER committed to main (this job only ever sits on the
         # runs-data branch). RUN_ID(s) are discovered from the downloaded dirs.
         run: |

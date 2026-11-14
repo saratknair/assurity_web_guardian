@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 // Chromium-only. Two projects: desktop 1440x900 and mobile 390x844.
-// No Safari/Firefox/extra devices (Req 16.5).
+// No Safari/Firefox/extra devices.
 export default defineConfig({
   testDir: './tests/generated',
   timeout: 30_000,
