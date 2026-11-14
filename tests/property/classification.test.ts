@@ -50,8 +50,8 @@ describe("classification", () => {
     expect(notSuppressed.outcomes.some((o) => o.kind === "failed-check")).toBe(false);
   });
 
-  // Property 13: AI analysis is linked, labeled, and never overwrites deterministic classification.
-  it("Property 13: AI items are separate, linked, labeled, never deterministic", () => {
+  // Property 13: template text is linked, labeled, and never overwrites deterministic classification.
+  it("Property 13: template items are separate, linked, labeled, never deterministic", () => {
     const r = compare({
       page: "https://assurity.nz/",
       deterministicChecks: [{ name: "h1", passed: false, detail: "missing" }],
@@ -65,7 +65,7 @@ describe("classification", () => {
     const qa = qualityText(detFinding);
     expect(qa.classification).toBe("ai-generated-analysis");
     expect(qa.relatedFindingId).toBe(detFinding.findingId);
-    expect(qa.label.toLowerCase()).toContain("ai-generated");
+    expect(qa.label.toLowerCase()).toContain("template text");
     // Deterministic finding keeps its own classification (not overwritten).
     expect(detFinding.classification).toBe("deterministic-test-evidence");
 

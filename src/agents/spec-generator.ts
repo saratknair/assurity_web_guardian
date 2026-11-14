@@ -15,7 +15,7 @@ export function generateDraftSpec(inv: PageInventory): string {
   lines.push(`- **URL:** ${inv.url}`);
   lines.push(`- **Generated:** ${new Date().toISOString()}`);
   lines.push("");
-  lines.push(`> This is an AI/agent-drafted specification. It is NOT a baseline`);
+  lines.push(`> This is an automatically drafted specification. It is NOT a baseline`);
   lines.push(`> until a human approves it through the Approval_Gate.`);
   lines.push("");
   lines.push(`## Title`);

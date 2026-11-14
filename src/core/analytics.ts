@@ -5,8 +5,8 @@ import { readHistoryFindings } from "../agents/a11y-history-store.js";
 /**
  * Historical analytics. DETERMINISTIC calculation over
  * completed run records. READ-ONLY: never rewrites history. Keeps objective
- * measurements strictly separate from prior AI analysis / recommendations /
- * human decisions. Previous AI output is NEVER promoted to objective evidence.
+ * measurements strictly separate from prior template analysis / recommendations /
+ * human decisions. Previous template output is NEVER promoted to objective evidence.
  */
 export interface RunSummary {
   runId: string;

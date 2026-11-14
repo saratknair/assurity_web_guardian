@@ -410,7 +410,7 @@ dialog#lightbox::backdrop { background: rgba(2, 6, 14, 0.8); }
 .lightbox__img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
 .lightbox__close { justify-self: end; }
 
-/* Legacy: AI-assisted block (old markup) */
+/* Template analysis block (stored class names kept for published markup) */
 .ai-analysis__items { display: grid; gap: 10px; }
 .ai-assisted {
   border: 2px dashed var(--guidance); border-radius: 10px; background: var(--surface); padding: 12px 14px;

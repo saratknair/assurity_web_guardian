@@ -7,7 +7,7 @@ import type { VisualResult } from "../agents/visual-compare.js";
 /**
  * Reporting. Multi-page consolidated HTML report + static
  * dashboard with an Executive view and an Operational view. Deterministic
- * evidence is visually distinct from AI-generated analysis (never shown as fact).
+ * evidence is visually distinct from template text (never shown as fact).
  */
 export interface PageReport {
   page: string;
@@ -96,7 +96,7 @@ function pageOps(p: PageReport, reportDir?: string): string {
     <div class="band det"><span class="tag">Deterministic</span><h2>Checks</h2>${checks}
       <h2>Outcomes</h2>${outcomes || "<div class='item'>none</div>"}
       <h2>Visual comparison</h2>${visual || "<div class='item'>none</div>"}</div>
-    <div class="band ai"><span class="tag">AI-generated \u2014 not a deterministic fact</span><h2>AI analysis & recommendations</h2>${ai || "<div class='item'>none</div>"}</div>
+    <div class="band ai"><span class="tag">Template text - not a deterministic fact</span><h2>Template analysis & recommendations</h2>${ai || "<div class='item'>none</div>"}</div>
     <div class="band"><h2>Evidence</h2><ul>${evidence}</ul></div>
   </details>`;
 }
@@ -138,7 +138,7 @@ export function renderReportHtml(m: ReportModel, reportDir?: string): string {
   <div class="band"><h2>Agent activity (truthful status)</h2><div class="agents">${agents}</div></div>
   <h2>Page-by-page</h2>
   ${ops}
-  <p class="disclaimer">Automated WCAG 2.2 AA checks do not establish full conformance; manual accessibility testing remains necessary. AI-generated items are interpretations, never measured facts.</p>
+  <p class="disclaimer">Automated WCAG 2.2 AA checks do not establish full conformance; manual accessibility testing remains necessary. Template text items are interpretations, never measured facts.</p>
 </div>
 </main>
 <script>${SCRIPT}</script>

@@ -27,7 +27,7 @@ export interface RunHealthPoint {
   health: "healthy" | "attention" | "failing";
 }
 
-/** One AI-assisted analysis item, always rendered with a "not a fact" label (1.8). */
+/** One template analysis item, always rendered with a "not a fact" label (1.8). */
 export interface DashboardAiItem {
   agent: string;
   label: string;
@@ -50,7 +50,7 @@ export interface DashboardData {
   findingsBySeverity: Record<string, number>;
   /** New vs recurring accessibility findings from the lifecycle (1.2). */
   a11yNewVsRecurring: { new: number; recurring: number };
-  /** AI-assisted items; every one carries `.ai-assisted` treatment. */
+  /** Template analysis items; every one carries `.ai-assisted` treatment. */
   aiItems: DashboardAiItem[];
   /** True when there are no runs - drives the empty state. */
   empty: boolean;
@@ -142,7 +142,7 @@ export function buildFindingsBySeverity(a11yFindings: { impact: string | null }[
   return out;
 }
 
-/** Collect AI-assisted items from a run's pages (or legacy top-level aiItems). */
+/** Collect template analysis items from a run's pages (or legacy top-level aiItems). */
 export function collectAiItems(pages: RunFindingPage[]): DashboardAiItem[] {
   const items: DashboardAiItem[] = [];
   for (const p of pages) {
@@ -212,7 +212,7 @@ function runPointFromEvents(runDir: string, runId: string, failedChecks: number)
  * Assemble the `DashboardData` contract from the local artifacts store.
  * Deterministic and read-only. Reuses `computeAnalytics()` for severity (via
  * the a11y history) and lifecycle, and reads per-run artifacts for the trend
- * and the latest-run page/AI breakdowns.
+ * and the latest-run page/template breakdowns.
  */
 export function buildDashboardData(
   runsRoot = "artifacts/runs",
@@ -245,7 +245,7 @@ export function buildDashboardData(
 
   const runHealthTrend = buildRunHealthTrend(runPoints);
 
-  // Latest run (newest by chronological order) drives page/AI breakdowns.
+  // Latest run (newest by chronological order) drives page/template breakdowns.
   const latestRunId = runPoints[runPoints.length - 1]?.runId;
   let latestPages: RunFindingPage[] = [];
   if (latestRunId) {

@@ -5,7 +5,8 @@ import type { Outcome } from "./comparator.js";
 /**
  * Fixed-template text generators (no model calls). Their outputs are separate,
  * linked records (relatedFindingId) classified ai-generated-analysis or
- * agent-recommendation. They never overwrite a deterministic finding's
+ * agent-recommendation (stored values kept so published runs stay readable;
+ * the text is produced from templates, not by a model). They never overwrite a deterministic finding's
  * classification and are always labeled, never presented as fact.
  */
 export interface TemplateItem {
@@ -13,7 +14,7 @@ export interface TemplateItem {
   relatedFindingId: string;
   classification: FindingClassification;
   agent: string;
-  label: string; // human-visible "AI-generated" label
+  label: string; // human-visible "Template text" label
   text: string;
   confidence?: number;
 }
@@ -25,7 +26,7 @@ export function qualityText(outcome: Outcome): TemplateItem {
     relatedFindingId: outcome.findingId,
     classification: "ai-generated-analysis",
     agent: "Quality_Analysis_Agent",
-    label: "AI-generated analysis (not a deterministic fact)",
+    label: "Template text (not a deterministic fact)",
     text:
       outcome.kind === "failed-check"
         ? `Likely impact: a failing deterministic check ("${outcome.detail}") may affect users; recommend human review.`
@@ -42,7 +43,7 @@ export function visualText(outcome: Outcome): TemplateItem | null {
     relatedFindingId: outcome.findingId,
     classification: "ai-generated-analysis",
     agent: "Visual_Explanation_Agent",
-    label: "AI-generated analysis (not a deterministic fact)",
+    label: "Template text (not a deterministic fact)",
     text: "The current screenshot differs visually from the baseline. This may be a layout or content change; a human should confirm whether it is expected.",
     confidence: 0.5,
   };

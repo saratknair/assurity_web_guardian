@@ -7,7 +7,7 @@ import { buildDashboardData } from "./dashboard-data.js";
  * Dashboard builder. Upgrades (does not replace) the static dashboard
  * with an Executive view and an Operational view driven by deterministic
  * historical analytics. Local, database-free. Evidence links use lazy loading.
- * AI-generated content stays visually distinct from deterministic evidence.
+ * Template text stays visually distinct from deterministic evidence.
  */
 function esc(s: unknown): string {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -139,7 +139,7 @@ export function buildDashboard(outPath = "artifacts/dashboard.html"): string {
   <div class="band det"><span class="tag">Deterministic evidence</span>
     <table id="ops-table"><thead><tr><th>Page</th><th>Outcome</th><th>Classification</th><th>Detail</th></tr></thead><tbody>${opsRows || "<tr><td colspan=4>No findings in latest run.</td></tr>"}</tbody></table>
   </div>
-  <p class="disclaimer">AI-generated analysis and agent recommendations appear in the per-run report, visually separated and never presented as measured fact.</p>
+  <p class="disclaimer">Template analysis and recommendations appear in the per-run report, visually separated and never presented as measured fact.</p>
 </div>
 </main>
 <script>${SCRIPT}</script>

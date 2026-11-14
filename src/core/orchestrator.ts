@@ -136,7 +136,7 @@ export function sanitizeVisual(
  * under one correlationId across ALL approved pages, emits truthful agent-status
  * events, and NEVER approves any finding or baseline. Runs deterministic checks
  * live on desktop+mobile, computes visual diffs vs approved screenshot baselines,
- * classifies outcomes, invokes AI agents (labeled), and writes the
+ * classifies outcomes, generates template text (labeled), and writes the
  * report + static dashboard. Preserves existing homepage history.
  */
 export async function runGuardian(cfg: AppConfig): Promise<string> {
@@ -299,7 +299,7 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
       );
       tel.agentStatus("Comparator", "deterministic", "completed");
 
-      // AI agents (labeled, linked).
+      // Template text (labeled, linked).
       tel.agentStatus("Quality_Analysis_Agent", "template", "working");
       const templateItems: TemplateItem[] = await recordStep(
         tel,
