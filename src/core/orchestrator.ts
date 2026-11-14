@@ -14,7 +14,7 @@ import { AppendOnlyLog } from "../telemetry/audit-log.js";
 import { TelemetryEmitter } from "../telemetry/telemetry-emitter.js";
 import { SiteGateway } from "./site-gateway.js";
 import { compare, type DeterministicCheck, type Outcome } from "../agents/comparator.js";
-import { qualityAnalysis, visualExplanation, triageRecommendation, type AiItem } from "../agents/template-text.js";
+import { qualityText, visualText, triageText, type TemplateItem } from "../agents/template-text.js";
 import { latestBaselineVersion, generateTestFromBaseline, writeTestManifest, type GeneratedTest } from "../agents/test-generator.js";
 import { slugify } from "../agents/spec-generator.js";
 import { takeScreenshot } from "../agents/screenshot.js";
@@ -167,7 +167,7 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
   tel.event("discovery.validated", { data: { approvedCount, scopeSource: scope.source } });
 
   const allOutcomes: Outcome[] = [];
-  const allAiItems: AiItem[] = [];
+  const allTemplateItems: TemplateItem[] = [];
   const pageReports: PageReport[] = [];
   const generated: GeneratedTest[] = [];
   let totalFailedChecks = 0;
@@ -301,14 +301,14 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
 
       // AI agents (labeled, linked).
       tel.agentStatus("Quality_Analysis_Agent", "template", "working");
-      const aiItems: AiItem[] = await recordStep(
+      const templateItems: TemplateItem[] = await recordStep(
         tel,
         { ...pageMeta, step: "notes", agent: "Quality_Analysis_Agent" },
         () => {
-          const items: AiItem[] = [];
+          const items: TemplateItem[] = [];
           for (const o of result.outcomes) {
-            items.push(qualityAnalysis(o));
-            const ve = visualExplanation(o);
+            items.push(qualityText(o));
+            const ve = visualText(o);
             if (ve) items.push(ve);
           }
           return items;
@@ -320,16 +320,16 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
         const triageItem = await recordStep(
           tel,
           { ...pageMeta, step: "triage", agent: "Triage_Agent" },
-          () => triageRecommendation(result.outcomes),
+          () => triageText(result.outcomes),
           () => summariseStep("triage", { items: 1 }),
         );
-        aiItems.push(triageItem);
+        templateItems.push(triageItem);
         tel.agentStatus("Triage_Agent", "template", "completed");
       }
       tel.agentStatus("Quality_Analysis_Agent", "template", "completed");
 
       allOutcomes.push(...result.outcomes);
-      allAiItems.push(...aiItems);
+      allTemplateItems.push(...templateItems);
       totalFailedChecks += result.failedCheckCount;
       pageReports.push({
         page: url,
@@ -337,7 +337,7 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
         baselineVersion: `v${version}`,
         checks: pageChecks,
         outcomes: result.outcomes,
-        aiItems,
+        aiItems: templateItems,
         visual: visualByViewport,
         evidence: pageEvidence,
       });

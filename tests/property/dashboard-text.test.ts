@@ -8,7 +8,7 @@ import { plainEnglishSummary, shownElementsText, scopeSentence } from "../../das
 import { isGenericGuidance, visibleGuidance, GENERIC_GUIDANCE_CORES } from "../../dashboard/lib/guidance.js";
 // @ts-expect-error plain browser ES module without type declarations
 import { RULE_CATALOGUE } from "../../dashboard/rule-catalogue.js";
-import { qualityAnalysis, visualExplanation } from "../../src/agents/template-text.js";
+import { qualityText, visualText } from "../../src/agents/template-text.js";
 import { isGenericGuidance as tsIsGeneric, GENERIC_GUIDANCE_CORES as tsCores } from "../../src/publish/guidance.js";
 
 const RUNS = { numRuns: 100 };
@@ -196,12 +196,12 @@ describe("Property 22: Automated guidance is specific, linked, and honest (visib
     );
   });
 
-  it("every legacy template text from src/agents/template-text.ts is generic", () => {
+  it("every template text from src/agents/template-text.ts is generic", () => {
     fc.assert(
       fc.property(arbLegacyOutcome, (o) => {
         const outcome = o as never;
-        expect(isGenericGuidance(qualityAnalysis(outcome).text)).toBe(true);
-        const v = visualExplanation(outcome);
+        expect(isGenericGuidance(qualityText(outcome).text)).toBe(true);
+        const v = visualText(outcome);
         if (o.kind === "visual-finding") {
           expect(v).not.toBeNull();
           expect(isGenericGuidance(v!.text)).toBe(true);
@@ -242,7 +242,7 @@ describe("Property 22: Automated guidance is specific, linked, and honest (visib
     );
     const legacy = arbLegacyOutcome.map((o) => {
       const outcome = o as never;
-      return qualityAnalysis(outcome).text as string;
+      return qualityText(outcome).text as string;
     });
     const anyText = fc.oneof(
       coreVariant,

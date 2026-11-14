@@ -3,12 +3,12 @@ import type { FindingClassification } from "../telemetry/types.js";
 import type { Outcome } from "./comparator.js";
 
 /**
- * AI-assisted agents. Their outputs are SEPARATE,
+ * Fixed-template text generators (no model calls). Their outputs are separate,
  * linked records (relatedFindingId) classified ai-generated-analysis or
- * agent-recommendation. They NEVER overwrite a deterministic finding's
+ * agent-recommendation. They never overwrite a deterministic finding's
  * classification and are always labeled, never presented as fact.
  */
-export interface AiItem {
+export interface TemplateItem {
   findingId: string;
   relatedFindingId: string;
   classification: FindingClassification;
@@ -19,7 +19,7 @@ export interface AiItem {
 }
 
 /** Quality_Analysis_Agent: interprets a deterministic outcome. */
-export function qualityAnalysis(outcome: Outcome): AiItem {
+export function qualityText(outcome: Outcome): TemplateItem {
   return {
     findingId: newFindingId(),
     relatedFindingId: outcome.findingId,
@@ -35,7 +35,7 @@ export function qualityAnalysis(outcome: Outcome): AiItem {
 }
 
 /** Visual_Explanation_Agent: explains a visual finding in plain language. */
-export function visualExplanation(outcome: Outcome): AiItem | null {
+export function visualText(outcome: Outcome): TemplateItem | null {
   if (outcome.kind !== "visual-finding") return null;
   return {
     findingId: newFindingId(),
@@ -49,7 +49,7 @@ export function visualExplanation(outcome: Outcome): AiItem | null {
 }
 
 /** Triage_Agent: proposes a consolidated recommendation across outcomes. */
-export function triageRecommendation(outcomes: Outcome[]): AiItem {
+export function triageText(outcomes: Outcome[]): TemplateItem {
   const failed = outcomes.filter((o) => o.kind === "failed-check").length;
   const changes = outcomes.filter((o) => o.kind !== "failed-check").length;
   const text =

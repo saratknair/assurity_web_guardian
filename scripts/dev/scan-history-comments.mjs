@@ -53,7 +53,7 @@ export const ALLOWLIST = [
     reason: "Public API error code for the disabled /api/run route; tests assert it.",
   },
   {
-    path: "tests/unit/retired-controls.test.ts",
+    path: "tests/unit/disabled-controls.test.ts",
     contains: 'toBe("retired")',
     reason: "Asserts the API error code above.",
   },

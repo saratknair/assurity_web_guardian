@@ -3,7 +3,7 @@ import { buildGuidance, isGenericGuidance } from "../../src/publish/guidance.js"
 import { DEFAULT_CAPS } from "../../src/publish/evidence.js";
 import type { BuiltRun } from "../../src/publish/run-findings.js";
 import type { VisualItem } from "../../src/publish/visual.js";
-import * as aiAgents from "../../src/agents/template-text.js";
+import * as templateText from "../../src/agents/template-text.js";
 
 const URL1 = "https://example.test/a";
 
@@ -58,10 +58,10 @@ describe("buildGuidance", () => {
     expect(items[0].severity).toBe("critical");
   });
 
-  it("ignores ignored findings and leaves ai-agents exported", () => {
+  it("ignores ignored findings and leaves template-text exported", () => {
     const { items } = buildGuidance(mk([a11y], [check]), [], DEFAULT_CAPS);
     expect(items.map((i) => i.findingId)).toEqual([a11y.id]);
-    expect(typeof aiAgents.qualityAnalysis).toBe("function");
-    expect(typeof aiAgents.visualExplanation).toBe("function");
+    expect(typeof templateText.qualityText).toBe("function");
+    expect(typeof templateText.visualText).toBe("function");
   });
 });

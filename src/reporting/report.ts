@@ -1,7 +1,7 @@
 import { writeFileSync } from "node:fs";
 import { join, relative, isAbsolute } from "node:path";
 import type { Outcome, DeterministicCheck } from "../agents/comparator.js";
-import type { AiItem } from "../agents/template-text.js";
+import type { TemplateItem } from "../agents/template-text.js";
 import type { VisualResult } from "../agents/visual-compare.js";
 
 /**
@@ -15,7 +15,7 @@ export interface PageReport {
   baselineVersion: string;
   checks: DeterministicCheck[];
   outcomes: Outcome[];
-  aiItems: AiItem[];
+  aiItems: TemplateItem[];
   visual: Record<string, VisualResult>;
   evidence: { kind: string; path: string }[];
 }

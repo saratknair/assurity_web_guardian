@@ -3,7 +3,7 @@
  *
  * Pure. Built from Active_Findings only (run.runFindings.findings; the ignored
  * list is never read). Fixed templates by kind and severity; no model, no
- * confidence value. src/agents/template-text.ts is untouched.
+ * confidence value. Separate from the per-finding text in src/agents/template-text.ts.
  */
 import { createHash } from "node:crypto";
 import type { BuiltRun, PublishedFinding } from "./run-findings.js";

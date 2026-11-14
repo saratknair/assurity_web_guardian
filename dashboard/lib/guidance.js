@@ -15,7 +15,7 @@
 //   7. The text is generic if and only if the result equals one of
 //      GENERIC_GUIDANCE_CORES exactly.
 //
-// This covers the legacy templates from src/agents/template-text.ts:
+// This covers the per-finding templates from src/agents/template-text.ts:
 //   Likely impact: a failing deterministic check ("...") may affect users; recommend human review.
 //   Observed change ("...") is not a deterministic failure; a human should decide if it matters.
 //   The current screenshot differs visually from the baseline. This may be a layout or content

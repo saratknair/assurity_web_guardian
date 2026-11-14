@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { compare } from "../../src/agents/comparator.js";
-import { qualityAnalysis, triageRecommendation, visualExplanation } from "../../src/agents/template-text.js";
+import { qualityText, triageText, visualText } from "../../src/agents/template-text.js";
 
 describe("classification", () => {
   // Property 19: a difference without a violated expectation is never a Failed_Check.
@@ -62,18 +62,18 @@ describe("classification", () => {
     const detFinding = r.outcomes.find((o) => o.kind === "failed-check")!;
     const visualFinding = r.outcomes.find((o) => o.kind === "visual-finding")!;
 
-    const qa = qualityAnalysis(detFinding);
+    const qa = qualityText(detFinding);
     expect(qa.classification).toBe("ai-generated-analysis");
     expect(qa.relatedFindingId).toBe(detFinding.findingId);
     expect(qa.label.toLowerCase()).toContain("ai-generated");
     // Deterministic finding keeps its own classification (not overwritten).
     expect(detFinding.classification).toBe("deterministic-test-evidence");
 
-    const ve = visualExplanation(visualFinding);
+    const ve = visualText(visualFinding);
     expect(ve?.classification).toBe("ai-generated-analysis");
     expect(ve?.relatedFindingId).toBe(visualFinding.findingId);
 
-    const tri = triageRecommendation(r.outcomes);
+    const tri = triageText(r.outcomes);
     expect(tri.classification).toBe("agent-recommendation");
     expect(tri.label.toLowerCase()).toContain("recommendation");
   });
