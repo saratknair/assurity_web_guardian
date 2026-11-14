@@ -32,7 +32,7 @@ The Virtual Office has no other assets. Stations, figures, floor and props are p
 
 ## npm dependencies
 
-The npm packages the Guardian itself uses are listed in `package.json` and locked in `package-lock.json`; those two files are the source of truth for versions. All are free and permissively licensed.
+The npm packages the Guardian itself uses are listed in `package.json` and locked in `package-lock.json`; those two files are the source of truth for versions. Every version in `package.json` is pinned exactly (no `^` or `~`) and matches the lock file, which `tests/unit/package-scripts.test.ts` checks. All are free and permissively licensed.
 
 | Package | Role | Licence |
 |---|---|---|

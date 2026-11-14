@@ -33,6 +33,19 @@ describe("package.json scripts", () => {
     expect(enginesMajor![1]).toBe(nvmMajor![1]);
   });
 
+  it("pins every dependency to the exact version recorded in package-lock.json", () => {
+    const pkg = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
+    const lock = JSON.parse(readFileSync(resolve(root, "package-lock.json"), "utf8"));
+    const rootSpecs = lock.packages[""];
+    for (const field of ["dependencies", "devDependencies"] as const) {
+      for (const [name, version] of Object.entries<string>(pkg[field])) {
+        expect(version, `${name} must be an exact version`).toMatch(/^\d+\.\d+\.\d+$/);
+        expect(lock.packages[`node_modules/${name}`].version, `${name} locked version`).toBe(version);
+        expect(rootSpecs[field][name], `${name} lockfile root spec`).toBe(version);
+      }
+    }
+  });
+
   it("points node scripts at files that exist", () => {
     for (const [name, cmd] of Object.entries(scripts)) {
       const m = /^node (scripts\/\S+)$/.exec(cmd);
