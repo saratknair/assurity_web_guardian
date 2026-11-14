@@ -38,14 +38,14 @@ const send = (path: string, headers: Record<string, string>, body: unknown) =>
   createConsole(deps()).handle({ method: "POST", path, query: {}, headers, body: JSON.stringify(body) });
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), "awg-retired-"));
+  root = mkdtempSync(join(tmpdir(), "awg-disabled-"));
   mkdirSync(join(root, "config"), { recursive: true });
   started = 0;
   gitCalls = [];
 });
 afterEach(() => rmSync(root, { recursive: true, force: true }));
 
-describe("retired controls", () => {
+describe("disabled controls", () => {
   it("POST /api/run returns 410 for a guarded request and starts nothing", async () => {
     const r = await send("/api/run", good, {});
     expect(r.status).toBe(410);
@@ -63,7 +63,7 @@ describe("retired controls", () => {
     expect(started).toBe(0);
   });
 
-  it("the retired route is registered as mutating", () => {
+  it("the disabled route is registered as mutating", () => {
     const r = allRoutes().find((x) => x.method === "POST" && x.pattern === "/api/run");
     expect(r?.mutating).toBe(true);
   });

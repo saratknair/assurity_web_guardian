@@ -44,6 +44,26 @@ const BINARY_EXT = new Set([
   ".ttf", ".zip", ".gz", ".mp4", ".bin",
 ]);
 
+// Justified matches: a hit is suppressed when its path matches and the matched
+// line contains `contains`. Every entry needs a reason.
+export const ALLOWLIST = [
+  {
+    path: "src/admin/console-routes.ts",
+    contains: 'error: "retired"',
+    reason: "Public API error code for the disabled /api/run route; tests assert it.",
+  },
+  {
+    path: "tests/unit/retired-controls.test.ts",
+    contains: 'toBe("retired")',
+    reason: "Asserts the API error code above.",
+  },
+];
+
+export function isAllowed(file, lineText) {
+  const p = file.replace(/\\/g, "/");
+  return ALLOWLIST.some((a) => a.path === p && lineText.includes(a.contains));
+}
+
 export function shouldScan(file) {
   const p = file.replace(/\\/g, "/");
   if (KEEP_PREFIXES.some((k) => p.startsWith(k))) return true;
@@ -61,7 +81,9 @@ export function scanText(file, text) {
   for (let i = 0; i < lines.length; i++) {
     for (const { kind, re } of PATTERNS) {
       const m = re.exec(lines[i]);
-      if (m) out.push({ path: file, line: i + 1, kind, match: m[0].trim() });
+      if (m && !isAllowed(file, lines[i])) {
+        out.push({ path: file, line: i + 1, kind, match: m[0].trim() });
+      }
     }
   }
   return out;

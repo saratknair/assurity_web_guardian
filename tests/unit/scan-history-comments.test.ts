@@ -26,6 +26,13 @@ describe("scan-history-comments", () => {
     expect(scanText("x.ts", "// Retries the fetch once on timeout.")).toEqual([]);
   });
 
+  it("suppresses allowlisted matches only for the listed path and text", () => {
+    const line = '      error: "retired",';
+    expect(scanText("src/admin/console-routes.ts", line)).toEqual([]);
+    expect(scanText("src/other.ts", line)).toHaveLength(1);
+    expect(scanText("src/admin/console-routes.ts", "// previously used")).toHaveLength(1);
+  });
+
   it("skips vendored, lock and instance files", () => {
     expect(shouldScan("office/vendor/three.module.min.js")).toBe(false);
     expect(shouldScan("package-lock.json")).toBe(false);

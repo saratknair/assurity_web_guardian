@@ -161,7 +161,7 @@ describe("approve", () => {
     expect(readFileSync(join(root, "artifacts/admin/setup-activity.jsonl"), "utf8").trim().split("\n")).toHaveLength(1);
   });
 
-  it("refuses an item whose file no longer matches the manifest sha16", async () => {
+  it("refuses an item whose file does not match the manifest sha16", async () => {
     capture(PNG_B, h16(PNG_A));
     const r = await post("/api/baselines/approve", approveBody());
     expect(r.status).toBe(200);

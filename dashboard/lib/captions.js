@@ -135,7 +135,7 @@ export function imageUnavailableText(reason, retentionRuns, role) {
     case "no-baseline-file":
       return base + " because no baseline file exists for this page and viewport.";
     case "baseline-changed-since-run":
-      return base + " because the baseline has changed since this run, so the image that was compared is no longer available.";
+      return base + " because the baseline has changed since this run, so the image that was compared is not available.";
     case "image-cap":
       return base + " because the image is larger than the published size limit for one image.";
     case "run-cap":

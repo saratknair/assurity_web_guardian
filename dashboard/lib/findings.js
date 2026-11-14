@@ -341,7 +341,7 @@ export function decisionEffectText(decisions) {
   const un = nonNegInt(d.unignoredNewThisRun);
   const rs = nonNegInt(d.resolvedNewThisRun);
   if (ig > 0) parts.push(plural(ig, "issue", "issues") + " ignored from this run");
-  if (un > 0) parts.push(plural(un, "issue", "issues") + " no longer ignored from this run");
+  if (un > 0) parts.push(plural(un, "issue", "issues") + " un-ignored from this run");
   if (rs > 0) parts.push(plural(rs, "issue", "issues") + " marked resolved from this run");
   return parts.join("; ");
 }

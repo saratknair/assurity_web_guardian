@@ -29,7 +29,7 @@ export const NO_ELEMENT_DETAIL_TEXT = "No element detail was recorded for this f
 export const MEASURE_NOT_RECORDED_TEXT = "Difference measure not recorded for this run";
 export const WITHHELD_TEXT = "[withheld]";
 export const WITHHELD_EXPLANATION =
-  "A value marked [withheld] was removed before publishing because it could have contained a file path, a secret, or text that could not be made safe.";
+  "A value marked [withheld] is removed before publishing because it could have contained a file path, a secret, or text that could not be made safe.";
 
 function isObj(v) {
   return v !== null && typeof v === "object" && !Array.isArray(v);
