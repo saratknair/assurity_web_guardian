@@ -7,8 +7,12 @@ import { generateTestFromBaseline, writeTestManifest } from "../../src/agents/te
 let root: string;
 let baselinesRoot: string;
 let outDir: string;
+let prevCwd: string;
 
+// Relative output paths resolve against the working directory, so each test runs
+// inside its temp root and never writes into the repository's tests/generated.
 beforeEach(() => {
+  prevCwd = process.cwd();
   root = mkdtempSync(join(tmpdir(), "awg-tg-"));
   baselinesRoot = join(root, "baselines");
   outDir = join(root, "tests", "generated");
@@ -19,9 +23,11 @@ beforeEach(() => {
     "# Baseline\nExpect all 12 images to load.\n",
     "utf8",
   );
+  process.chdir(root);
 });
 
 afterEach(() => {
+  process.chdir(prevCwd);
   rmSync(root, { recursive: true, force: true });
 });
 
