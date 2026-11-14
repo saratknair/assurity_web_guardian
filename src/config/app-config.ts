@@ -58,6 +58,17 @@ export interface AppConfig {
    * configs that predate domain configs.
    */
   domain?: string;
+  /** Optional product title shown in the UIs (1 to 80 chars once trimmed). */
+  displayTitle?: string;
+}
+
+export const DEFAULT_DISPLAY_TITLE = "Web Guardian";
+export const MAX_DISPLAY_TITLE_LENGTH = 80;
+
+/** Trimmed displayTitle, or "Web Guardian" when unset, empty or whitespace-only. */
+export function resolveDisplayTitle(cfg: { displayTitle?: string }): string {
+  const t = typeof cfg.displayTitle === "string" ? cfg.displayTitle.trim() : "";
+  return t === "" ? DEFAULT_DISPLAY_TITLE : t;
 }
 
 export interface PageSeedFile {
@@ -145,6 +156,16 @@ function validateConfig(cfg: AppConfig): void {
   // Conservative_Request_Rate: 1 req/s/host minimum - preserved.
   if (l.requestSpacingMs < 1000) {
     throw new Error("requestSpacingMs must be >= 1000 (1 req/s/host)");
+  }
+  if (cfg.displayTitle !== undefined) {
+    if (typeof cfg.displayTitle !== "string") {
+      throw new Error("displayTitle must be a string");
+    }
+    if (cfg.displayTitle.trim().length > MAX_DISPLAY_TITLE_LENGTH) {
+      throw new Error(
+        `displayTitle must be at most ${MAX_DISPLAY_TITLE_LENGTH} characters`,
+      );
+    }
   }
   // The approved-page cap is configurable with a sane upper bound.
   const cap = l.maxApprovedPages ?? DEFAULT_MAX_APPROVED_PAGES;
