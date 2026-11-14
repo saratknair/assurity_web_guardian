@@ -46,6 +46,12 @@ describe("package.json scripts", () => {
     }
   });
 
+  it("ships SECURITY.md linking docs/VENDORED.md", () => {
+    expect(existsSync(resolve(root, "SECURITY.md"))).toBe(true);
+    expect(existsSync(resolve(root, "docs/VENDORED.md"))).toBe(true);
+    expect(readFileSync(resolve(root, "SECURITY.md"), "utf8")).toContain("docs/VENDORED.md");
+  });
+
   it("points node scripts at files that exist", () => {
     for (const [name, cmd] of Object.entries(scripts)) {
       const m = /^node (scripts\/\S+)$/.exec(cmd);
