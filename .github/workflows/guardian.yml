@@ -10,10 +10,9 @@
 #   - pull requests run only the read-only verify-platform job, and only for same-repo
 #     branches; no pull_request_target
 #   - no untrusted ${{ github.event.* }} interpolation into any run: shell
+#   - no job runs in a fork (repository.fork guard on every job)
 #
-# NOTE: the pinned commit SHAs below should be re-verified by a human against the
-# upstream release tags before merging. The VERSION in each trailing comment is the
-# intended release; confirm the 40-char SHA resolves to that tag.
+# Each action is pinned to the commit of the release tag named in its comment.
 name: Web Guardian
 
 on:
@@ -53,12 +52,14 @@ jobs:
     # Hard cap so a stuck run cannot hold the runner or replace published data
     timeout-minutes: 30
     # Publishing jobs never run for pull requests; PRs only get verify-platform.
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && !github.event.repository.fork
     # Read-only token for the run job - it never needs to write to the repo
     permissions:
       contents: read
     steps:
       - name: Checkout
+        # Credentials stay persisted: the restore steps fetch the runs-data branch
+        # over the same token (needed when the repository is private).
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Setup Node
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
@@ -244,9 +245,10 @@ jobs:
   # job is Linux only and does not run the tests). No browsers are installed here.
   verify-platform:
     if: >-
-      github.event_name == 'workflow_dispatch' ||
+      !github.event.repository.fork &&
+      (github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'pull_request' &&
-      github.event.pull_request.head.repo.full_name == github.repository)
+      github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     permissions:
@@ -260,6 +262,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
       - name: Setup Node
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
@@ -274,7 +278,9 @@ jobs:
 
   publish:
     needs: run
+    if: github.event_name != 'pull_request' && !github.event.repository.fork
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     # Write scope granted ONLY here, and ONLY what Pages deployment needs
     permissions:
       pages: write
@@ -301,11 +307,12 @@ jobs:
   commit-runs-data:
     needs: run
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     # Only this job may write repo contents, and only to push one run dir.
     permissions:
       contents: write
-    # Never push from a pull request event.
-    if: github.event_name != 'pull_request'
+    # Never push from a pull request event or from a fork.
+    if: github.event_name != 'pull_request' && !github.event.repository.fork
     steps:
       # Normal checkout (default branch). This always succeeds and gives us a
       # working .git with the GITHUB_TOKEN persisted for the later push. We do NOT

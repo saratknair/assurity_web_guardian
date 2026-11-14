@@ -103,6 +103,58 @@ describe("guardian.yml workflow smoke test", () => {
     expect(code).toMatch(/\n  publish:\n    needs: run\n/);
   });
 
+  describe("job hardening", () => {
+    const jobsAt = code.indexOf("\njobs:\n");
+    const bodies = code
+      .slice(jobsAt + 6)
+      .split(/\n(?=  [a-z][\w-]*:\n)/)
+      .map((b) => b.trim())
+      .filter((b) => b.length > 0);
+    const byName = new Map(bodies.map((b) => [b.slice(0, b.indexOf(":")), b]));
+
+    it("defines the four expected jobs", () => {
+      expect([...byName.keys()].sort()).toEqual(["commit-runs-data", "publish", "run", "verify-platform"]);
+    });
+
+    it("gives every job a timeout and a fork guard", () => {
+      for (const [name, body] of byName) {
+        expect(body, name).toMatch(/timeout-minutes:\s*\d+/);
+        expect(body, name).toContain("!github.event.repository.fork");
+      }
+    });
+
+    it("grants write scopes only to publish and commit-runs-data", () => {
+      expect(code).toMatch(/\npermissions:\n  contents: read\n/);
+      for (const [name, body] of byName) {
+        const writes = /:\s*write\b/.test(body);
+        expect(writes, name).toBe(name === "publish" || name === "commit-runs-data");
+      }
+    });
+
+    it("drops checkout credentials in the verify-platform job", () => {
+      expect(byName.get("verify-platform")).toMatch(/persist-credentials:\s*false/);
+    });
+
+    it("never uses pull_request_target", () => {
+      expect(code).not.toContain("pull_request_target");
+    });
+
+    it("keeps event and input contexts out of run scripts", () => {
+      let inRun = false;
+      let indent = 0;
+      for (const line of code.split("\n")) {
+        const m = line.match(/^(\s*)(?:-\s+)?run:/);
+        if (m) {
+          inRun = true;
+          indent = m[1].length;
+        } else if (inRun && line.trim() && line.search(/\S/) <= indent) {
+          inRun = false;
+        }
+        if (m || inRun) expect(line).not.toMatch(/\$\{\{\s*(github\.(event|head_ref|base_ref)|inputs)\b/);
+      }
+    });
+  });
+
   it("keeps every action pinned to a 40-hex SHA", () => {
     const uses = [...code.matchAll(/^\s*(?:-\s+)?uses:\s*(\S+)/gm)].map((m) => m[1]);
     expect(uses.length).toBeGreaterThan(0);

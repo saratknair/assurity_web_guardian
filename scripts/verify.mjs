@@ -521,6 +521,8 @@ try {
   if (!/github\.event\.pull_request\.head\.repo\.full_name\s*==\s*github\.repository/.test(wf)) {
     problems.push("missing fork-PR if-guard");
   }
+  if (!/github\.event\.repository\.fork/.test(wf)) problems.push("missing repository.fork guard");
+  if (/pull_request_target/.test(wf.replace(/^\s*#.*$/gm, ""))) problems.push("uses pull_request_target");
 
   // No untrusted event input interpolated into a run: shell. Scan each `run:`
   // block for dangerous ${{ github.event.*.(title|body|head_ref) }} usage.
