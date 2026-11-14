@@ -1,0 +1,6 @@
+{
+  "maxUrls": 10,
+  "approvedUrls": [
+    "https://example.com/"
+  ]
+}

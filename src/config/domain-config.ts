@@ -32,7 +32,8 @@ const DOMAINS_DIR = "config/domains";
 
 /**
  * List the configured domain slugs (file names without `.json`) under
- * `config/domains`, sorted for determinism.
+ * `config/domains`, sorted for determinism. `*.example.json` templates are not
+ * configured domains and are skipped.
  */
 export function listDomains(): string[] {
   let entries: string[];
@@ -42,7 +43,7 @@ export function listDomains(): string[] {
     return [];
   }
   return entries
-    .filter((f) => f.toLowerCase().endsWith(".json"))
+    .filter((f) => f.toLowerCase().endsWith(".json") && !f.toLowerCase().endsWith(".example.json"))
     .map((f) => f.slice(0, -".json".length))
     .sort();
 }

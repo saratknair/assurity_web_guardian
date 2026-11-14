@@ -15,6 +15,7 @@
     "approve": "node dist/index.js approve",
     "list-pending": "node dist/index.js list-pending",
     "report": "node dist/index.js report",
+    "init-config": "node scripts/init-config.mjs",
     "scan:history": "node scripts/dev/scan-history-comments.mjs"
   },
   "engines": {
