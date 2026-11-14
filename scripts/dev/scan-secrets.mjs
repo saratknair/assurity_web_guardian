@@ -22,8 +22,9 @@ export const PATTERNS = [
   { kind: "personal-path", re: /C:\\Users\\/ },
   { kind: "personal-path", re: /\/Users\/[a-z]/ },
   { kind: "personal-path", re: /\/home\/[a-z]/ },
-  { kind: "email", re: /[\w.+-]+@[\w-]+\.[\w.]+/ },
-  { kind: "name", re: /assurity|saratknair|nairs/i, productOnly: true },
+  // The domain must end in a letters-only TLD, so "name@4.4.6" package specifiers do not match.
+  { kind: "email", re: /[\w.+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b/ },
+  { kind: "name", re: /assu[r]ity|sarat[k]nair|nai[r]s/i, productOnly: true },
 ];
 
 // Never scanned: dependencies, vendored libraries, lock files, binary assets.

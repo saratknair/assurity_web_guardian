@@ -24,6 +24,11 @@ describe("scanText", () => {
     });
   }
 
+  it("does not read a package specifier as an email", () => {
+    expect(scanText("docs/a.md", "| lib | chart.js@4.4.6 | three@0.160.0 |")).toEqual([]);
+    expect(scanText("docs/a.md", "git@" + "github.com:o/r.git").length).toBe(1);
+  });
+
   it("passes clean text", () => {
     expect(scanText("src/a.ts", "const answer = 42;\nconsole.log('hello');")).toEqual([]);
   });
