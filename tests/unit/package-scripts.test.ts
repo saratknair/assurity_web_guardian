@@ -5,7 +5,7 @@ import { describe, it, expect } from "vitest";
 const root = resolve(__dirname, "../..");
 const scripts: Record<string, string> = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8")).scripts;
 
-const REQUIRED = ["console", "guardian", "build", "test", "verify", "typecheck", "init-config", "scan:history"];
+const REQUIRED = ["console", "guardian", "build", "test", "verify", "typecheck", "init-config", "scan:history", "scan:secrets"];
 
 describe("package.json scripts", () => {
   it("defines the required script set", () => {
