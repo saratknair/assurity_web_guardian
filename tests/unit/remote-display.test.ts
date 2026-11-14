@@ -10,11 +10,11 @@ describe("remoteDisplayName", () => {
   });
 
   it("strips credentials, including a password with an at sign", () => {
-    const a = remoteDisplayName("https://user:s3cret@github.com/o/r.git") as string;
+    const a = remoteDisplayName("https://user:FAKE-NOT-REAL@github.com/o/r.git") as string;
     expect(a).toBe("o/r");
-    const b = remoteDisplayName("https://user:p@ss@gitlab.example.com/grp/proj.git") as string;
+    const b = remoteDisplayName("https://user:FAKE@PW@gitlab.example.com/grp/proj.git") as string;
     expect(b).toBe("gitlab.example.com/grp/proj");
-    expect(b).not.toContain("ss@");
+    expect(b).not.toContain("PW@");
     expect(b).not.toContain("user");
   });
 

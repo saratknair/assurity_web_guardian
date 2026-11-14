@@ -7,6 +7,8 @@ import { readLogPage, resetRunsSync, runsApiHooks, waitForRunsSync, LOG_MAX_BYTE
 import type { ConsoleDeps, GitPort, GitResult } from "../../src/admin/console-deps.js";
 
 let root: string;
+// Built at runtime so the source holds no token-shaped literal.
+const FAKE_GH_TOKEN = "gh" + "p_" + "FAKENOTREAL0000";
 const A = "run_aaaaaa111111";
 const B = "run_bbbbbb222222";
 const SHA = "c".repeat(40);
@@ -32,7 +34,7 @@ function deps(git: GitPort): ConsoleDeps {
 }
 
 const fakeGit: GitPort = {
-  run: async (args) => (args[0] === "remote" ? ok("https://user:pw@github.com/acme/site.git\n") : ok()),
+  run: async (args) => (args[0] === "remote" ? ok("https://user:FAKE-PW@github.com/acme/site.git\n") : ok()),
 };
 
 const hdr = { host: "127.0.0.1:7787" };
@@ -114,7 +116,7 @@ describe("GET /api/runs/:id/log", () => {
     const line = JSON.stringify({
       time: "t1",
       kind: "note",
-      message: `ghp_abcdefghijklmnop at ${join(root, "x", "y.txt")}`,
+      message: `${FAKE_GH_TOKEN} at ${join(root, "x", "y.txt")}`,
     });
     mkRun(A, "2030-01-01T00:00:00.000Z", { "audit.jsonl": line + "\nraw <b>text</b>\n" });
     const c = createConsole(deps(fakeGit));

@@ -53,7 +53,7 @@ describe("console router", () => {
     const none = (await createConsole(deps()).handle(get)).json as { pagesUrl: string | null };
     expect(none.pagesUrl).toBeNull();
     const d = deps();
-    d.git = { run: async () => ({ code: 0, stdout: "https://tok:x@github.com/example-owner/example-repo.git\n", stderr: "" }) };
+    d.git = { run: async () => ({ code: 0, stdout: "https://FAKE-TOKEN:x@github.com/example-owner/example-repo.git\n", stderr: "" }) };
     const s = (await createConsole(d).handle(get)).json as { pagesUrl: string | null };
     expect(s.pagesUrl).toBe("https://example-owner.github.io/example-repo/");
   });

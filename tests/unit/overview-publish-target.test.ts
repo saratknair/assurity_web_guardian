@@ -58,7 +58,7 @@ describe("Overview publish target (no-fetch path)", () => {
     const dir = mkdtempSync(join(tmpdir(), "p404-"));
     try {
       execFileSync("git", ["init", "-q"], { cwd: dir });
-      execFileSync("git", ["remote", "add", "origin", "https://user:tok@github.com/example-owner/example-repo.git"], { cwd: dir });
+      execFileSync("git", ["remote", "add", "origin", "https://user:FAKE-TOKEN@github.com/example-owner/example-repo.git"], { cwd: dir });
       const o = await publishOverview(depsWith(realGit(dir), dir));
       expect(o.target.remote).toBe("example-owner/example-repo");
       expect(JSON.stringify(o)).not.toMatch(/tok|user:/);
@@ -70,7 +70,7 @@ describe("Overview publish target (no-fetch path)", () => {
   });
 
   it("returns the display name from a fake git port whose get-url carries credentials", async () => {
-    const o = await publishOverview(depsWith(fakeGit("https://me:secret@github.com/example-owner/example-repo.git", {}, {}), "C:/x"));
+    const o = await publishOverview(depsWith(fakeGit("https://me:FAKE-NOT-REAL@github.com/example-owner/example-repo.git", {}, {}), "C:/x"));
     expect(o.target.remote).toBe("example-owner/example-repo");
   });
 });

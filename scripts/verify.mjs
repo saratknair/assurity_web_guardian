@@ -115,8 +115,10 @@ else for (const r of runs.slice(-1)) {
 //     the literal secret nor the key survives in the serialized output.
 try {
   const { sanitizeJson } = await import("../dist/publish/sanitizer.js");
-  const FAKE_SECRET = "sk-TESTSECRET1234567890ABCDEFGHIJKL"; // long opaque token
-  const FAKE_AWS_KEY = "AKIAIOSFODNN7EXAMPLE1234567890XYZ"; // AWS-looking key
+  // Built at runtime so no secret-shaped literal sits in the source. Both are
+  // 32+ characters without hyphens, which the sanitizer treats as opaque tokens.
+  const FAKE_SECRET = "sk-" + "FAKENOTREAL".repeat(3);
+  const FAKE_AWS_KEY = "AKIA" + "FAKENOTREAL".repeat(3);
   const sample = {
     note: `token is ${FAKE_SECRET}`,
     apiKey: FAKE_AWS_KEY,

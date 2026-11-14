@@ -11,4 +11,4 @@ export const EXAMPLE_PAGES_URL = `https://${EXAMPLE_OWNER}.github.io/${EXAMPLE_R
 
 export const EXAMPLE_REMOTE_HTTPS = `https://github.com/${EXAMPLE_REPOSITORY}.git`;
 export const EXAMPLE_REMOTE_SSH = `git@github.com:${EXAMPLE_REPOSITORY}.git`;
-export const EXAMPLE_REMOTE_HTTPS_WITH_TOKEN = `https://tok:x@github.com/${EXAMPLE_REPOSITORY}.git`;
+export const EXAMPLE_REMOTE_HTTPS_WITH_TOKEN = `https://FAKE-TOKEN:x@github.com/${EXAMPLE_REPOSITORY}.git`;

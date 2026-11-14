@@ -148,7 +148,7 @@ describe("Property 62: Anything shown from outside the console is scrubbed", () 
         controlChars,
         fc.integer({ min: 1, max: 3000 }),
         (token, cred, p, s, ctrl, n) => {
-          const text = [token, cred.text, p, s, ctrl.join(""), "y".repeat(n), "Bearer abcdefghijklmnop"].join(" \n");
+          const text = [token, cred.text, p, s, ctrl.join(""), "y".repeat(n), "Bearer FAKE-NOT-REAL-0000"].join(" \n");
           const ctx = { projectRoot: "D:\\work\\proj", home: "C:\\Users\\someone" };
           const once = scrubForDisplay(text, ctx);
           expect(scrubForDisplay(once, ctx)).toBe(once);
