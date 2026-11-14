@@ -55,8 +55,7 @@ function keysDeep(v: unknown, out: Set<string> = new Set()): Set<string> {
 }
 
 describe("published structure properties", () => {
-  // Feature: dashboard-usability-overhaul, Property 25: Page history agrees with run data
-  // **Validates: Requirements 9.5**
+  // Property 25: Page history agrees with run data
   it("Property 25: page history entries match each run's findings for the slug", () => {
     fc.assert(
       fc.property(arbRunSet, (runs) => {
@@ -83,8 +82,7 @@ describe("published structure properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 26: The aggregate file does not depend on element detail
-  // **Validates: Requirements 16.5**
+  // Property 26: The aggregate file does not depend on element detail
   it("Property 26: aggregates are independent of element html/target/failureSummary and node count", () => {
     fc.assert(
       fc.property(arbRunInputs, fc.string({ maxLength: 20 }), fc.integer({ min: 0, max: 5 }), (inputs, html, count) => {
@@ -99,8 +97,7 @@ describe("published structure properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 27: Published data is genuine, valid, and stable JSON
-  // **Validates: Requirements 17.5, 17.14**
+  // Property 27: Published data is genuine, valid, and stable JSON
   it("Property 27: published structures round-trip through JSON and are deterministic", () => {
     fc.assert(
       fc.property(arbRunSet, (runs) => {
@@ -124,8 +121,7 @@ describe("published structure properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 15: Page groups partition the pages
-  // **Validates: Requirements 8.1, 8.2**
+  // Property 15: Page groups partition the pages
   it("Property 15: published page group equals pageGroupOf(url) and groups partition pages", () => {
     fc.assert(
       fc.property(arbRunInputs, (inputs) => {

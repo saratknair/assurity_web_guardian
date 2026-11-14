@@ -1,5 +1,4 @@
-// Unit tests for the pure Virtual Office self-scan helpers (task 11.7).
-// Validates: Requirements 8.6, 15.3, 16.6, 17.4
+// Unit tests for the pure Virtual Office self-scan helpers.
 import { describe, it, expect } from "vitest";
 import {
   shapeResults,

@@ -30,7 +30,7 @@ const arbRun = fc.record({
 const sum = (o: Record<string, number>, keys: string[]) => keys.reduce((a, k) => a + o[k], 0);
 
 describe("dashboard counts properties", () => {
-  // Feature: dashboard-usability-overhaul, Property 4: Counts are conserved
+  // Property 4: Counts are conserved
   it("Property 4: Counts are conserved", () => {
     fc.assert(
       fc.property(arbRun, (raw) => {
@@ -45,7 +45,7 @@ describe("dashboard counts properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 5: Every view of a run's counts agree
+  // Property 5: Every view of a run's counts agree
   // Dashboard-side views only (KPI, severity chart, segment filter, lifecycle chart,
   // run-view list length); the published trend aggregate is covered on the publish side.
   it("Property 5: Every view of a run's counts agrees", () => {
@@ -74,7 +74,7 @@ describe("dashboard counts properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 24: Same-rule-on-other-pages count is exact
+  // Property 24: Same-rule-on-other-pages count is exact
   it("Property 24: Same-rule-on-other-pages count is exact", () => {
     fc.assert(
       fc.property(arbRun, arbFinding, (raw, target) => {

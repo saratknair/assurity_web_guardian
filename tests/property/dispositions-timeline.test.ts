@@ -243,9 +243,8 @@ afterAll(() => {
 });
 
 describe("dispositions timeline properties", () => {
-  // Feature: dashboard-usability-overhaul, Property 32: Decisions never change runs that finished before them
+  // Property 32: Decisions never change runs that finished before them
   it("Property 32: Decisions never change runs that finished before them (published output)", () => {
-    // **Validates: Requirements 19.1, 19.2, 19.3, 18.12**
     fc.assert(
       fc.property(arbLog, arbRuns, (log, runs) => {
         let prev: ReadonlySet<string> | null = null;
@@ -261,9 +260,8 @@ describe("dispositions timeline properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 32: Decisions never change runs that finished before them
+  // Property 32: Decisions never change runs that finished before them
   it("Property 32: the frozen set ignores later entries and republishing after log changes is byte-identical", () => {
-    // **Validates: Requirements 19.1, 19.2, 19.3, 18.12**
     // Filesystem-heavy (writes the log, freezes, reloads): 50 iterations by design.
     const art = join(tmp, "artifacts");
     const runDir = join(tmp, "run");
@@ -297,9 +295,8 @@ describe("dispositions timeline properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 33: Resolved then reappears is a regression
+  // Property 33: Resolved then reappears is a regression
   it("Property 33: Resolved then reappears is a regression", () => {
-    // **Validates: Requirements 19.9, 19.10, 19.11, 19.19, 19.23**
     fc.assert(
       fc.property(arbSimpleLog, arbSubset, arbSubset, fc.integer({ min: 5, max: 90 }), (log, detected, prev, finMin) => {
         const fin = at(finMin);
@@ -345,9 +342,8 @@ describe("dispositions timeline properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 34: Un-ignore restores from its own time onward
+  // Property 34: Un-ignore restores from its own time onward
   it("Property 34: Un-ignore restores from its own time onward", () => {
-    // **Validates: Requirements 19.12, 19.13, 19.14, 18.11**
     fc.assert(
       fc.property(
         fc.record({
@@ -399,9 +395,8 @@ describe("dispositions timeline properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 36: Application of dispositions is deterministic and order independent
+  // Property 36: Application of dispositions is deterministic and order independent
   it("Property 36: Application of dispositions is deterministic and order independent", () => {
-    // **Validates: Requirements 18.11, 19.1, 19.2**
     fc.assert(
       fc.property(
         arbLog.chain((log) =>
@@ -440,9 +435,8 @@ describe("dispositions timeline properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 39: Decision effect counts are exact
+  // Property 39: Decision effect counts are exact
   it("Property 39: Decision effect counts are exact", () => {
-    // **Validates: Requirements 19.20, 19.21, 19.24, 10.12**
     fc.assert(
       fc.property(
         arbLog,

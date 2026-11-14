@@ -1,4 +1,4 @@
-// Feature: dashboard-usability-overhaul, Property 41: Only same-origin loopback requests may change decisions
+// Property 41: Only same-origin loopback requests may change decisions
 import { describe, it, expect } from "vitest";
 import fc from "fast-check";
 import { checkLocalRequest, type LocalRequestHeaders } from "../../src/admin/local-guard.js";
@@ -74,7 +74,7 @@ function expected(h: LocalRequestHeaders, port: number): boolean {
   return hostOk && originOk && siteOk && mime === "application/json";
 }
 
-describe("Feature: dashboard-usability-overhaul, Property 41: Only same-origin loopback requests may change decisions", () => {
+describe("Property 41: Only same-origin loopback requests may change decisions", () => {
   it("**Property 41** accepts iff host, origin, sec-fetch-site and content-type all satisfy the rule", () => {
     fc.assert(
       fc.property(

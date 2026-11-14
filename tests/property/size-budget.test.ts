@@ -28,9 +28,8 @@ const capsArb = fc.record({
   maxImageBytes: fc.integer({ min: 0, max: 5000 }),
 });
 
-describe("Feature: dashboard-usability-overhaul — size budget", () => {
-  // Feature: dashboard-usability-overhaul, Property 17: Published size never exceeds the cap and every drop is recorded
-  // **Validates: Requirements 1.11, 5.8**
+describe("size budget", () => {
+  // Property 17: Published size never exceeds the cap and every drop is recorded
   it("Property 17: Published size never exceeds the cap and every drop is recorded", () => {
     fc.assert(
       fc.property(candidateListArb, capsArb, (cands, caps) => {

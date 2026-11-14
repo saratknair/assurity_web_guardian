@@ -53,8 +53,7 @@ const arbFilter = fc.record({
 });
 
 describe("page list properties", () => {
-  // Feature: dashboard-usability-overhaul, Property 14: Search and filters only narrow the page list
-  // **Validates: Requirements 8.5, 8.6, 8.12**
+  // Property 14: Search and filters only narrow the page list
   it("Property 14: search and filters only narrow the page list", () => {
     fc.assert(
       fc.property(arbPageRows(60), arbFilter, fc.nat(), (rows, filter, pick) => {
@@ -92,8 +91,7 @@ describe("page list properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 15: Page groups partition the pages
-  // **Validates: Requirements 8.1, 8.2**
+  // Property 15: Page groups partition the pages
   it("Property 15: page groups partition the pages", () => {
     fc.assert(
       fc.property(arbPageRows(100), (rows) => {
@@ -121,8 +119,7 @@ describe("page list properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 15: Page groups partition the pages
-  // **Validates: Requirements 8.1, 8.2**
+  // Property 15: Page groups partition the pages
   it("Property 15: group name is the lowercased first path segment or (home)", () => {
     fc.assert(
       fc.property(fc.array(fc.constantFrom("Services", "a", "", "B%20c", "caf\u00e9"), { maxLength: 3 }), (segs) => {
@@ -135,8 +132,7 @@ describe("page list properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 15: Page groups partition the pages
-  // **Validates: Requirements 8.1, 8.2**
+  // Property 15: Page groups partition the pages
   it("Property 15: TS pageGroupOf and JS groupOfUrl agree", () => {
     fc.assert(
       fc.property(fc.oneof(arbUrl, fc.string(), fc.fullUnicodeString(), fc.webUrl(), fc.constantFrom("", "/", "not a url", "https://x/%E0%A4%A", "https://x//a")), (url) => {
@@ -146,8 +142,7 @@ describe("page list properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 16: Row severity and sort order are correct
-  // **Validates: Requirements 8.7, 8.13**
+  // Property 16: Row severity and sort order are correct
   it("Property 16: highest severity is the most severe present", () => {
     fc.assert(
       fc.property(arbPage, (page) => {
@@ -160,8 +155,7 @@ describe("page list properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 16: Row severity and sort order are correct
-  // **Validates: Requirements 8.7, 8.13**
+  // Property 16: Row severity and sort order are correct
   it("Property 16: sortPages is a stable, ordered permutation", () => {
     fc.assert(
       fc.property(arbPageRows(100), fc.constantFrom("url", "count", "severity"), fc.constantFrom("asc", "desc"), (rows, key, dir) => {
@@ -182,8 +176,7 @@ describe("page list properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 28: Page filtering stays within the latency budget
-  // **Validates: Requirements 16.3**
+  // Property 28: Page filtering stays within the latency budget
   it("Property 28: filter + sort over 500 pages stays under 200 ms", () => {
     fc.assert(
       fc.property(fc.array(arbPage, { minLength: 500, maxLength: 500 }), arbFilter, fc.constantFrom("url", "count", "severity"), fc.constantFrom("asc", "desc"), (pages, filter, key, dir) => {

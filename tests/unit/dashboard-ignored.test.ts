@@ -11,7 +11,7 @@ const disp = (id: string, scope: string, at: string) => ({
   decisionId: id, decision: "ignore", scope, reason: "Third-party widget", reviewer: "Sam", at,
 });
 
-describe("dashboard ignored helpers (R19.4, 19.8, 19.10, 19.11, 19.23)", () => {
+describe("dashboard ignored helpers", () => {
   it("groups ignored findings by decision, newest first, with scope words and page counts", () => {
     const ignored = [
       { id: "f1", slug: "a", pageUrl: "https://x.test/a", disposition: disp("d1", "site-rule", "2026-01-01T00:00:00Z") },

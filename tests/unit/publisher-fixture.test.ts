@@ -7,7 +7,7 @@ import { PNG } from "pngjs";
 import pixelmatch from "pixelmatch";
 import { buildPublishedData } from "../../src/publish/published-data.js";
 
-// Task 7.4 (R1.7, R1.9, R9.12, R17.6): end-to-end publisher run over a small
+// End-to-end publisher run over a small
 // generated fixture. Time is frozen (Date only) so generatedAt is identical and
 // the two runs can be compared byte for byte without normalization.
 

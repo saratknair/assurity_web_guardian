@@ -1,4 +1,4 @@
-// Virtual Office self-scan (virtual-office-replay, task 11.7).
+// Virtual Office self-scan.
 //
 // Usage: node scripts/scan-office.mjs <siteDir>      (CI: ./_site)
 //
@@ -7,10 +7,10 @@
 // runs @axe-core/playwright (tags wcag2a, wcag2aa, wcag22aa) and checks:
 //   - the Transcript is not empty
 //   - an Office_Deep_Link restores the playback position
-//   - the idle frame count does not change while paused (requirement 16.6)
+//   - the idle frame count does not change while paused
 //   - a forced Fallback_Mode pass (WebGL disabled) shows the message and a
-//     non-empty Transcript, and passes axe too (requirement 8.6)
-//   - no horizontal scroll at 320 px (requirement 15.3)
+//     non-empty Transcript, and passes axe too
+//   - no horizontal scroll at 320 px
 //   - no request leaves 127.0.0.1
 // Writes <siteDir>/data/office-self-scan.json, appends a table to
 // $GITHUB_STEP_SUMMARY (when set) and ALWAYS exits 0 (non-blocking).

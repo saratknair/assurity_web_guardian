@@ -6,7 +6,7 @@ import { PNG } from "pngjs";
 import pixelmatch from "pixelmatch";
 import { buildVisualItems } from "../../src/publish/visual.js";
 
-// Task 7.6 (R16.8, R16.9, R17.1, R17.2): runs outside the image-retention window
+// Runs outside the image-retention window
 // publish no images, so the publisher must not decode PNGs or verify baselines
 // for them (that work dominated publish time).
 

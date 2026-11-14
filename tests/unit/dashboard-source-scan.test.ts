@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 
-// Validates: Requirements 3.11, 6.1, 7.1, 15.12, 16.4, 17.4, 17.7
 // Source-scan smoke test over the shipped dashboard code (vendor/ excluded).
 
 const ROOT = process.cwd();

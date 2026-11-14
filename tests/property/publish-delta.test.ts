@@ -1,4 +1,4 @@
-// Feature: dashboard-usability-overhaul, Property 54: Publish stages exactly the configuration delta and nothing else
+// Property 54: Publish stages exactly the configuration delta and nothing else
 import { describe, it, expect } from "vitest";
 import fc from "fast-check";
 import { CONFIG_PATHSPECS, isConfigPath } from "../../src/admin/publish-paths.js";

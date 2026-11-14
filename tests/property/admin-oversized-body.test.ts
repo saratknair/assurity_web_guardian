@@ -1,4 +1,4 @@
-// Feature: dashboard-usability-overhaul, Property 61: Oversized bodies are rejected without side effects
+// Property 61: Oversized bodies are rejected without side effects
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import fc from "fast-check";
 import { setBrowserLauncher, resetBrowserLauncher } from "../../src/admin/open-routes.js";
@@ -61,7 +61,6 @@ describe("Property 61: Oversized bodies are rejected without side effects", () =
     expect(mutating.length).toBeGreaterThan(10);
   });
 
-  // **Validates: Requirements 30.5, 30.6**
   it("a body over the ceiling by byte length gets 413 and records nothing", async () => {
     await fc.assert(
       fc.asyncProperty(routeArb, unitArb, fc.integer({ min: 1, max: 64 }), async (route, unit, extra) => {
@@ -82,7 +81,6 @@ describe("Property 61: Oversized bodies are rejected without side effects", () =
     );
   });
 
-  // **Validates: Requirements 30.5, 30.6**
   it("multi-byte text with fewer characters than the ceiling but more bytes gets 413", async () => {
     await fc.assert(
       fc.asyncProperty(routeArb, fc.constantFrom<[string, number]>(["\u20ac", 3], ["\u{1F600}", 4]), async (route, unit) => {
@@ -105,7 +103,6 @@ describe("Property 61: Oversized bodies are rejected without side effects", () =
     );
   });
 
-  // **Validates: Requirements 30.5, 30.6**
   it("a valid JSON body at exactly the ceiling (or below) is processed, never 413", async () => {
     await fc.assert(
       fc.asyncProperty(routeArb, unitArb, fc.integer({ min: 0, max: 40 }), async (route, unit, slack) => {
@@ -145,7 +142,6 @@ describe("Property 61: Oversized bodies are rejected without side effects", () =
     }
   });
 
-  // **Validates: Requirements 30.5, 30.6**
   it("preflight rejects a declared content-length above the ceiling and records nothing", async () => {
     await fc.assert(
       fc.asyncProperty(routeArb, fc.integer({ min: 1, max: 1_000_000 }), async (route, extra) => {
@@ -162,7 +158,6 @@ describe("Property 61: Oversized bodies are rejected without side effects", () =
     );
   });
 
-  // **Validates: Requirements 30.5, 30.6**
   it("malformed JSON within the ceiling gets 400 and records nothing", async () => {
     await fc.assert(
       fc.asyncProperty(routeArb, fc.string({ maxLength: 200 }), async (route, tail) => {

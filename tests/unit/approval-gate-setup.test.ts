@@ -1,5 +1,4 @@
-// Feature: dashboard-usability-overhaul - task 22.5 approval gate setup actions
-// (Requirements 21.5, 22.12, 24.4, 24.7, 25.4).
+// Approval gate setup actions.
 import { describe, it, expect, afterEach } from "vitest";
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";

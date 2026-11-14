@@ -163,7 +163,7 @@ const dashboardNew = {
   latest: { runId: "r2", pages: [pageA] },
 };
 
-describe("Not rated and not-recorded severity labels (R2.7, R2.8)", () => {
+describe("Not rated and not-recorded severity labels", () => {
   it("labels unrated severity as 'Not rated'", () => {
     expect(sevLabel("unrated")).toBe("Not rated");
   });
@@ -185,7 +185,7 @@ describe("Not rated and not-recorded severity labels (R2.7, R2.8)", () => {
   });
 });
 
-describe("KPI cards have no duplicate meaning (R14.4)", () => {
+describe("KPI cards have no duplicate meaning", () => {
   async function kpis(dashboard: unknown) {
     const container = new FakeNode("div");
     const ctx = makeCtx({ state: { dashboard, index: null, ui: {} } });
@@ -212,7 +212,7 @@ describe("KPI cards have no duplicate meaning (R14.4)", () => {
   });
 });
 
-describe("Run view change text and trigger (R10.4)", () => {
+describe("Run view change text and trigger", () => {
   const rows = runRows(dashboardNew, null);
 
   it("orders runs newest first and finds entries and previous runs", () => {
@@ -267,7 +267,7 @@ describe("Run view change text and trigger (R10.4)", () => {
   });
 });
 
-describe("Overview falls back to the latest loaded run (R14.6)", () => {
+describe("Overview falls back to the latest loaded run", () => {
   it("names the failed file and shows the most recent run that loaded", async () => {
     const dashboard = {
       runs: [
@@ -304,14 +304,14 @@ describe("Overview falls back to the latest loaded run (R14.6)", () => {
   });
 });
 
-describe("Legacy data renders (R17.9)", () => {
+describe("Legacy data renders", () => {
   const legacyDashboard = {
     runHealthTrend: [{ runId: "old1", finishedAt: "2025-01-01T00:00:00.000Z", health: "attention" }],
     findingsByPage: [{ page: "https://old.test/", count: 2 }],
     findingsBySeverity: {},
   };
 
-  it("builds a summary from pre-overhaul fields without throwing", () => {
+  it("builds a summary from legacy fields without throwing", () => {
     const s = legacySummary(legacyDashboard);
     expect(s.runId).toBe("old1");
     expect(s.total).toBe(2);

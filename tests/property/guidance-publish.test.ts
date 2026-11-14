@@ -13,8 +13,7 @@ function withIgnored(run: BuiltRun): BuiltRun {
 }
 
 describe("Property 22 (publisher): guidance is specific, linked, and honest", () => {
-  // Feature: dashboard-usability-overhaul, Property 22: Automated guidance is specific, linked, and honest
-  // **Validates: Requirements 7.3, 7.4, 7.5, 7.7, 7.9**
+  // Property 22: Automated guidance is specific, linked, and honest
   it("holds for any built run and cap", () => {
     fc.assert(
       fc.property(arbRunInputs, fc.integer({ min: 0, max: 12 }), fc.boolean(), (inputs, cap, useDefault) => {

@@ -1,5 +1,5 @@
-// Feature: dashboard-usability-overhaul, Property 35: Log merge is a lossless, commutative, idempotent union
-// Feature: dashboard-usability-overhaul, Property 37: Decision input validation and entry integrity
+// Property 35: Log merge is a lossless, commutative, idempotent union
+// Property 37: Decision input validation and entry integrity
 import { describe, it, expect } from "vitest";
 import fc from "fast-check";
 import {

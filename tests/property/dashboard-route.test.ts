@@ -51,9 +51,8 @@ const arbRoute = fc.record(
   { requiredKeys: [] },
 );
 
-describe("Feature: dashboard-usability-overhaul - route", () => {
-  // Feature: dashboard-usability-overhaul, Property 13: Deep links round-trip
-  // **Validates: Requirements 3.13, 8.9, 9.7, 9.12, 11.8**
+describe("route", () => {
+  // Property 13: Deep links round-trip
   it("Property 13: parseRoute(formatRoute(r)) equals normalizeRoute(r)", () => {
     fc.assert(
       fc.property(arbRoute, (r) => {
@@ -63,7 +62,7 @@ describe("Feature: dashboard-usability-overhaul - route", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 13: Deep links round-trip
+  // Property 13: Deep links round-trip
   it("Property 13: formatRoute is stable on parsed canonical hashes", () => {
     fc.assert(
       fc.property(arbRoute, (r) => {
@@ -75,7 +74,7 @@ describe("Feature: dashboard-usability-overhaul - route", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 13: Deep links round-trip
+  // Property 13: Deep links round-trip
   it("Property 13: arbitrary hash strings format to a stable canonical hash", () => {
     fc.assert(
       fc.property(fc.stringOf(fc.oneof(reservedChar, fc.char()), { maxLength: 60 }), (raw) => {
@@ -86,7 +85,7 @@ describe("Feature: dashboard-usability-overhaul - route", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 13: Deep links round-trip
+  // Property 13: Deep links round-trip
   it("Property 13: unicode and reserved characters in q and slug survive", () => {
     const sample = "caf\u00e9 & #1 100% \u65e5\u672c";
     const r = { view: "page", slug: sample, params: { q: sample, rule: [sample, "a,b"] } };

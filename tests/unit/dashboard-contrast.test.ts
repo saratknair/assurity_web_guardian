@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-// Validates: Requirements 16.6, 17.8 (documented CONTRAST pairs in dashboard/style.css)
+// Documented CONTRAST pairs in dashboard/style.css
 const css = readFileSync(join(process.cwd(), "dashboard", "style.css"), "utf8");
 
 function rootTokens(): Record<string, string> {

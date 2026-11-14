@@ -1,4 +1,4 @@
-// Feature: dashboard-usability-overhaul, Property 46: A new-domain draft changes nothing until it is confirmed
+// Property 46: A new-domain draft changes nothing until it is confirmed
 import { describe, expect, it } from "vitest";
 import * as fc from "fast-check";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -11,7 +11,6 @@ import { setHostResolver } from "../../src/admin/domain-setup-api.js";
 import { discoveryChecks } from "../../src/admin/discovery-api.js";
 
 /**
- * **Validates: Requirements 21.2, 21.3, 21.7, 21.8, 21.9, 21.11**
  *
  * Sequences of wizard actions that never include a successful confirm leave the project
  * configuration and baselines byte-identical; cancel removes the draft file and staging folder.

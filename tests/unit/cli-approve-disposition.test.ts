@@ -18,7 +18,7 @@ afterEach(() => {
   for (const d of dirs.splice(0)) rmSync(d, { recursive: true, force: true });
 });
 
-describe.skipIf(!existsSync(CLI))("CLI approve: finding dispositions (Req 18.14)", () => {
+describe.skipIf(!existsSync(CLI))("CLI approve: finding dispositions", () => {
   it("records an ignore with source cli and prints the entry id", () => {
     const r = run([
       "--decision", "ignore", "--scope", "page-rule",

@@ -1,4 +1,4 @@
-// Dashboard self-scan (dashboard-usability-overhaul, design section H).
+// Dashboard self-scan.
 //
 // Usage: node scripts/scan-dashboard.mjs <siteDir>      (CI: ./_site)
 //
@@ -9,7 +9,7 @@
 // each, writes <siteDir>/data/self-scan.json, appends a table to
 // $GITHUB_STEP_SUMMARY (when set) and ALWAYS exits 0 (non-blocking).
 //
-// SiteGateway exemption (R17.11): this script only talks to its own loopback
+// SiteGateway exemption: this script only talks to its own loopback
 // server and observes the Dashboard itself, not a website. It therefore does
 // not go through the SiteGateway. Approved_Domain handling for site scans is
 // untouched by this script.

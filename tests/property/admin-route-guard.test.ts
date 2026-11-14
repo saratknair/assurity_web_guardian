@@ -1,4 +1,4 @@
-// Feature: dashboard-usability-overhaul, Property 60: The local-request guard covers every state-changing route
+// Property 60: The local-request guard covers every state-changing route
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import fc from "fast-check";
 import { readFileSync } from "node:fs";

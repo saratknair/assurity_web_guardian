@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import fc from "fast-check";
 import { mkdtempSync, rmSync } from "node:fs";
 import { join } from "node:path";
@@ -17,7 +17,7 @@ afterEach(() => {
   rmSync(dir, { recursive: true, force: true });
 });
 
-describe("Feature: assurity-web-guardian — Phase 4 telemetry", () => {
+describe("telemetry", () => {
   // Property 11: Audit and event logs are append-only.
   it("Property 11: append grows the log; overwrite is rejected and preserves content", () => {
     const log = new AppendOnlyLog(join(dir, "audit.jsonl"));

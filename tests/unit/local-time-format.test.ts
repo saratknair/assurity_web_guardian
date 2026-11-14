@@ -10,7 +10,7 @@ import { formatRunDate as captionDate } from "../../dashboard/lib/captions.js";
 
 const ISO = "2026-11-12T23:00:00Z";
 
-describe("local time formatting (Requirements 19.1, 18.7)", () => {
+describe("local time formatting", () => {
   it("Office helper shows 13 Nov in Pacific/Auckland with a zone label", () => {
     expect(formatLocalDateTime(ISO, "Pacific/Auckland")).toMatch(/^2026-11-13 12:00 \S+$/);
   });

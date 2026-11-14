@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { publish } from "../../src/publish/publisher.js";
 import { readLocalDashboardFile } from "../../src/admin/local-dashboard.js";
 
-// Task 11.3 (R17.1, R17.4): the local publish stages office/ next to data/.
+// The local publish stages office/ next to data/.
 
 describe("publisher stages the Virtual Office", () => {
   const root = mkdtempSync(join(tmpdir(), "awg-puboffice-"));

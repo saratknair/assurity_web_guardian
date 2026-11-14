@@ -1,4 +1,4 @@
-﻿import { runGuardian } from "../dist/core/orchestrator.js";
+import { runGuardian } from "../dist/core/orchestrator.js";
 import { loadConfig } from "../dist/config/app-config.js";
 
 const cfg = loadConfig();

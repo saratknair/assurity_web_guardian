@@ -1,8 +1,8 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import { compare } from "../../src/agents/comparator.js";
 import { qualityAnalysis, triageRecommendation, visualExplanation } from "../../src/agents/ai-agents.js";
 
-describe("Feature: assurity-web-guardian — Phase 10/11 classification", () => {
+describe("classification", () => {
   // Property 19: a difference without a violated expectation is never a Failed_Check.
   it("Property 19: observed changes are never failed-checks", () => {
     const r = compare({

@@ -1,4 +1,4 @@
-// Feature: dashboard-usability-overhaul, Property 55: An empty delta disables publishing and creates no commit
+// Property 55: An empty delta disables publishing and creates no commit
 import { describe, it, expect, beforeEach } from "vitest";
 import fc from "fast-check";
 import type { ConsoleDeps } from "../../src/admin/console-deps.js";

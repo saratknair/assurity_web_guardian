@@ -71,15 +71,15 @@ for (const r of runs.slice(-1)) {
 }
 
 // ===========================================================================
-// Phase 2 invariants (guardian-phase2-overhaul, tasks 12.1 / 12.2 / 12.3).
-// All checks are deterministic and OFFLINE — they import the real compiled
+// Invariant checks.
+// All checks are deterministic and OFFLINE - they import the real compiled
 // modules from ../dist, read committed config/artifacts, and (for the admin
 // loopback check) bind only to 127.0.0.1 on an ephemeral port and close
 // immediately. They APPEND to the existing `checks`/`ok` machinery above and
 // change none of the existing checks.
 // ===========================================================================
 
-// --- task 12.1: sanitization + admin-safety ------------------------------
+// --- sanitization + admin-safety ------------------------------
 
 // 11. sanitization-removes-secrets: the sanitizer strips secrets/tokens/PII.
 //     Build an in-memory object carrying a fake API secret and an AWS-looking
@@ -135,7 +135,7 @@ try {
 }
 
 // 13. loopback-only-admin: the Admin GUI server binds the loopback interface
-//     ONLY (Req 11.1). Start it on an ephemeral port, assert server.address()
+//     ONLY. Start it on an ephemeral port, assert server.address()
 //     reports 127.0.0.1, confirm it serves on loopback, and confirm a
 //     non-loopback host is NOT served (connection refused). Always close it.
 {
@@ -171,7 +171,7 @@ try {
     });
 
     // Negative: a non-loopback local address is NOT served (bind is loopback-only).
-    // Attempt a raw TCP connect to 127.0.0.2 — on a loopback-only bind this is
+    // Attempt a raw TCP connect to 127.0.0.2 - on a loopback-only bind this is
     // refused/unreachable, proving the server is not on 0.0.0.0.
     const refusedOffLoopback = await new Promise((res) => {
       const sock = net.createConnection({ host: "127.0.0.2", port, timeout: 1000 });
@@ -192,7 +192,7 @@ try {
   ok("loopback-only-admin", pass, detail);
 }
 
-// --- task 12.2: office honesty + static no-network -----------------------
+// --- office honesty + static no-network -----------------------
 
 // Helper: resolve the latest run's event stream. Prefer a published, sanitized
 // bundle's events.json if one exists; else fall back to the raw events.jsonl of
@@ -235,7 +235,7 @@ function loadLatestEvents() {
 }
 
 // 14. no-fabricated-characters: a virtual-office character can only exist
-//     because a genuine agent event backs it (Req 2.11). The office is a
+//     because a genuine agent event backs it. The office is a
 //     static ES-module app the backend tsconfig does NOT compile, so rather
 //     than add a cross-package build dependency, assert the invariant over the published/
 //     raw event stream directly: EVERY character-implying event
@@ -281,7 +281,7 @@ try {
   ok("no-fabricated-characters", false, `error: ${e.message}`);
 }
 
-// 14b. step-events-well-formed (virtual-office-replay, Req 1.7, 17.4, 17.5):
+// 14b. step-events-well-formed (office replay):
 //      every `step.completed` event in every local run's events.jsonl is well
 //      formed, and no event carries agentRole "ai" (template steps are never
 //      AI). STEP_NAMES mirrors src/telemetry/step-model.ts. Legacy runs have no
@@ -344,7 +344,7 @@ try {
 }
 
 // 15. static-dashboard-no-network: the STATIC dashboard + office replay paths
-//     make no absolute/off-origin requests (Req 1.5, 6.10). Read the dashboard
+//     make no absolute/off-origin requests. Read the dashboard
 //     app files and the office data source as text and assert:
 //       - dashboard/index.html references only relative assets (no http(s)://,
 //         no 127.0.0.1/localhost);
@@ -359,18 +359,18 @@ try {
   const LOOPBACK = /(127\.0\.0\.1|localhost)/i;
   const problems = [];
 
-  // index.html — pure static shell, must be fully relative.
+  // index.html - pure static shell, must be fully relative.
   const indexHtml = readFileSync(resolve("dashboard/index.html"), "utf8");
   if (ABS_URL.test(indexHtml)) problems.push("index.html has absolute URL");
   if (LOOPBACK.test(indexHtml)) problems.push("index.html references loopback");
 
-  // app.js — the render path. No absolute URL / loopback / EventSource at all.
+  // app.js - the render path. No absolute URL / loopback / EventSource at all.
   const appJs = readFileSync(resolve("dashboard/app.js"), "utf8");
   if (ABS_URL.test(appJs)) problems.push("app.js has absolute URL");
   if (LOOPBACK.test(appJs)) problems.push("app.js references loopback");
   if (/EventSource/.test(appJs)) problems.push("app.js opens EventSource");
 
-  // data-source.js — the static loader must use the relative data URL.
+  // data-source.js - the static loader must use the relative data URL.
   const dsJs = readFileSync(resolve("dashboard/data-source.js"), "utf8");
   if (!dsJs.includes("./data/dashboard.json")) problems.push("data-source.js missing relative static data URL");
   // The static loader function body must not reference loopback or EventSource.
@@ -384,7 +384,7 @@ try {
     if (/EventSource/.test(body)) problems.push("loadStatic opens EventSource");
   }
 
-  // Office replay path — office/lib/data.js resolves ../../data/ relative to
+  // Office replay path - office/lib/data.js resolves ../../data/ relative to
   // itself, never opens an EventSource, and has no "http" literal.
   const officeDs = readFileSync(resolve("office/lib/data.js"), "utf8");
   if (!officeDs.includes("../../data/")) problems.push("office data.js missing relative '../../data/' path");
@@ -398,10 +398,10 @@ try {
   ok("static-dashboard-no-network", false, `error: ${e.message}`);
 }
 
-// --- task 12.3: scope + workflow + deps + cloud-sync ----------------------
+// --- scope + workflow + deps + cloud-sync ----------------------
 
 // 16. approved-scope-only: every page scanned in the latest run belongs to an
-//     APPROVED host (Req 5.7) — generalized beyond a literal "assurity.nz"
+//     APPROVED host - generalized beyond a literal "assurity.nz"
 //     string. Derive the approved host(s) from the Domain_Config (and the
 //     per-domain approved scope file when present), then assert every page URL
 //     host in the latest run's results.json is in the approved set. This keeps
@@ -454,7 +454,7 @@ try {
 }
 
 // 17. workflow-hardened: the GitHub Actions workflow follows least-privilege
-//     and supply-chain hardening (Req 9.1, 9.2, 9.3, 14.x). Read
+//     and supply-chain hardening. Read
 //     `.github/workflows/guardian.yml` as text and assert:
 //       - a default top-level `permissions:` of `contents: read`;
 //       - every third-party `uses:` action is pinned to a 40-char commit SHA;
@@ -517,7 +517,7 @@ try {
   ok("workflow-hardened", false, `error: ${e.message}`);
 }
 
-// 18. deps-pinned: dependencies are pinned/vendored (Req 12.1, 12.4). Assert
+// 18. deps-pinned: dependencies are pinned/vendored. Assert
 //     `package-lock.json` exists at the repo root, and that the vendored
 //     Chart.js pin matches the version recorded in DEPENDENCIES.md.
 //
@@ -525,7 +525,7 @@ try {
 //     network, so the real `dashboard/vendor/chart.umd.min.js` may be absent
 //     and only the `*.NEEDS_VENDORING` placeholder present. In that case we PASS
 //     with an explicit "chart.js vendoring pending" detail rather than failing
-//     the whole gate — but we STILL require DEPENDENCIES.md to record a pinned
+//     the whole gate - but we STILL require DEPENDENCIES.md to record a pinned
 //     Chart.js version string (so the pin is never lost). Once the real bundle
 //     is dropped in, this check continues to pass (lock + recorded pin present).
 try {
@@ -562,13 +562,13 @@ try {
 }
 
 // 19. cloud-sync-additive-nondestructive: Cloud_Sync only ever ADDS cloud runs
-//     absent locally and never overwrites a locally-present run (Req 7.3, 7.5,
-//     7.8). Exercise the pure `partitionRuns(localIds, cloudIds)` helper
+//     absent locally and never overwrites a locally-present run.
+//     Exercise the pure `partitionRuns(localIds, cloudIds)` helper
 //     in-memory (NO network) and assert its partition is non-destructive:
 //       - every id chosen to ADD is absent locally;
 //       - every id chosen to SKIP is present locally;
 //       - add/skip are disjoint and together cover the distinct cloud ids;
-//       - applying the adds yields exactly local ∪ cloud (no overwrite, no loss).
+//       - applying the adds yields exactly local union cloud (no overwrite, no loss).
 try {
   const { partitionRuns } = await import("../dist/admin/cloud-sync.js");
   const local = ["run_a", "run_b", "run_c"];
@@ -582,7 +582,7 @@ try {
   const disjoint = toAdd.every((id) => !toSkip.includes(id));
   const coversCloud = cloudDistinct.every((id) => toAdd.includes(id) || toSkip.includes(id));
   const noExtra = [...toAdd, ...toSkip].every((id) => cloudDistinct.includes(id));
-  // Non-destructive union: local + adds == local ∪ cloud, and no local id removed.
+  // Non-destructive union: local + adds == local union cloud, and no local id removed.
   const unionAfter = new Set([...local, ...toAdd]);
   const expectedUnion = new Set([...local, ...cloudDistinct]);
   const unionOk = unionAfter.size === expectedUnion.size && [...expectedUnion].every((id) => unionAfter.has(id));

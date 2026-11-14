@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 // @ts-expect-error plain browser ES module without type declarations
 import { loadStatic, loadPublished } from "../../dashboard/data-source.js";
 
-// Validates: Requirements 15.2, 15.3 (relative URLs only in static mode; errors name the file)
+// Relative URLs only in static mode; errors name the file
 const g = globalThis as any;
 let urls: string[] = [];
 let savedFetch: unknown;

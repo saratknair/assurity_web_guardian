@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mkdtempSync, rmSync, existsSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
@@ -12,8 +12,8 @@ afterEach(() => {
   rmSync(root, { recursive: true, force: true });
 });
 
-describe("Feature: assurity-web-guardian — Phase 5 evidence store", () => {
-  it("creates the full run directory layout (Req 24)", () => {
+describe("evidence store", () => {
+  it("creates the full run directory layout", () => {
     const store = new EvidenceStore("run_test1", root);
     for (const sub of ["screenshots", "traces", "accessibility", "agent-tasks", "report"]) {
       expect(existsSync(join(store.runDir, sub))).toBe(true);
@@ -32,7 +32,7 @@ describe("Feature: assurity-web-guardian — Phase 5 evidence store", () => {
     expect(store.evidenceResolves()).toBe(false);
   });
 
-  it("retention never deletes a run awaiting human review (Req 10.5, 24.6)", () => {
+  it("retention never deletes a run awaiting human review", () => {
     // Build three run dirs; one is awaiting review.
     const makeRun = (name: string, awaiting: boolean) => {
       const d = join(root, name);

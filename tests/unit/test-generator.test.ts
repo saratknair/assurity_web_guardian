@@ -25,7 +25,7 @@ afterEach(() => {
   rmSync(root, { recursive: true, force: true });
 });
 
-describe("Feature: assurity-web-guardian — Phase 2 test-manifest path migration (Req 8.2, 11.8)", () => {
+describe("test-manifest path migration", () => {
   it("stores a repo-relative specPath with forward slashes and no absolute prefix", () => {
     const outRel = "tests/generated";
     const gen = generateTestFromBaseline("assurity-nz", "https://assurity.nz/", baselinesRoot, outRel);

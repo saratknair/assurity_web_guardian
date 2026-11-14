@@ -1,4 +1,4 @@
-﻿import { chromium } from "@playwright/test";
+import { chromium } from "@playwright/test";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { loadConfig } from "../dist/config/app-config.js";
@@ -53,7 +53,7 @@ const candidates = [...candidatesSet].slice(0, 20); // cap probing
 const results = [];
 
 for (const url of candidates) {
-  // Conservative pacing (Req 12.1): >= 1s between requests.
+  // Conservative pacing: >= 1s between requests.
   await new Promise((r) => setTimeout(r, cfg.limits.requestSpacingMs));
   const rec = { url, httpStatus: null, title: "", h1: "", purpose: "", navCount: 0, ctas: [], forms: 0, hasExternalLinks: false, concern: "" };
   try {

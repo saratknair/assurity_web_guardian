@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 
 // Smoke test: text assertions on the CI workflow (no YAML parser).
-// Requirements: 13.1, 13.2, 13.14
 const raw = readFileSync(".github/workflows/guardian.yml", "utf8");
 // Non-comment lines only, so explanatory comments ("never -f") do not trip checks.
 const code = raw

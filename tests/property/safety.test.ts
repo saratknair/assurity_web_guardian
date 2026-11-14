@@ -1,11 +1,11 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import fc from "fast-check";
 import { isApprovedDomain, isExternal } from "../../src/safety/domain-guard.js";
 import { looksLikePii, GuardedPage } from "../../src/safety/form-guard.js";
 
 const APPROVED = "assurity.nz";
 
-describe("Feature: assurity-web-guardian — Phase 3 safety", () => {
+describe("safety", () => {
   // Property 2: Requests never leave the approved domain.
   it("Property 2: off-domain URLs are always external and never approved", () => {
     fc.assert(
@@ -27,7 +27,7 @@ describe("Feature: assurity-web-guardian — Phase 3 safety", () => {
     expect(isExternal("https://linkedin.com/company", APPROVED)).toBe(true);
   });
 
-  // Form / PII guard (Req 11.3, 11.4).
+  // Form / PII guard.
   it("blocks PII-named fields and PII-shaped values", () => {
     expect(looksLikePii("email", "whatever")).toBe(true);
     expect(looksLikePii("fullName", "x")).toBe(true);

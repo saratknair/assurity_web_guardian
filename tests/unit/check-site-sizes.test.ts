@@ -1,5 +1,4 @@
-// Unit tests for the site size gate (task 13.1).
-// Validates: Requirements 16.8, 17.6, 17.7
+// Unit tests for the site size gate.
 import { describe, it, expect } from "vitest";
 import {
   evaluateSizes,

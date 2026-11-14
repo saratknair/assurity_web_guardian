@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 // @ts-expect-error plain browser ES module without type declarations
 import { normalizeRun } from "../../dashboard/lib/findings.js";
 
-// Validates: Requirements 12.4, 12.7
 describe("normalizeRun replay pass-through", () => {
   it("defaults replay when absent or malformed", () => {
     expect(normalizeRun({}).replay).toEqual({ enriched: false, durationMs: null });

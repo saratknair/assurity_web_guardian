@@ -60,9 +60,8 @@ function assertClean(value: string): void {
   expect(BAD_CONTROL.test(value), `control in ${JSON.stringify(value)}`).toBe(false);
 }
 
-describe("Feature: dashboard-usability-overhaul — evidence sanitization", () => {
-  // Feature: dashboard-usability-overhaul, Property 1: Published element evidence is clean
-  // **Validates: Requirements 1.4, 1.8, 1.10, 17.6**
+describe("evidence sanitization", () => {
+  // Property 1: Published element evidence is clean
   it("Property 1: Published element evidence is clean", () => {
     fc.assert(
       fc.property(fc.array(arbAxeNode, { minLength: 1, maxLength: 4 }), (nodes) => {
@@ -82,7 +81,7 @@ describe("Feature: dashboard-usability-overhaul — evidence sanitization", () =
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 1: Published element evidence is clean
+  // Property 1: Published element evidence is clean
   it("Property 1 (direct): sanitizeEvidenceText output is clean or withheld", () => {
     fc.assert(
       fc.property(arbEvidenceString, fc.integer({ min: 0, max: 700 }), (raw, max) => {
@@ -94,8 +93,7 @@ describe("Feature: dashboard-usability-overhaul — evidence sanitization", () =
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 2: Evidence caps and counts are exact
-  // **Validates: Requirements 1.1, 1.2, 1.3, 1.5, 1.6**
+  // Property 2: Evidence caps and counts are exact
   it("Property 2: Evidence caps and counts are exact", () => {
     const safeChar = fc.constantFrom(..."abcdefghij klmnop<>=/-.#".split(""));
     // Single-space-separated words so collapseSpaces never changes length; no secrets/paths.

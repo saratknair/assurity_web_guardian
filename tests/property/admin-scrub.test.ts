@@ -1,4 +1,4 @@
-// Feature: dashboard-usability-overhaul, Property 62: Anything shown from outside the console is scrubbed
+// Property 62: Anything shown from outside the console is scrubbed
 import { describe, it, expect } from "vitest";
 import fc from "fast-check";
 import { scrubForDisplay } from "../../src/admin/scrub.js";
@@ -55,7 +55,6 @@ const controlChars = fc.array(
 
 describe("Property 62: Anything shown from outside the console is scrubbed", () => {
   it("Property 62: removes injected tokens, Bearer headers, and credential URLs", () => {
-    // **Validates: Requirements 26.11, 29.6, 30.9**
     fc.assert(
       fc.property(tokenArb, bearerArb, credUrlArb, filler, (token, bearer, cred, pad) => {
         const text = `${pad} ${token} ${pad}\n${bearer.header}\nclone ${cred.text} ${pad}`;
@@ -71,7 +70,6 @@ describe("Property 62: Anything shown from outside the console is scrubbed", () 
   });
 
   it("Property 62: removes Windows, UNC, and POSIX absolute paths", () => {
-    // **Validates: Requirements 26.11, 29.6, 30.9**
     fc.assert(
       fc.property(anyPath, anyPath, filler, (p1, p2, pad) => {
         const text = `${pad} error at ${p1} and "${p2}" ${pad}`;
@@ -84,7 +82,6 @@ describe("Property 62: Anything shown from outside the console is scrubbed", () 
   });
 
   it("Property 62: replaces the project root and home directory", () => {
-    // **Validates: Requirements 26.11, 29.6, 30.9**
     fc.assert(
       fc.property(segs, segs, segs, fc.boolean(), (a, b, rel, fwd) => {
         const home = `C:\\Users\\qh${a.join("")}`;
@@ -105,7 +102,6 @@ describe("Property 62: Anything shown from outside the console is scrubbed", () 
   });
 
   it("Property 62: drops control characters but keeps newlines and tabs", () => {
-    // **Validates: Requirements 26.11, 29.6, 30.9**
     fc.assert(
       fc.property(filler, controlChars, filler, (a, ctrl, b) => {
         const out = scrubForDisplay(`${a}${ctrl.join("")}\n${b}\tx`);
@@ -118,7 +114,6 @@ describe("Property 62: Anything shown from outside the console is scrubbed", () 
   });
 
   it("Property 62: caps line length at 2000 characters", () => {
-    // **Validates: Requirements 26.11, 29.6, 30.9**
     fc.assert(
       fc.property(fc.integer({ min: 2001, max: 6000 }), fc.integer({ min: 0, max: 3 }), (len, extra) => {
         const lines = [
@@ -134,7 +129,6 @@ describe("Property 62: Anything shown from outside the console is scrubbed", () 
   });
 
   it("Property 62: leaves 40-character commit SHAs intact", () => {
-    // **Validates: Requirements 26.11, 29.6, 30.9**
     fc.assert(
       fc.property(sha, filler, (s, pad) => {
         const out = scrubForDisplay(`${pad} commit ${s} pushed ${pad}\n[main ${s}] done`);
@@ -145,7 +139,6 @@ describe("Property 62: Anything shown from outside the console is scrubbed", () 
   });
 
   it("Property 62: is idempotent on mixed secret-bearing text", () => {
-    // **Validates: Requirements 26.11, 29.6, 30.9**
     fc.assert(
       fc.property(
         tokenArb,
@@ -166,7 +159,6 @@ describe("Property 62: Anything shown from outside the console is scrubbed", () 
   });
 
   it("Property 62: never throws and is idempotent on arbitrary strings", () => {
-    // **Validates: Requirements 26.11, 29.6, 30.9**
     fc.assert(
       fc.property(fc.oneof(fc.string(), fc.fullUnicodeString(), fc.string({ maxLength: 3000 })), (text) => {
         const once = scrubForDisplay(text);

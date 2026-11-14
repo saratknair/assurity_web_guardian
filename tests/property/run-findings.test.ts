@@ -99,8 +99,7 @@ const sevOf = (impact: unknown): string =>
   impact === "critical" || impact === "serious" || impact === "moderate" || impact === "minor" ? impact : "unrated";
 
 describe("run findings properties", () => {
-  // Feature: dashboard-usability-overhaul, Property 3: One Finding per rule violation with its real Impact
-  // **Validates: Requirements 2.1, 2.3, 2.6, 12.6**
+  // Property 3: One Finding per rule violation with its real Impact
   it("Property 3: one a11y-rule Finding per (page, viewport, rule) with its real impact", () => {
     fc.assert(
       fc.property(arbRunInputs, (inputs) => {
@@ -133,8 +132,7 @@ describe("run findings properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 4: Counts are conserved
-  // **Validates: Requirements 2.4, 2.9, 4.2, 4.5, 12.9, 14.7**
+  // Property 4: Counts are conserved
   it("Property 4: totals, severity, lifecycle and page counts are conserved", () => {
     fc.assert(
       fc.property(arbRunInputs, (inputs) => {
@@ -156,8 +154,7 @@ describe("run findings properties", () => {
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 23: Suppressed visual Findings name the failing rules
-  // **Validates: Requirements 2.1, 2.3, 2.6**
+  // Property 23: Suppressed visual Findings name the failing rules
   it("Property 23: suppressedBy equals the ids of the page's non-visual Findings", () => {
     fc.assert(
       fc.property(arbRunInputs, (inputs) => {

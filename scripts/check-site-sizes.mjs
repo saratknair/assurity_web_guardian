@@ -1,13 +1,12 @@
-// Site size gate (virtual-office-replay, task 13.1).
+// Site size gate.
 //
 // Usage: node scripts/check-site-sizes.mjs <siteDir> [--office-dir <dir>]
 //   (CI: ./_site)
 //
 // Checks the built static site:
-//   - <site>/office total size must be <= 1,572,864 bytes (requirement 16.8);
+//   - <site>/office total size must be <= 1,572,864 bytes;
 //     the message names the largest file
 //   - each <site>/data/runs/*/events.json must be <= 262,144 bytes
-//     (requirements 17.6, 17.7)
 // Prints every offending path (site-relative, forward slashes) and exits 1.
 // A missing office/ directory fails (CI must ship the office). A missing
 // data/runs directory is fine (no runs yet).

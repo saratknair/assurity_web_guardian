@@ -9,10 +9,9 @@ import {
   type ResolvedItem,
 } from "../../src/core/dispositions.js";
 
-// Feature: dashboard-usability-overhaul, Property 29: Matcher scope correctness
-// Feature: dashboard-usability-overhaul, Property 30: Element-scope ignores account for nodes exactly
-// Feature: dashboard-usability-overhaul, Property 31: Ignored Findings are excluded from every active count and nothing is lost
-// **Validates: Requirements 19.4, 19.5, 19.6, 19.11, 19.15, 19.16, 19.17, 19.18, 20.3**
+// Property 29: Matcher scope correctness
+// Property 30: Element-scope ignores account for nodes exactly
+// Property 31: Ignored Findings are excluded from every active count and nothing is lost
 
 const RUNS = { numRuns: 200 };
 

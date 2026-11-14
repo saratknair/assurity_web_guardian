@@ -51,9 +51,8 @@ const arbHistoryAndObs = fc.tuple(arbHistory, arbObservation);
 const clone = <T>(x: T): T => JSON.parse(JSON.stringify(x)) as T;
 const UNRESOLVED: LifecycleState[] = ["new", "recurring", "existing-unresolved"];
 
-describe("Feature: dashboard-usability-overhaul - lifecycle and history", () => {
-  // Feature: dashboard-usability-overhaul, Property 7: Lifecycle transitions follow the table
-  // **Validates: Requirements 12.10, 13.3, 13.4, 13.5, 13.6, 13.7**
+describe("lifecycle and history", () => {
+  // Property 7: Lifecycle transitions follow the table
   it("Property 7: Lifecycle transitions follow the table", () => {
     const prevs = fc.constantFrom<LifecycleState | undefined>(undefined, "new", "recurring", "existing-unresolved", "resolved");
     fc.assert(
@@ -110,8 +109,7 @@ describe("Feature: dashboard-usability-overhaul - lifecycle and history", () => 
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 8: History application is idempotent
-  // **Validates: Requirements 13.12**
+  // Property 8: History application is idempotent
   it("Property 8: History application is idempotent", () => {
     fc.assert(
       fc.property(arbHistoryAndObs, ([h, obs]) => {
@@ -124,8 +122,7 @@ describe("Feature: dashboard-usability-overhaul - lifecycle and history", () => 
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 9: History only grows
-  // **Validates: Requirements 13.11**
+  // Property 9: History only grows
   it("Property 9: History only grows", () => {
     fc.assert(
       fc.property(arbObsSeq, (seq) => {
@@ -172,8 +169,7 @@ describe("Feature: dashboard-usability-overhaul - lifecycle and history", () => 
       );
     });
 
-    // Feature: dashboard-usability-overhaul, Property 11: Unavailable history never fabricates state
-    // **Validates: Requirements 12.5, 13.8**
+    // Property 11: Unavailable history never fabricates state
     it("Property 11: an unreadable history file loads as unavailable with empty state and is left untouched", () => {
       dir = mkdtempSync(join(tmpdir(), "awg-hist-"));
       const file = join(dir, "a11y-history.json");
@@ -191,10 +187,9 @@ describe("Feature: dashboard-usability-overhaul - lifecycle and history", () => 
     });
   });
 
-  // Feature: dashboard-usability-overhaul, Property 11: Unavailable history never fabricates state
-  // **Validates: Requirements 12.5, 13.8**
+  // Property 11: Unavailable history never fabricates state
   it("Property 11: the snapshot carries the unavailable status and an empty input history is not mutated", () => {
-    // Module-level part only. The orchestrator (task 8.3) must not call applyRun when history is
+    // Module-level part only. The orchestrator must not call applyRun when history is
     // unavailable, mark every Finding `not-recorded`, and the Dashboard must count unrecorded
     // Findings under "State not recorded"; those parts are verified at integration level.
     fc.assert(
@@ -209,8 +204,7 @@ describe("Feature: dashboard-usability-overhaul - lifecycle and history", () => 
     );
   });
 
-  // Feature: dashboard-usability-overhaul, Property 10: Lifecycle is deterministic
-  // **Validates: Requirements 13.13**
+  // Property 10: Lifecycle is deterministic
   it("Property 10: Lifecycle is deterministic and independent of the current time", () => {
     try {
       fc.assert(
@@ -230,8 +224,7 @@ describe("Feature: dashboard-usability-overhaul - lifecycle and history", () => 
     }
   });
 
-  // Feature: dashboard-usability-overhaul, Property 12: Resolved items are complete and scoped
-  // **Validates: Requirements 13.3, 13.5, 13.6, 13.7**
+  // Property 12: Resolved items are complete and scoped
   it("Property 12: Resolved items are complete and scoped", () => {
     fc.assert(
       fc.property(arbHistoryAndObs, ([h, obs]) => {

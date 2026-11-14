@@ -17,8 +17,7 @@ function makePng(w: number, h: number, data: Uint8Array): PNG {
 const sizeArb = fc.record({ w: fc.integer({ min: 1, max: 16 }), h: fc.integer({ min: 1, max: 16 }) });
 const bytesArb = fc.uint8Array({ minLength: 16 * 16 * 4, maxLength: 16 * 16 * 4 });
 
-// Feature: dashboard-usability-overhaul, Property 19: Derived difference measure equals the comparer's count
-// **Validates: Requirements 4.3, 4.4**
+// Property 19: Derived difference measure equals the comparer's count
 describe("Property 19: Derived difference measure equals the comparer's count", () => {
   it("deriveDiffMeasure(pixelmatch diff PNG).diffPixels === pixelmatch count", () => {
     fc.assert(
@@ -76,8 +75,7 @@ const pairArb = fc.record({
   stray: fc.boolean(), // not-differing pairs may still have a baseline and a stale diff file on disk
 });
 
-// Feature: dashboard-usability-overhaul, Property 18: Baselines are published exactly for differing pairs
-// **Validates: Requirements 5.1, 5.2, 5.7**
+// Property 18: Baselines are published exactly for differing pairs
 describe("Property 18: Baselines are published exactly for differing pairs", () => {
   it("publishes a baseline copy exactly for verified differing pairs, with reasons otherwise", () => {
     // File-system cases: 50 runs rather than 100 to keep the suite fast.

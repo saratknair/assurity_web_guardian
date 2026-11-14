@@ -15,7 +15,7 @@ describe("step-recorder", () => {
     expect([s(), s(), s()]).toEqual([1, 2, 3]);
   });
 
-  it("summarises findings per the design tables", () => {
+  it("summarises findings using the step summary tables", () => {
     const load = summariseStep("load", {
       status: 200,
       reached: true,

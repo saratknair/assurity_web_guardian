@@ -11,8 +11,7 @@ import {
   DEFAULT_IMAGE_RETENTION_RUNS,
 } from "../../src/publish/size-budget.js";
 
-// Feature: dashboard-usability-overhaul, Property 40: Images are published only for the latest N runs and every omission is recorded
-// **Validates: Requirements 16.8, 16.9, 16.10, 16.11, 16.12**
+// Property 40: Images are published only for the latest N runs and every omission is recorded
 
 type Run = { runId: string; finishedAt: string | null };
 

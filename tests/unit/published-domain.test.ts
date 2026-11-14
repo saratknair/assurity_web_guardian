@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { buildPublishedData, deriveRunDomain } from "../../src/publish/published-data.js";
 
-// Task 35.1 (R21.6, R29.1): additive optional per-run `domain`; label not hard-coded.
+// Additive optional per-run `domain`; label not hard-coded.
 
 const root = mkdtempSync(join(tmpdir(), "awg-pubdom-"));
 afterAll(() => rmSync(root, { recursive: true, force: true }));

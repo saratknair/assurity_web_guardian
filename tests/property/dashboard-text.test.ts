@@ -26,7 +26,7 @@ const arbCtx = fc.record({
   runFinishedAt: fc.option(isoDate, { nil: undefined }),
 });
 
-// Feature: dashboard-usability-overhaul, Property 20: Captions and alt text always carry their facts
+// Property 20: Captions and alt text always carry their facts
 describe("Property 20: Captions and alt text always carry their facts", () => {
   it("evidenceCaption carries url, viewport, role, run id/date or Run not recorded, legend or full-page capture", () => {
     fc.assert(
@@ -79,7 +79,7 @@ function sentence(s: string): string {
   return /[.!?]$/.test(t) ? t : t + ".";
 }
 
-// Feature: dashboard-usability-overhaul, Property 21: Plain-English summaries are complete and never invented
+// Property 21: Plain-English summaries are complete and never invented
 describe("Property 21: Plain-English summaries are complete and never invented", () => {
   it("catalogue rules: summary contains what, who, the scope statement, and no placeholder", () => {
     fc.assert(
@@ -164,7 +164,7 @@ const arbLegacyOutcome = fc.record({
   detail: fc.oneof(fc.string(), fc.fullUnicodeString(), words),
 });
 
-// Feature: dashboard-usability-overhaul, Property 22: Automated guidance is specific, linked, and honest
+// Property 22: Automated guidance is specific, linked, and honest
 describe("Property 22: Automated guidance is specific, linked, and honest (visibleGuidance and isGenericGuidance)", () => {
   it("visibleGuidance drops unknown findingIds, generic texts and confidence fields", () => {
     const known = ["F1", "F2", "F3"];

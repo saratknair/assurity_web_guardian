@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-// Validates: Requirements 15.2, 15.3, 15.4 (contrast of the console colour pairs)
+// Contrast of the console colour pairs
 const css = readFileSync(join(process.cwd(), "admin-ui", "console.css"), "utf8");
 
 function rootTokens(): Record<string, string> {
