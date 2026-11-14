@@ -24,6 +24,15 @@ describe("package.json scripts", () => {
     }
   });
 
+  it("declares the same Node major in .nvmrc and engines.node", () => {
+    const pkg = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
+    const nvmMajor = /^v?(\d+)/.exec(readFileSync(resolve(root, ".nvmrc"), "utf8").trim());
+    const enginesMajor = /(\d+)/.exec(pkg.engines.node);
+    expect(nvmMajor).not.toBeNull();
+    expect(enginesMajor).not.toBeNull();
+    expect(enginesMajor![1]).toBe(nvmMajor![1]);
+  });
+
   it("points node scripts at files that exist", () => {
     for (const [name, cmd] of Object.entries(scripts)) {
       const m = /^node (scripts\/\S+)$/.exec(cmd);

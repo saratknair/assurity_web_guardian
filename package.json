@@ -20,7 +20,7 @@
     "scan:history": "node scripts/dev/scan-history-comments.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22 <23"
   },
   "dependencies": {
     "@axe-core/playwright": "^4.10.0",
