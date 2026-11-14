@@ -9,6 +9,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { resolveDisplayTitle } from "../config/app-config.js";
 import { buildDashboardData } from "../reporting/dashboard-data.js";
 import {
   hasResidualPath,
@@ -102,6 +103,8 @@ export interface RunsIndex {
   schemaVersion?: 2;
   generatedAt: string;
   domain: string;
+  /** Additive optional: product title for the UIs; absent on older published data. */
+  displayTitle?: string;
   imageRetentionRuns?: number;
   runs: PublishedRunSummary[];
 }
@@ -601,6 +604,7 @@ export async function buildPublishedData(opts: {
   outDir: string;
   historyPath?: string;
   domain?: string;
+  displayTitle?: string;
 }): Promise<{ runsPublished: string[]; withheld: Record<string, string[]> }> {
   const runsRoot = opts.runsRoot ?? "artifacts/runs";
   const historyPath = opts.historyPath ?? "artifacts/a11y-history.json";
@@ -733,6 +737,7 @@ export async function buildPublishedData(opts: {
     schemaVersion: 2,
     generatedAt: new Date().toISOString(),
     domain,
+    displayTitle: resolveDisplayTitle({ displayTitle: opts.displayTitle }),
     imageRetentionRuns: retention,
     runs: indexRuns.map(({ summary: r }) => ({
       ...(domainById.get(r.runId) ? { domain: domainById.get(r.runId) as string } : {}),

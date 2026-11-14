@@ -70,6 +70,7 @@
 import { loadPublished } from "./data-source.js";
 import { parseRoute, formatRoute } from "./lib/route.js";
 import { normalizeRun } from "./lib/findings.js";
+import { DEFAULT_TITLE, titleFrom } from "./lib/title.js";
 
 const VIEW_MODULES = {
   overview: "./views/overview.js",
@@ -90,7 +91,7 @@ const IMPORTERS = {
   visual: () => import("./views/visual-comparison.js"),
 };
 
-const TITLE = "Web Guardian";
+let TITLE = DEFAULT_TITLE;
 
 const state = {
   dashboard: null,
@@ -131,6 +132,10 @@ async function boot() {
     return;
   }
 
+  TITLE = titleFrom(state.index);
+  const heading = document.querySelector(".topbar__title");
+  if (heading) heading.textContent = TITLE;
+  document.title = TITLE;
   renderHeader(state.dashboard);
   wireNavigation();
   state.route = parseRoute(location.hash);

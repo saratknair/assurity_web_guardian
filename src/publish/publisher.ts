@@ -10,6 +10,7 @@ import {
 } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { buildPublishedData, type RunsIndex } from "./published-data.js";
+import { loadDisplayTitle } from "../config/app-config.js";
 
 /**
  * Publisher orchestrator.
@@ -239,7 +240,7 @@ export async function publish(opts: {
   let withheldMap: Record<string, string[]> = {};
   let publishedRunId: string | undefined;
   try {
-    const built = await buildPublishedData({ runsRoot, outDir: stagingDir });
+    const built = await buildPublishedData({ runsRoot, outDir: stagingDir, displayTitle: loadDisplayTitle() });
     withheldMap = built.withheld;
 
     const index = readStagedIndex(stagingDir);

@@ -71,6 +71,15 @@ export function resolveDisplayTitle(cfg: { displayTitle?: string }): string {
   return t === "" ? DEFAULT_DISPLAY_TITLE : t;
 }
 
+/** Resolved title from the app config file; the default when the file is missing or invalid. */
+export function loadDisplayTitle(path = "config/app.config.json"): string {
+  try {
+    return resolveDisplayTitle(loadConfig(path));
+  } catch {
+    return DEFAULT_DISPLAY_TITLE;
+  }
+}
+
 export interface PageSeedFile {
   maxUrls: number;
   approvedUrls: string[];

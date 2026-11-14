@@ -15,6 +15,7 @@ const SECTIONS = [
 ];
 
 const STATUS_THROTTLE_MS = 5000;
+let productTitle = "Web Guardian";
 const statusRegion = document.getElementById("status");
 const alertRegion = document.getElementById("alert");
 const host = document.getElementById("section-host");
@@ -98,13 +99,13 @@ async function loadSection() {
   } catch (e) {
     if (token !== loadToken) return;
     host.replaceChildren(errorPanel(label, e && e.message ? e.message : "Unknown error."));
-    document.title = label + " - Web Guardian Console";
+    document.title = label + " - " + productTitle + " Console";
     return;
   }
   if (token !== loadToken) return;
   const section = el("section", { "aria-labelledby": "section-title" }, [el("h2", { id: "section-title", text: label })]);
   host.replaceChildren(section);
-  document.title = label + " - Web Guardian Console";
+  document.title = label + " - " + productTitle + " Console";
   try {
     await mod.render(section, { api, el, announce, showAlert });
   } catch (e) {
@@ -113,9 +114,23 @@ async function loadSection() {
   }
 }
 
+/** Read the product title from the status endpoint; keep the default when it is unavailable. */
+async function loadProductTitle() {
+  try {
+    const s = await api("/api/status");
+    if (s && typeof s.displayTitle === "string" && s.displayTitle.trim() !== "") productTitle = s.displayTitle.trim();
+  } catch {
+    return;
+  }
+  const h = document.querySelector("header h1");
+  if (h) h.textContent = productTitle + " Console";
+  document.title = document.title.replace(/^(.*) - .* Console$/, "$1 - " + productTitle + " Console");
+}
+
 buildNav();
 window.addEventListener("hashchange", () => {
   loadSection();
   document.getElementById("main").focus();
 });
 loadSection();
+loadProductTitle();

@@ -17,6 +17,7 @@ import { loadIndex, loadEvents, loadRunFindings } from "./lib/data.js";
 import { buildTimeline, stateAt, countAt, nextStart, prevStart, firstEntryForPage } from "./lib/timeline.js";
 import { STATIONS } from "./lib/stations.js";
 import { formatClock } from "./lib/format.js";
+import { titleFrom } from "./lib/title.js";
 import {
   initialState, resolveInitialState, clampToDuration, hasImagesFor, routeFromState,
   appKeyAction, fallbackMessage, announceDecision,
@@ -31,6 +32,13 @@ import { createTelemetryPanel } from "./views/telemetry-panel.js";
 import { createSwimlane } from "./views/swimlane.js";
 import { createInspector } from "./views/inspector.js";
 import { createHelp } from "./views/help.js";
+
+/** Show the product title in the tab and the header (text only). */
+function applyTitle(title) {
+  document.title = title;
+  const h = document.querySelector(".topbar__title");
+  if (h) h.textContent = title;
+}
 
 const URL_DEBOUNCE_MS = 250;
 const ANNOUNCE_MIN_MS = 1500;
@@ -326,6 +334,7 @@ export function boot() {
       errors.push(failure("index.json", err));
     }
     store.set({ index, loadErrors: errors });
+    applyTitle(titleFrom(index));
     if (!index) {
       store.set({ loading: false });
       return;

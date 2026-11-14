@@ -3,6 +3,7 @@
  * `ROUTE_GROUPS`; the router never needs to change. Handlers use ports only.
  */
 import { runningJobOf } from "./console-deps.js";
+import { resolveDisplayTitle } from "../config/app-config.js";
 import type { ConsoleDeps } from "./console-deps.js";
 import { pagesUrlFromRemote } from "./git-feedback.js";
 import { urlLimit, usedText } from "./url-set.js";
@@ -86,10 +87,16 @@ function readDomain(deps: ConsoleDeps): { domain: string; baseUrl: string; slug:
   return { domain, baseUrl, slug };
 }
 
+/** The resolved product title from the app config; the default when the config is missing or unset. */
+function readDisplayTitle(deps: ConsoleDeps): string {
+  const cfg = readJsonFile(deps, "config/app.config.json");
+  return resolveDisplayTitle({ displayTitle: cfg ? (str(cfg.displayTitle) ?? undefined) : undefined });
+}
+
 async function getDomain(ctx: HandlerContext): Promise<ConsoleResponse> {
   const d = readDomain(ctx.deps);
   if (!d) return { status: 500, json: { error: "domain config unavailable" } };
-  return { status: 200, json: { domain: d.domain, baseUrl: d.baseUrl, slug: d.slug } };
+  return { status: 200, json: { domain: d.domain, baseUrl: d.baseUrl, slug: d.slug, displayTitle: readDisplayTitle(ctx.deps) } };
 }
 
 async function getStatus(ctx: HandlerContext): Promise<ConsoleResponse> {
@@ -117,6 +124,7 @@ async function getStatus(ctx: HandlerContext): Promise<ConsoleResponse> {
     json: {
       domain: d ? d.domain : null,
       baseUrl: d ? d.baseUrl : null,
+      displayTitle: readDisplayTitle(deps),
       used,
       // Unpublished count comes from the delta against the last known origin/main (no fetch);
       // last publish comes from Git_Feedback. Both stay null when unknown.

@@ -1,4 +1,5 @@
 import { buildPublishedData } from "./published-data.js";
+import { loadDisplayTitle } from "../config/app-config.js";
 
 /**
  * CLI entry for the publisher / CI workflow (Cloud_Runner step
@@ -20,7 +21,7 @@ async function main(): Promise<void> {
   const historyPath = process.env.AWG_A11Y_HISTORY ?? "artifacts/a11y-history.json";
   const domain = process.env.AWG_DOMAIN || undefined;
 
-  const result = await buildPublishedData({ runsRoot, outDir, historyPath, domain });
+  const result = await buildPublishedData({ runsRoot, outDir, historyPath, domain, displayTitle: loadDisplayTitle() });
 
   const withheldRuns = Object.keys(result.withheld);
   console.log(
