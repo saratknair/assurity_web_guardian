@@ -97,6 +97,21 @@ function listLocalRunIds(runsRoot: string): string[] {
   });
 }
 
+/** A branch name that cannot be read by git as an option or revision expression. */
+export function isSafeBranchName(name: string): boolean {
+  return /^[A-Za-z0-9][A-Za-z0-9._/-]*$/.test(name) && !name.includes("..") && !name.endsWith("/") && !name.endsWith(".lock");
+}
+
+/** A run id that is one plain path segment (no separators, no dot segments). */
+export function isSafeRunId(id: string): boolean {
+  return /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(id) && !id.includes("..");
+}
+
+/** True when every segment of a remote-supplied relative path is a plain name. */
+export function isSafeRelativePath(rel: string): boolean {
+  return rel.length > 0 && rel.split("/").every((s) => s !== "" && s !== "." && s !== ".." && !/[\\:\0]/.test(s));
+}
+
 /** POSIX-style prefix the branch stores run artifacts under. */
 const RUNS_PREFIX = "artifacts/runs";
 
@@ -123,7 +138,8 @@ async function listCloudRuns(
     const rest = p.slice(prefix.length);
     const slash = rest.indexOf("/");
     const id = slash === -1 ? rest : rest.slice(0, slash);
-    if (id.length > 0) runIds.add(id);
+    // Remote tree names are untrusted: only plain directory names become run ids.
+    if (isSafeRunId(id)) runIds.add(id);
   }
   return { runIds: [...runIds], files };
 }
@@ -147,6 +163,8 @@ async function materializeRun(
     if (!filePath.startsWith(runPrefix)) continue;
     const relative = filePath.slice(runPrefix.length);
     if (relative.length === 0) continue;
+    // A remote tree is untrusted data: refuse any path that could leave destRunDir.
+    if (!isSafeRelativePath(relative)) throw new Error("unsafe path in remote run");
     // Read the blob as raw bytes so screenshots/traces survive intact.
     const { stdout } = await execFileAsync("git", ["show", `${ref}:${filePath}`], {
       cwd: repoDir,
@@ -172,6 +190,8 @@ export async function cloudSync(opts: {
   runsRoot: string;
 }): Promise<CloudSyncResult> {
   const { repoDir, branch, runsRoot } = opts;
+  // The branch goes to git as an argument; refuse anything that could parse as an option.
+  if (!isSafeBranchName(branch)) return { added: [], skipped: [], ok: false, reason: "invalid branch name" };
 
   // 1. READ-ONLY fetch of the runs-data branch. No push, no branch edit, no
   //    commit - just update the remote-tracking ref so we can read it.
