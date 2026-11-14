@@ -193,6 +193,12 @@ jobs:
         # build (it also checks _site/data/runs/*/events.json) and before the
         # Pages upload.
         run: node scripts/check-site-sizes.mjs ./_site
+      - name: Stamp build id on site assets
+        # Appends ?v=<short commit SHA> to the entry script and stylesheet URLs of
+        # the dashboard and office pages so a new deploy bypasses cached copies.
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: node scripts/stamp-build-id.mjs ./_site
       - name: Self-scan virtual office
         # Non-blocking automated axe check of the Virtual Office. Needs the
         # Playwright chromium browser installed earlier in this job. Not a

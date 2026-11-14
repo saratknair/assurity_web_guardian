@@ -35,6 +35,15 @@ describe("guardian.yml workflow smoke test", () => {
     expect(code.slice(start, end)).toMatch(/AWG_RUN_ORIGIN:\s*cloud/);
   });
 
+  it("stamps the build id after both site copies and before the Pages upload", () => {
+    const office = code.indexOf("- name: Add static virtual office to site");
+    const stamp = code.indexOf("- name: Stamp build id on site assets");
+    const upload = code.indexOf("- name: Upload Pages artifact");
+    expect(stamp).toBeGreaterThan(office);
+    expect(stamp).toBeLessThan(upload);
+    expect(code).toContain("node scripts/stamp-build-id.mjs ./_site");
+  });
+
   it("never force-pushes", () => {
     expect(code).not.toMatch(/push\s+(.*\s)?(-f|--force|--force-with-lease)\b/);
     expect(code).not.toContain("--force-with-lease");
