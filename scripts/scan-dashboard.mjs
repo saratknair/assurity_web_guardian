@@ -7,7 +7,9 @@
 // view, a Finding detail view and the Visual comparison in Chromium via
 // Playwright, runs @axe-core/playwright (tags wcag2a, wcag2aa, wcag22aa) on
 // each, writes <siteDir>/data/self-scan.json, appends a table to
-// $GITHUB_STEP_SUMMARY (when set) and ALWAYS exits 0 (non-blocking).
+// $GITHUB_STEP_SUMMARY (when set) and exits 0 (non-blocking). When the
+// published data is absent it prints "skipped: no instance data (...)" and
+// exits 0; with GUARDIAN_REQUIRE_INSTANCE_DATA=1 that case exits 1 instead.
 //
 // SiteGateway exemption: this script only talks to its own loopback
 // server and observes the Dashboard itself, not a website. It therefore does
@@ -24,6 +26,7 @@ import { createServer } from "node:http";
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync, existsSync, statSync } from "node:fs";
 import { join, extname, normalize, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { decideSkip, missingPublishedData } from "./lib/instance-data.mjs";
 
 export const AXE_TAGS = ["wcag2a", "wcag2aa", "wcag22aa"];
 export const IMPACTS = ["critical", "serious", "moderate", "minor"];
@@ -268,13 +271,18 @@ async function scanAll(siteDir) {
 
 async function main() {
   const siteDir = resolve(process.argv[2] || "_site");
+  const decision = decideSkip(missingPublishedData(siteDir));
+  if (decision.action !== "run") {
+    (decision.exitCode === 0 ? console.log : console.error)(decision.message);
+    return decision.exitCode;
+  }
   const started = Date.now();
   let shaped;
   try {
     shaped = shapeResults(await scanAll(siteDir));
   } catch (e) {
     console.warn("self-scan: failed (" + (e instanceof Error ? e.name : "error") + ")");
-    return;
+    return 0;
   }
   mkdirSync(join(siteDir, "data"), { recursive: true });
   writeFileSync(join(siteDir, "data", "self-scan.json"), JSON.stringify(shaped, null, 2) + "\n");
@@ -288,13 +296,14 @@ async function main() {
   }
   console.log(md);
   console.log("self-scan finished in " + ((Date.now() - started) / 1000).toFixed(1) + "s");
+  return 0;
 }
 
 const isMain =
   process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
 if (isMain) {
   main().then(
-    () => process.exit(0),
+    (code) => process.exit(code ?? 0),
     () => process.exit(0),
   );
 }

@@ -183,6 +183,9 @@ jobs:
         # not routed through the SiteGateway). Writes _site/data/self-scan.json and
         # a table to the step summary. Not a conformance claim.
         continue-on-error: true
+        env:
+          # CI always has published data; a skip here would hide a broken build.
+          GUARDIAN_REQUIRE_INSTANCE_DATA: "1"
         run: node scripts/scan-dashboard.mjs ./_site
       - name: Add static virtual office to site
         # The Virtual_Office is a build-free static app under office/. Copy it
@@ -192,6 +195,8 @@ jobs:
         # Blocking size gate. Runs after the office copy and the published data
         # build (it also checks _site/data/runs/*/events.json) and before the
         # Pages upload.
+        env:
+          GUARDIAN_REQUIRE_INSTANCE_DATA: "1"
         run: node scripts/check-site-sizes.mjs ./_site
       - name: Stamp build id on site assets
         # Appends ?v=<short commit SHA> to the entry script and stylesheet URLs of
@@ -204,6 +209,8 @@ jobs:
         # Playwright chromium browser installed earlier in this job. Not a
         # conformance claim.
         continue-on-error: true
+        env:
+          GUARDIAN_REQUIRE_INSTANCE_DATA: "1"
         run: node scripts/scan-office.mjs ./_site
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1

@@ -1,21 +1,39 @@
 import { readdirSync, existsSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { AppendOnlyLog, IntegrityError } from "../dist/telemetry/audit-log.js";
+import { inspectInstance, isStrict } from "./lib/instance-data.mjs";
+
+// Instance data (config, baselines, runs) is absent in a fresh product copy.
+// Checks that need it are reported as SKIP; GUARDIAN_REQUIRE_INSTANCE_DATA=1
+// turns each skip into a FAIL.
+const instance = inspectInstance(".");
+const strict = isStrict();
 
 // Instance settings: approved host and domain slug come from the app config.
-const appConfig = JSON.parse(readFileSync(resolve("config/app.config.json"), "utf8"));
+const appConfig = instance.hasConfig
+  ? JSON.parse(readFileSync(resolve("config/app.config.json"), "utf8"))
+  : {};
 const approvedDomain = String(appConfig.approvedDomain ?? "");
 const domainSlug = String(appConfig.domain ?? "");
 
 const runsRoot = resolve("artifacts/runs");
-const runs = readdirSync(runsRoot)
-  .filter((n) => statSync(join(runsRoot, n)).isDirectory())
-  .sort((a, b) => statSync(join(runsRoot, a)).mtimeMs - statSync(join(runsRoot, b)).mtimeMs);
+const runs = instance.hasRuns
+  ? readdirSync(runsRoot)
+      .filter((n) => statSync(join(runsRoot, n)).isDirectory())
+      .sort((a, b) => statSync(join(runsRoot, a)).mtimeMs - statSync(join(runsRoot, b)).mtimeMs)
+  : [];
 const checks = [];
 const ok = (name, pass, detail = "") => checks.push({ name, pass, detail });
+const skip = (name, reason) => {
+  if (strict) checks.push({ name, pass: false, detail: "instance data required but missing: " + reason });
+  else checks.push({ name, pass: true, skipped: true, detail: reason });
+};
+const NO_RUNS = "no artifacts/runs";
+const NO_CONFIG = "no config/app.config.json";
 
 // 1. At least two runs completed (repeatability).
-ok("two-runs-completed", runs.length >= 2, `${runs.length} run dirs`);
+if (!instance.hasRuns) skip("two-runs-completed", NO_RUNS);
+else ok("two-runs-completed", runs.length >= 2, `${runs.length} run dirs`);
 
 for (const r of runs.slice(-2)) {
   const dir = join(runsRoot, r);
@@ -63,13 +81,18 @@ try { audit.overwriteAt(0, { x: 1 }); } catch (e) { editRejected = e instanceof 
 ok("audit-not-editable", editRejected);
 
 // 8. Approved baseline exists (human-gated).
-ok("baseline-exists", existsSync(resolve("baselines", domainSlug, "baseline.v2.md")) || existsSync(resolve("baselines", domainSlug, "baseline.v1.md")));
+if (!instance.hasConfig) skip("baseline-exists", NO_CONFIG);
+else if (!instance.hasBaselines) skip("baseline-exists", "no baselines");
+else ok("baseline-exists", existsSync(resolve("baselines", domainSlug, "baseline.v2.md")) || existsSync(resolve("baselines", domainSlug, "baseline.v1.md")));
 
 // 9. Dashboard generated.
-ok("dashboard-exists", existsSync(resolve("artifacts/dashboard.html")) && statSync(resolve("artifacts/dashboard.html")).size > 0);
+if (!instance.hasRuns) skip("dashboard-exists", NO_RUNS);
+else ok("dashboard-exists", existsSync(resolve("artifacts/dashboard.html")) && statSync(resolve("artifacts/dashboard.html")).size > 0);
 
 // 10. Approved-domain-only: every page in the latest run is on the approved domain.
-for (const r of runs.slice(-1)) {
+if (!instance.hasRuns) skip("approved-domain-only", NO_RUNS);
+else if (!instance.hasConfig) skip("approved-domain-only", NO_CONFIG);
+else for (const r of runs.slice(-1)) {
   const results = JSON.parse(readFileSync(join(runsRoot, r, "results.json"), "utf8"));
   const domOk = Array.isArray(results.pages) && results.pages.length > 0 && results.pages.every((p) => approvedDomain !== "" && p.page.includes(approvedDomain));
   ok(`${r}:approved-domain-only`, domOk, `${results.pages?.length ?? 0} pages`);
@@ -249,7 +272,8 @@ function loadLatestEvents() {
 //     without a backing agentName, and malformed events (missing kind /
 //     agentName, unknown kind) carry no character and are ignored. This is the
 //     same honesty contract `deriveOffice` enforces, checked at its source.
-try {
+if (!instance.hasRuns) skip("no-fabricated-characters", NO_RUNS);
+else try {
   const { source, events } = loadLatestEvents();
   const CHAR_KINDS = new Set(["agent.started", "agent.working", "agent.completed", "agent.failed"]);
   const KNOWN_KINDS = new Set([
@@ -291,7 +315,8 @@ try {
 //      formed, and no event carries agentRole "ai" (template steps are never
 //      AI). STEP_NAMES mirrors src/telemetry/step-model.ts. Legacy runs have no
 //      step events; if none exist the check passes with a note.
-try {
+if (!instance.hasRuns) skip("step-events-well-formed", NO_RUNS);
+else try {
   const STEP_NAMES = [
     "test-plan", "load", "screenshot", "visual-compare", "accessibility-scan",
     "compare", "notes", "triage", "history", "decisions",
@@ -411,7 +436,9 @@ try {
 //     host in the latest run's results.json is in the approved set. This keeps
 //     the system multi-domain-ready (the host is read as data, never hard-coded)
 //     while the existing `approved-domain-only` check above is retained.
-try {
+if (!instance.hasRuns) skip("approved-scope-only", NO_RUNS);
+else if (!instance.hasConfig) skip("approved-scope-only", NO_CONFIG);
+else try {
   const { listDomains, loadDomainConfig } = await import("../dist/config/domain-config.js");
   const approvedHosts = new Set();
   const approvedUrls = []; // exact URLs from approved scope files, if any
@@ -602,7 +629,13 @@ try {
   ok("cloud-sync-additive-nondestructive", false, `error: ${e.message}`);
 }
 
-const passed = checks.filter((c) => c.pass).length;
-console.log("VERIFICATION " + passed + "/" + checks.length + " passed");
-for (const c of checks) console.log((c.pass ? "PASS " : "FAIL ") + c.name + (c.detail ? " [" + c.detail + "]" : ""));
-process.exit(passed === checks.length ? 0 : 1);
+const skipped = checks.filter((c) => c.skipped).length;
+const counted = checks.length - skipped;
+const passed = checks.filter((c) => c.pass && !c.skipped).length;
+console.log("VERIFICATION " + passed + "/" + counted + " passed" + (skipped > 0 ? ", " + skipped + " skipped" : ""));
+for (const c of checks) {
+  const label = c.skipped ? "SKIP " : c.pass ? "PASS " : "FAIL ";
+  console.log(label + c.name + (c.detail ? " [" + c.detail + "]" : ""));
+}
+if (skipped > 0) console.log("skipped: no instance data (" + checks.filter((c) => c.skipped).map((c) => c.name).join(", ") + ")");
+process.exit(passed === counted ? 0 : 1);

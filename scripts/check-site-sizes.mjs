@@ -13,10 +13,14 @@
 //
 // --office-dir measures a different folder as the office (for example the
 // repo's office/ folder) instead of <site>/office.
+//
+// When <siteDir> does not exist at all it prints "skipped: no instance data
+// (...)" and exits 0; with GUARDIAN_REQUIRE_INSTANCE_DATA=1 it exits 1.
 
 import { readdirSync, statSync, existsSync } from "node:fs";
 import { join, resolve, relative, sep } from "node:path";
 import { pathToFileURL } from "node:url";
+import { decideSkip, missingSite } from "./lib/instance-data.mjs";
 
 export const OFFICE_LIMIT_BYTES = 1572864;
 export const EVENTS_LIMIT_BYTES = 262144;
@@ -110,6 +114,11 @@ function main(argv) {
     args.splice(i, 2);
   }
   const siteDir = args[0] || "_site";
+  const decision = decideSkip(missingSite(siteDir));
+  if (decision.action !== "run") {
+    (decision.exitCode === 0 ? console.log : console.error)(decision.message);
+    return decision.exitCode;
+  }
   const { officeFiles, eventFiles, officeMissing } = collectSizes(siteDir, officeDir);
   if (officeMissing) {
     console.error("FAIL: office/ directory not found in " + siteDir + " (the site must ship the Virtual Office)");

@@ -44,6 +44,15 @@ describe("guardian.yml workflow smoke test", () => {
     expect(code).toContain("node scripts/stamp-build-id.mjs ./_site");
   });
 
+  it("requires instance data in the scan and size-gate steps", () => {
+    for (const script of ["scan-dashboard.mjs", "scan-office.mjs", "check-site-sizes.mjs"]) {
+      const at = code.indexOf("run: node scripts/" + script);
+      expect(at).toBeGreaterThan(-1);
+      const stepStart = code.lastIndexOf("- name:", at);
+      expect(code.slice(stepStart, at)).toMatch(/GUARDIAN_REQUIRE_INSTANCE_DATA:\s*"1"/);
+    }
+  });
+
   it("never force-pushes", () => {
     expect(code).not.toMatch(/push\s+(.*\s)?(-f|--force|--force-with-lease)\b/);
     expect(code).not.toContain("--force-with-lease");
