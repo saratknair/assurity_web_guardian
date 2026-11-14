@@ -1,5 +1,5 @@
 // Assurity Web Guardian - Page_Detail_View (#/page/<slug>?run=<runId>).
-// Plain browser ES module, ASCII-only. Requirements 9.1 to 9.5, 9.9, 9.11.
+// Plain browser ES module, ASCII-only.
 //
 // Full-width layout (.detail-layout, no side panel). Sections: heading with
 // the page URL (the single h2), summary (highest severity and counts), Findings

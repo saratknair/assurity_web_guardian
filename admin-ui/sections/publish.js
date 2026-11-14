@@ -1,4 +1,4 @@
-// Publish section (design J.8, J.9, J.11; Requirements 26, 27, 30).
+// Publish section.
 // All text is set with textContent. No HTML is parsed. No inline script or style.
 
 const REVIEWER_KEY = "awg.reviewer";

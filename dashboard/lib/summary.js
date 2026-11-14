@@ -2,7 +2,7 @@
 //
 // a11y-rule Findings with a Rule_Catalogue entry:
 //   "{what}. {scopeSentence} {who}"
-// a11y-rule Findings WITHOUT a catalogue entry (Requirement 3.8): only the
+// a11y-rule Findings WITHOUT a catalogue entry: only the
 // published description, the published help text (the Finding `title`, or
 // `help` when present), and a scope sentence derived only from nodeCount.
 // No explanatory text is invented for unknown rules.
@@ -57,7 +57,7 @@ export function scopeSentence(scope, nodeCount, firstTarget) {
 }
 
 /**
- * "Showing X of Y" text for Affected_Elements (Requirement 3.6).
+ * "Showing X of Y" text for Affected_Elements.
  * e.g. "Showing 10 of 27 elements (17 not shown)" or "Showing all 7 elements".
  */
 export function shownElementsText(finding) {
@@ -151,7 +151,7 @@ export function plainEnglishSummary(finding, catalogue, opts) {
 }
 
 /**
- * "How to fix" text (Requirement 3.7): the catalogue `fix`, or the published
+ * "How to fix" text: the catalogue `fix`, or the published
  * help text when the rule is not in the catalogue. "" when neither exists.
  */
 export function fixText(finding, catalogue) {

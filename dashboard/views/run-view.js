@@ -5,7 +5,7 @@
 // CONTRACT comment in app.js). Renders exactly one <h2>. All dynamic text goes
 // through textContent. No <form> element is used.
 //
-// Shows (R10.3, R10.4, R10.10): Run_ID, date and time, trigger ("not
+// Shows: Run_ID, date and time, trigger ("not
 // recorded" when absent), origin, pages scanned, active Finding count by
 // Severity, the change versus the previous run ("+3", "-2", "no change" or
 // "no earlier run") and the shared findings list with no filters. A run whose

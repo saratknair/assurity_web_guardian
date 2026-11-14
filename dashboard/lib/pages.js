@@ -1,5 +1,4 @@
 // Pure page-explorer helpers. No window/document access at import time.
-// Requirements 8.1, 8.2, 8.4-8.7, 8.12, 8.13.
 //
 // Input page rows follow dashboard.json `latest.pages[]`:
 //   { url, slug, group, title, counts: { total, critical, serious, moderate,
@@ -105,7 +104,7 @@ function statesOf(page) {
  * Build flat rows once. Each row gets a precomputed lowercase `searchKey`
  * (url + title), `total`, `sevCounts`, `highest` ("none" when no findings),
  * `highestRank` (lower = more severe; none sorts last), `states` (Set) and
- * `index` (original position, used to keep sorts stable).
+ * `index` (original position, keeps sorts stable).
  */
 export function buildPageRows(pages) {
   const list = Array.isArray(pages) ? pages : [];

@@ -1,4 +1,4 @@
-// Setup activity: read-only table of the Setup_Activity_Log, newest first (R25.1, R25.2).
+// Setup activity: read-only table of the Setup_Activity_Log, newest first.
 // All values are shown as plain text (textContent only).
 
 const PAGE = 100;

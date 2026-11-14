@@ -1,4 +1,4 @@
-// Inspector view (requirements 7.1-7.8, 11.1, 11.2, 13.1).
+// Inspector view.
 //
 // createInspector(host, handlers) -> { update(model), dispose() }
 //   host     : #inspector element.

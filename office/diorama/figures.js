@@ -83,7 +83,7 @@ export function createFigures(sceneApi, opts) {
   const stationCount = sceneApi.stations.length;
 
   // True while playback is paused or scrubbed: working figures hold still so a
-  // paused Diorama renders no new frames (requirement 16.6).
+  // paused Diorama renders no new frames.
   let still = false;
 
   function isReduced() {

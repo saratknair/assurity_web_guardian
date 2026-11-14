@@ -41,7 +41,7 @@
  * Utility:    .sr-only  .skip-link  .is-hidden  [hidden]  .mono  .muted
  * Dialog:     dialog#lightbox (.lightbox__body .lightbox__img .lightbox__close
  *             ::backdrop styled)
- * Legacy (kept so the pre-overhaul markup stays usable): .kpi-row .charts
+ * Older markup still supported: .kpi-row .charts
  *             .card .card--wide .card__* .detail-panel* .outcome* .shots
  *             .page-row__chip .chip-clean .chip-find .ai-* .not-a-fact
  *             .findings-explorer .explorer-* .kind-tag
@@ -507,7 +507,7 @@ dialog#lightbox::backdrop { background: rgba(2, 6, 14, 0.8); }
 }
 
 /* ---------------------------------------------------------------------------
- * Task 17.1: styles for the findings, finding detail, page detail and chart
+ * Styles for the findings, finding detail, page detail and chart
  * helper classes. Uses only the :root tokens above (contrast table applies).
  * ------------------------------------------------------------------------- */
 .view-title { margin: 0 0 14px; font-size: 1.375rem; letter-spacing: -0.01em; }
@@ -590,7 +590,7 @@ dialog#lightbox::backdrop { background: rgba(2, 6, 14, 0.8); }
 .chart-legend li { display: inline-flex; align-items: center; gap: 6px; }
 .chart-swatch { flex: none; width: 16px; height: 16px; border: 1px solid var(--border-strong); border-radius: 3px; vertical-align: middle; }
 
-/* Section-level load error with Retry (app.js, task 17.1) */
+/* Section-level load error with Retry (app.js) */
 .error-panel .btn { margin-top: 8px; color: var(--text); }
 .error-panel p { margin: 0 0 6px; }
 

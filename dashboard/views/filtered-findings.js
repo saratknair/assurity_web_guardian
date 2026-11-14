@@ -9,7 +9,7 @@
 // findings"), checkbox controls for Severity, Lifecycle state, Page group and
 // a rule id picker, and the findings list (rendered by findings-list.js, in
 // blocks of 100 with a "Show more" button). Every filter change navigates, so
-// the filters are recorded in the Deep_Link (R11.8). Default scope is
+// the filters are recorded in the Deep_Link. Default scope is
 // "active"; scope=ignored lists run.ignored.
 //
 // Pure helpers are exported for tests and never touch window/document at

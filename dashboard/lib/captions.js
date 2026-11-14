@@ -1,7 +1,6 @@
 // Pure Evidence_Caption and alt-text helpers. No window/document at import time.
 //
-// Requirements 4.7, 5.6, 5.9, 6.1 to 6.6, 16.11. A missing run id or run date
-// is rendered as the literal RUN_NOT_RECORDED; no value is ever assumed.
+// A missing run id or run date is rendered as the literal RUN_NOT_RECORDED; no value is ever assumed.
 // Dates are formatted in the viewer's local time zone with the zone shown.
 // An optional timeZone argument lets tests fix the zone.
 //
@@ -147,8 +146,7 @@ export function imageUnavailableText(reason, retentionRuns, role) {
 }
 
 // ---------------------------------------------------------------------------
-// Ignored / Regression / human-resolved wording (R19.4, 19.7, 19.8, 19.10,
-// 19.11, 19.23). Pure plain-string helpers; reviewer and reason text is
+// Ignored / Regression / human-resolved wording. Pure plain-string helpers; reviewer and reason text is
 // published as entered and is only ever placed in the DOM with textContent.
 // ---------------------------------------------------------------------------
 

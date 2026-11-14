@@ -1,5 +1,5 @@
 // Low-end detection and quality choice. Pure; no DOM access, no three.js.
-// Requirement 16.7: low capability = device pixel ratio above 2, fewer than 4
+// Low capability = device pixel ratio above 2, fewer than 4
 // logical processors, or a failed frame-rate check. Shadows are always off.
 
 export const FRAME_SAMPLE_COUNT = 20;

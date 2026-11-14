@@ -1,4 +1,4 @@
-// Keyboard shortcut table (requirements 4.9, 6.4, 6.10). Printed inside the
+// Keyboard shortcut table. Printed inside the
 // <details id="shortcut-help"> element; the host is #help-content.
 //
 // createHelp(host, handlers) -> { update(model), dispose() }

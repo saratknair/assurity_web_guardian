@@ -7,7 +7,7 @@
 // model (plain object):
 //   {
 //     timeline: Timeline from buildTimeline (null before a run is loaded),
-//     runId:    string | null  (used to form Dashboard Deep_Links),
+//     runId:    string | null  (forms Dashboard Deep_Links),
 //     t:        number         (playback position in ms)
 //   }
 //

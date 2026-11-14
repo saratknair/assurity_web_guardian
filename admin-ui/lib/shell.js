@@ -1,6 +1,6 @@
 // Pure view-model helpers for the console shell. No DOM access, so tests can import this file directly.
 
-/** "N of 10 used" (design J.13, Requirement 22.2). */
+/** "N of 10 used". */
 export function usedText(n, max) {
   const used = Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
   const limit = Number.isFinite(max) && max >= 0 ? Math.floor(max) : 10;

@@ -1,4 +1,4 @@
-// Pure helpers for the Ignored list (R19.8). No window/document at import time.
+// Pure helpers for the Ignored list. No window/document at import time.
 //
 // groupIgnoredByDecision(ignored) groups run.ignored[] by the decision that
 // ignored each Finding (disposition.decisionId). Findings without a

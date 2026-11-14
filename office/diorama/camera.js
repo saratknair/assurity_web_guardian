@@ -1,7 +1,6 @@
 // Camera rig: bounds, target clamp, fly-to, keyboard setters.
 // Pure math is exported without importing three. The three.js and
 // OrbitControls modules are loaded lazily inside createCameraRig only.
-// Requirements 6.1 to 6.5, 6.7, 6.8.
 
 export const BOUNDS = Object.freeze({
   minDistance: 6,

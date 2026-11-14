@@ -5,7 +5,7 @@
 // CONTRACT comment in app.js). Renders exactly one <h2>. All dynamic text goes
 // through textContent (never markup strings). No <form> element is used.
 //
-// Data sources (R16.1): the latest run renders from dashboard.json `latest`
+// Data sources: the latest run renders from dashboard.json `latest`
 // with no fetch; any other run is fetched with ctx.loadRun(runId). Old
 // dashboards without `runs[]` / `latest` fall back to the legacy fields
 // (runHealthTrend, findingsByPage, findingsBySeverity) and show figures that
@@ -256,7 +256,7 @@ export function summaryFromRun(run, entry) {
   };
 }
 
-/** Summary from the pre-overhaul dashboard.json fields. Never throws. */
+/** Summary from the older dashboard.json fields. Never throws. */
 export function legacySummary(dashboard) {
   const d = isObj(dashboard) ? dashboard : {};
   const trend = Array.isArray(d.runHealthTrend) ? d.runHealthTrend.filter(isObj) : [];

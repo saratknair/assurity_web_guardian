@@ -1,4 +1,4 @@
-// Schedule section: view and edit the cron line of the GitHub workflow file (Requirements 28).
+// Schedule section: view and edit the cron line of the GitHub workflow file.
 // The schedule lives only in the workflow file. A save changes this folder only; Publish sends it.
 
 const REVIEWER_KEY = "awg.reviewer";

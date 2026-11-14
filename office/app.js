@@ -1,6 +1,6 @@
 // Virtual Office bootstrap, router and wiring. ASCII only, DOM built with lib/dom.js.
 //
-// Boot order (requirement 16.4):
+// Boot order:
 //   1. shell + Transcript (and the other views, empty)
 //   2. load index.json, choose a run, load events.json + run-findings.json in
 //      parallel, build the timeline, render every text view
@@ -372,7 +372,7 @@ export function boot() {
     const msg = fallbackMessage(reason);
     try {
       if (hosts.diorama) {
-        // The host is no longer an interactive group: it must not be a tab stop.
+        // The host is not an interactive group: it must not be a tab stop.
         ["tabindex", "role", "aria-label", "aria-describedby"].forEach((a) => hosts.diorama.removeAttribute(a));
         setChildren(hosts.diorama, el("div", { class: "muted", role: "status" }, [
           el("p", { text: msg.headline + " " + msg.reason }),

@@ -6,7 +6,7 @@
 // Nothing here touches window/document at import time, so the pure row
 // helpers (trendRows, severityRows, lifecycleRows, summaries) run under Node.
 //
-// Accessibility (R15): every chart has a canvas role="img" + aria-label, a
+// Accessibility: every chart has a canvas role="img" + aria-label, a
 // visible summary line, a legend and a <details> data table whose rows hold
 // the same actions as the pointer (real links, keyboard operable). Series use
 // canvas pattern fills plus text labels, never colour alone. If Chart.js is
@@ -118,7 +118,7 @@ export function trendSummary(rows) {
 }
 
 /**
- * Severity rows: only severities with at least one Finding (R11.1), in
+ * Severity rows: only severities with at least one Finding, in
  * SEVERITY_ORDER. Accepts counts keyed kebab-case or camelCase.
  * Row: { key, label, symbol, count, route }
  */
@@ -149,7 +149,7 @@ export function severitySummary(rows) {
  * Lifecycle rows. `lifecycle` may be countByLifecycle() output ({series,
  * resolved}), a dashboard.json runs[] entry ({byLifecycle, resolved}) or a flat
  * count object. All five present-state rows are always returned (including
- * "State not recorded") so nothing is omitted (R12.6); their counts sum to the
+ * "State not recorded") so nothing is omitted; their counts sum to the
  * active total. `resolved` is separate (present:false) and has no route
  * because resolved items are not Active_Findings.
  * Row: { key, label, count, present, route }

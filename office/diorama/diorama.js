@@ -2,7 +2,6 @@
 // camera, scene, figures and screens together. No DOM access at import time and
 // no static three import here: the heavy modules are imported inside
 // createDiorama so this file can be imported under Node for its pure helpers.
-// Requirements 6.5, 8.6, 16.3, 16.4.
 import { chooseQuality, readDeviceInputs, createFrameMonitor } from "./capability.js";
 import { createLoop } from "./loop.js";
 

@@ -1,6 +1,5 @@
 // Render-on-demand loop. No DOM access at import; the host, document, raf and
 // IntersectionObserver are passed in or read lazily inside createLoop.
-// Requirements 16.5 and 16.6.
 
 // Pure decision: may a frame be scheduled now?
 export function canSchedule(s) {

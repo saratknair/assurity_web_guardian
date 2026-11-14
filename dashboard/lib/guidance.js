@@ -1,6 +1,6 @@
 // Pure Automated_Guidance helpers. No window/document at import time.
 //
-// isGenericGuidance RULE (Requirement 7.5). src/publish/guidance.ts (task 6.1)
+// isGenericGuidance RULE. src/publish/guidance.ts
 // MUST mirror this exactly; a cross-test compares both implementations.
 //
 //   1. A value that is not a string is generic.
@@ -20,7 +20,7 @@
 //   Observed change ("...") is not a deterministic failure; a human should decide if it matters.
 //   The current screenshot differs visually from the baseline. This may be a layout or content
 //   change; a human should confirm whether it is expected.
-// and the bare sentence quoted in Requirement 7.5.
+// and the bare generic sentence.
 
 export const GENERIC_GUIDANCE_CORES = Object.freeze([
   "a failing deterministic check may affect users; recommend human review",
@@ -67,7 +67,7 @@ function idLookup(findingsById) {
 }
 
 /**
- * Items that may be displayed (Requirements 7.5, 7.8, 7.9):
+ * Items that may be displayed:
  *  - drops items whose `findingId` is not a Finding of the run,
  *  - drops items whose `text` is generic (isGenericGuidance),
  *  - returns shallow copies with every `confidence*` field removed.

@@ -1,12 +1,10 @@
 // Assurity Web Guardian - Finding_Detail_View (route #/finding/<runId>/<findingId>).
 // Plain browser ES module, ASCII-only. See the VIEW MODULE CONTRACT in app.js.
 //
-// Requirements 3.1 to 3.13, 4.1 to 4.7, 7.1 to 7.4, 7.6, 7.10, 17.9.
-//
 // Every published string reaches the DOM through textContent / createElement
 // (never markup strings). Affected-element HTML snippets are set with
 // textContent inside <pre><code>, so they are shown as escaped text and are
-// never interpreted as markup (Requirement 3.11). No forms. Nothing touches
+// never interpreted as markup. No forms. Nothing touches
 // window/document at import time.
 //
 // Section order: heading, severity, summary, what is affected, facts,

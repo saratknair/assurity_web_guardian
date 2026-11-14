@@ -1,5 +1,5 @@
 // Pure severity helpers. No window/document access at import time.
-// Requirements 2.7, 2.8: "unrated" shows "Not rated"; legacy runs show
+// "unrated" shows "Not rated"; legacy runs show
 // "Severity not recorded for this run". Symbols are distinct shapes so that
 // severity never relies on colour alone.
 
