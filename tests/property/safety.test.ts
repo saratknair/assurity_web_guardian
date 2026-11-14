@@ -3,7 +3,7 @@ import fc from "fast-check";
 import { isApprovedDomain, isExternal } from "../../src/safety/domain-guard.js";
 import { looksLikePii, GuardedPage } from "../../src/safety/form-guard.js";
 
-const APPROVED = "assurity.nz";
+const APPROVED = "example.com";
 
 describe("safety", () => {
   // Property 2: Requests never leave the approved domain.
@@ -20,10 +20,10 @@ describe("safety", () => {
   });
 
   it("Property 2: known hosts classify correctly", () => {
-    expect(isApprovedDomain("https://assurity.nz/", APPROVED)).toBe(true);
-    expect(isApprovedDomain("https://www.assurity.nz/x", APPROVED)).toBe(true);
-    expect(isApprovedDomain("https://evil.com/assurity.nz", APPROVED)).toBe(false);
-    expect(isApprovedDomain("https://assurity.nz.evil.com/", APPROVED)).toBe(false);
+    expect(isApprovedDomain("https://example.com/", APPROVED)).toBe(true);
+    expect(isApprovedDomain("https://www.example.com/x", APPROVED)).toBe(true);
+    expect(isApprovedDomain("https://evil.com/example.com", APPROVED)).toBe(false);
+    expect(isApprovedDomain("https://example.com.evil.com/", APPROVED)).toBe(false);
     expect(isExternal("https://linkedin.com/company", APPROVED)).toBe(true);
   });
 

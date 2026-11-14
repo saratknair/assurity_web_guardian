@@ -26,7 +26,7 @@ describe("evidence store", () => {
     expect(existsSync(p)).toBe(true);
     const shot = join(store.runDir, "screenshots", "home.png");
     writeFileSync(shot, "x");
-    store.addEvidence({ kind: "screenshot", path: shot, page: "https://assurity.nz/", viewport: "desktop" });
+    store.addEvidence({ kind: "screenshot", path: shot, page: "https://example.com/", viewport: "desktop" });
     expect(store.evidenceResolves()).toBe(true);
     store.addEvidence({ kind: "trace", path: join(store.runDir, "traces", "missing.zip") });
     expect(store.evidenceResolves()).toBe(false);

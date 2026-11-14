@@ -6,7 +6,7 @@ import {
 } from "../../src/publish/run-findings.js";
 import type { DispositionEntry } from "../../src/core/dispositions.js";
 
-const URL1 = "https://assurity.nz/";
+const URL1 = "https://example.com/";
 
 function entry(p: Partial<DispositionEntry> & { id: string }): DispositionEntry {
   return {
@@ -26,11 +26,11 @@ function inputs(entries: DispositionEntry[] | null): RawRunInputs {
   return {
     runId: "run_a",
     finishedAt: "2026-02-01T00:00:00.000Z",
-    results: { pages: [{ page: URL1, slug: "assurity-nz", checks: [] }] },
-    findings: { pages: [{ page: URL1, slug: "assurity-nz", outcomes: [] }] },
+    results: { pages: [{ page: URL1, slug: "example-com", checks: [] }] },
+    findings: { pages: [{ page: URL1, slug: "example-com", outcomes: [] }] },
     axe: [
       {
-        slug: "assurity-nz",
+        slug: "example-com",
         viewport: "desktop",
         raw: {
           url: URL1,
@@ -91,7 +91,7 @@ describe("disposition overlay in buildRunFindings", () => {
     const f = b.runFindings.findings.find((x) => x.ruleId === "link-name")!;
     expect(f.ignoredNodeCount).toBe(1);
     expect(f.nodeCount).toBe(1);
-    const ev = b.evidence["evidence/assurity-nz.desktop.json"].violations.find((v) => v.ruleId === "link-name")!;
+    const ev = b.evidence["evidence/example-com.desktop.json"].violations.find((v) => v.ruleId === "link-name")!;
     expect(ev.nodes.map((n) => n.target)).toEqual(["a.two"]);
   });
 

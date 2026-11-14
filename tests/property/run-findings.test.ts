@@ -50,7 +50,7 @@ export const arbRunInputs: fc.Arbitrary<RawRunInputs> = fc
     const visualFiles: RawRunInputs["visualFiles"] = [];
     pages.forEach((p, i) => {
       const slug = `page-${i}`;
-      const url = `https://assurity.nz/${p.segments}${p.segments ? "/" : ""}p${i}`;
+      const url = `https://example.com/${p.segments}${p.segments ? "/" : ""}p${i}`;
       resultPages.push({
         page: url,
         slug,

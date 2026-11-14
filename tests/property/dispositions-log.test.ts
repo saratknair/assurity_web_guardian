@@ -26,7 +26,7 @@ const isoAt = fc
   .map((ms) => new Date(ms).toISOString());
 
 const matcherArb = fc.record({
-  pageUrl: fc.constantFrom("https://assurity.nz/", "https://assurity.nz/a", "https://assurity.nz/b?x=1"),
+  pageUrl: fc.constantFrom("https://example.com/", "https://example.com/a", "https://example.com/b?x=1"),
   viewport: fc.constantFrom("desktop" as const, "mobile" as const, "" as const),
   ruleId: fc.constantFrom("color-contrast", "image-alt", "check:links"),
   cssTarget: fc.constantFrom("", "#a", ".b > p", "\u65e5"),
@@ -119,7 +119,7 @@ const NOW = new Date("2025-06-01T00:00:00.000Z");
 const goodInput = (over: Record<string, unknown> = {}) => ({
   decision: "ignore",
   scope: "page-rule",
-  matcher: { pageUrl: "https://assurity.nz/a", ruleId: "color-contrast" },
+  matcher: { pageUrl: "https://example.com/a", ruleId: "color-contrast" },
   reason: "Known false positive",
   reviewer: "Sam",
   source: "cli",
@@ -192,7 +192,7 @@ describe("Property 37: Decision input validation and entry integrity", () => {
         if (ok.ok) expect(fields(un(ign.entry.id, [ign.entry, ok.entry]))).toContain("undoes");
         // non-ignore target
         const res = validateNewEntry(
-          goodInput({ decision: "resolve", scope: "finding", matcher: { pageUrl: "https://assurity.nz/a", viewport: "desktop", ruleId: "image-alt" } }),
+          goodInput({ decision: "resolve", scope: "finding", matcher: { pageUrl: "https://example.com/a", viewport: "desktop", ruleId: "image-alt" } }),
           [],
           new Date(at),
         );

@@ -12,10 +12,10 @@ beforeEach(() => {
   root = mkdtempSync(join(tmpdir(), "awg-tg-"));
   baselinesRoot = join(root, "baselines");
   outDir = join(root, "tests", "generated");
-  mkdirSync(join(baselinesRoot, "assurity-nz"), { recursive: true });
+  mkdirSync(join(baselinesRoot, "example-com"), { recursive: true });
   mkdirSync(outDir, { recursive: true });
   writeFileSync(
-    join(baselinesRoot, "assurity-nz", "baseline.v2.md"),
+    join(baselinesRoot, "example-com", "baseline.v2.md"),
     "# Baseline\nExpect all 12 images to load.\n",
     "utf8",
   );
@@ -28,9 +28,9 @@ afterEach(() => {
 describe("test-manifest path migration", () => {
   it("stores a repo-relative specPath with forward slashes and no absolute prefix", () => {
     const outRel = "tests/generated";
-    const gen = generateTestFromBaseline("assurity-nz", "https://assurity.nz/", baselinesRoot, outRel);
+    const gen = generateTestFromBaseline("example-com", "https://example.com/", baselinesRoot, outRel);
 
-    expect(gen.specPath).toBe("tests/generated/assurity-nz.baseline-v2.spec.ts");
+    expect(gen.specPath).toBe("tests/generated/example-com.baseline-v2.spec.ts");
     // No Windows drive letter, no UNC, no POSIX absolute, no backslashes.
     expect(gen.specPath).not.toMatch(/^[A-Za-z]:[\\/]/);
     expect(gen.specPath).not.toMatch(/^\\\\/);
@@ -39,8 +39,8 @@ describe("test-manifest path migration", () => {
   });
 
   it("still writes the actual spec file to disk (behavior unchanged)", () => {
-    const gen = generateTestFromBaseline("assurity-nz", "https://assurity.nz/", baselinesRoot, outDir);
-    const expectedAbs = join(outDir, "assurity-nz.baseline-v2.spec.ts");
+    const gen = generateTestFromBaseline("example-com", "https://example.com/", baselinesRoot, outDir);
+    const expectedAbs = join(outDir, "example-com.baseline-v2.spec.ts");
     expect(existsSync(expectedAbs)).toBe(true);
     // Even when outDir is absolute, the stored path is normalized to forward slashes.
     expect(gen.specPath).not.toContain("\\");
@@ -49,7 +49,7 @@ describe("test-manifest path migration", () => {
   it("writes a manifest whose specPath entries contain no absolute paths", () => {
     const runDir = join(root, "run");
     mkdirSync(runDir, { recursive: true });
-    const gen = generateTestFromBaseline("assurity-nz", "https://assurity.nz/", baselinesRoot, "tests/generated");
+    const gen = generateTestFromBaseline("example-com", "https://example.com/", baselinesRoot, "tests/generated");
     const manifestPath = writeTestManifest(runDir, [gen]);
 
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as {

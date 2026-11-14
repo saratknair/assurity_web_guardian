@@ -6,7 +6,7 @@ describe("classification", () => {
   // Property 19: a difference without a violated expectation is never a Failed_Check.
   it("Property 19: observed changes are never failed-checks", () => {
     const r = compare({
-      page: "https://assurity.nz/",
+      page: "https://example.com/",
       deterministicChecks: [{ name: "title", passed: true, detail: "ok" }],
       observedDifferences: ["hero text changed", "new banner added"],
       screenshotDiffers: false,
@@ -18,7 +18,7 @@ describe("classification", () => {
 
   it("failed deterministic check produces a failed-check (deterministic-test-evidence)", () => {
     const r = compare({
-      page: "https://assurity.nz/",
+      page: "https://example.com/",
       deterministicChecks: [{ name: "h1", passed: false, detail: "no visible h1" }],
       observedDifferences: [],
       screenshotDiffers: false,
@@ -30,7 +30,7 @@ describe("classification", () => {
   // Property 20: Visual_Finding suppressed when a deterministic rule is violated in the same comparison.
   it("Property 20: visual finding is suppressed when a deterministic rule is violated", () => {
     const suppressed = compare({
-      page: "https://assurity.nz/",
+      page: "https://example.com/",
       deterministicChecks: [],
       observedDifferences: [],
       screenshotDiffers: true,
@@ -40,7 +40,7 @@ describe("classification", () => {
     expect(suppressed.outcomes.some((o) => o.kind === "failed-check")).toBe(true);
 
     const notSuppressed = compare({
-      page: "https://assurity.nz/",
+      page: "https://example.com/",
       deterministicChecks: [],
       observedDifferences: [],
       screenshotDiffers: true,
@@ -53,7 +53,7 @@ describe("classification", () => {
   // Property 13: template text is linked, labeled, and never overwrites deterministic classification.
   it("Property 13: template items are separate, linked, labeled, never deterministic", () => {
     const r = compare({
-      page: "https://assurity.nz/",
+      page: "https://example.com/",
       deterministicChecks: [{ name: "h1", passed: false, detail: "missing" }],
       observedDifferences: [],
       screenshotDiffers: true,

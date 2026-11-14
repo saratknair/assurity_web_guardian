@@ -53,9 +53,9 @@ describe("console router", () => {
     const none = (await createConsole(deps()).handle(get)).json as { pagesUrl: string | null };
     expect(none.pagesUrl).toBeNull();
     const d = deps();
-    d.git = { run: async () => ({ code: 0, stdout: "https://tok:x@github.com/SaratKNair/assurity_web_guardian.git\n", stderr: "" }) };
+    d.git = { run: async () => ({ code: 0, stdout: "https://tok:x@github.com/example-owner/example-repo.git\n", stderr: "" }) };
     const s = (await createConsole(d).handle(get)).json as { pagesUrl: string | null };
-    expect(s.pagesUrl).toBe("https://saratknair.github.io/assurity_web_guardian/");
+    expect(s.pagesUrl).toBe("https://example-owner.github.io/example-repo/");
   });
 
   it("rejects a foreign Host on GET and any bad POST, even for unknown routes", async () => {

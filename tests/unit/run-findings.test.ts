@@ -6,7 +6,7 @@ import { buildRunFindings, loadRawRunInputs, type RawRunInputs } from "../../src
 import { DEFAULT_CAPS } from "../../src/publish/evidence.js";
 import { findingId, findingKey } from "../../src/core/finding-model.js";
 
-const URL1 = "https://assurity.nz/";
+const URL1 = "https://example.com/";
 
 function baseInputs(): RawRunInputs {
   return {
@@ -15,7 +15,7 @@ function baseInputs(): RawRunInputs {
       pages: [
         {
           page: URL1,
-          slug: "assurity-nz",
+          slug: "example-com",
           checks: [
             { name: "desktop:title", passed: true, detail: "Home" },
             { name: "desktop:a11y-critical-serious", passed: false, detail: "link-name, nested-interactive" },
@@ -28,7 +28,7 @@ function baseInputs(): RawRunInputs {
       pages: [
         {
           page: URL1,
-          slug: "assurity-nz",
+          slug: "example-com",
           outcomes: [
             { findingId: "fnd_a", detail: "desktop:a11y-critical-serious: link-name, nested-interactive" },
             {
@@ -41,7 +41,7 @@ function baseInputs(): RawRunInputs {
     },
     axe: [
       {
-        slug: "assurity-nz",
+        slug: "example-com",
         viewport: "desktop",
         raw: {
           url: URL1,
@@ -54,7 +54,7 @@ function baseInputs(): RawRunInputs {
         },
       },
     ],
-    visualFiles: [{ slug: "assurity-nz", viewport: "desktop", hasDiff: true }],
+    visualFiles: [{ slug: "example-com", viewport: "desktop", hasDiff: true }],
     lifecycle: null,
   };
 }
@@ -75,7 +75,7 @@ describe("buildRunFindings", () => {
     const link = rules[0];
     expect(link.id).toBe(findingId("run_test", findingKey({ pageUrl: URL1, viewport: "desktop", ruleId: "link-name" }), "a11y-rule"));
     expect(link).toMatchObject({ legacyFindingId: "fnd_a", wcag: ["wcag244"], nodeCount: 1, ignoredNodeCount: 0, lifecycle: "not-recorded" });
-    expect(Object.keys(evidence)).toEqual(["evidence/assurity-nz.desktop.json"]);
+    expect(Object.keys(evidence)).toEqual(["evidence/example-com.desktop.json"]);
   });
 
   it("marks the visual finding suppressed by the page-viewport rules", () => {
@@ -102,7 +102,7 @@ describe("buildRunFindings", () => {
     expect(r.pages).toEqual([
       {
         url: URL1,
-        slug: "assurity-nz",
+        slug: "example-com",
         group: "(home)",
         title: "Home",
         counts: { total: 5, critical: 0, serious: 1, moderate: 1, minor: 0, unrated: 3, notRecorded: 0 },
@@ -126,10 +126,10 @@ describe("buildRunFindings", () => {
 
   it("falls back to legacy mode when no raw axe is readable and records the omission", () => {
     const inputs = baseInputs();
-    inputs.axe = [{ slug: "assurity-nz", viewport: "desktop", raw: null, parseError: "SyntaxError" }];
+    inputs.axe = [{ slug: "example-com", viewport: "desktop", raw: null, parseError: "SyntaxError" }];
     const { runFindings: r } = buildRunFindings(inputs, { caps: DEFAULT_CAPS });
     expect(r.detailLevel).toBe("legacy");
-    expect(r.omissions).toEqual([{ path: "accessibility/assurity-nz.desktop.json", role: "evidence", reason: "raw-axe-unreadable" }]);
+    expect(r.omissions).toEqual([{ path: "accessibility/example-com.desktop.json", role: "evidence", reason: "raw-axe-unreadable" }]);
     expect(r.findings.length).toBe(2);
     expect(r.findings.every((f) => f.severity === "not-recorded" && f.ruleId === "legacy-outcome")).toBe(true);
     expect(r.totals.bySeverity.notRecorded).toBe(2);

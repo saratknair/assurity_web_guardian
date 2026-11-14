@@ -25,7 +25,7 @@ import {
 // @ts-expect-error plain browser ES module without type declarations
 import { decisionEffectText } from "../../dashboard/lib/findings.js";
 
-const URL1 = "https://assurity.nz/";
+const URL1 = "https://example.com/";
 const BASE = Date.parse("2026-01-01T00:00:00.000Z");
 const RULES = ["link-name", "region", "image-alt"] as const;
 const NODES: Record<string, { html: string; target: string[] }[]> = {
@@ -94,11 +94,11 @@ function rawInputs(
   return {
     runId,
     finishedAt: fin,
-    results: { pages: [{ page: URL1, slug: "assurity-nz", checks: [] }] },
-    findings: { pages: [{ page: URL1, slug: "assurity-nz", outcomes: [] }] },
+    results: { pages: [{ page: URL1, slug: "example-com", checks: [] }] },
+    findings: { pages: [{ page: URL1, slug: "example-com", outcomes: [] }] },
     axe: [
       {
-        slug: "assurity-nz",
+        slug: "example-com",
         viewport: "desktop",
         raw: {
           url: URL1,
@@ -411,7 +411,7 @@ describe("dispositions timeline properties", () => {
             id: `f_${r}`,
             kind: "a11y-rule",
             pageUrl: URL1,
-            slug: "assurity-nz",
+            slug: "example-com",
             viewport: "desktop",
             ruleId: r,
             severity: "serious",

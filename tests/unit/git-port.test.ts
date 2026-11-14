@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { checkGitArgs, realGit } from "../../src/admin/git-port.js";
 import { buildFeedbackRecord, normalizeRemote, pagesUrlFromRemote } from "../../src/admin/git-feedback.js";
+import { EXAMPLE_PAGES_URL, EXAMPLE_REMOTE_HTTPS, EXAMPLE_REMOTE_SSH } from "../helpers/fixtures.js";
 
 describe("pagesUrlFromRemote", () => {
   it("derives the GitHub Pages address from https and ssh remotes", () => {
-    expect(pagesUrlFromRemote("https://github.com/saratknair/assurity_web_guardian.git")).toBe(
-      "https://saratknair.github.io/assurity_web_guardian/",
-    );
+    expect(pagesUrlFromRemote(EXAMPLE_REMOTE_HTTPS)).toBe(EXAMPLE_PAGES_URL);
+    expect(pagesUrlFromRemote(EXAMPLE_REMOTE_SSH)).toBe(EXAMPLE_PAGES_URL);
     expect(pagesUrlFromRemote("git@github.com:Owner/Repo.git")).toBe("https://owner.github.io/Repo/");
     expect(pagesUrlFromRemote("ssh://git@github.com/o/r")).toBe("https://o.github.io/r/");
   });

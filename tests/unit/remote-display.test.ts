@@ -1,10 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { remoteDisplayName } from "../../src/admin/git-feedback.js";
+import { EXAMPLE_REMOTE_HTTPS, EXAMPLE_REMOTE_SSH, EXAMPLE_REPOSITORY } from "../helpers/fixtures.js";
 
 describe("remoteDisplayName", () => {
   it("shows owner/repo for GitHub https and ssh remotes", () => {
-    expect(remoteDisplayName("https://github.com/saratknair/assurity_web_guardian.git")).toBe("saratknair/assurity_web_guardian");
-    expect(remoteDisplayName("git@github.com:saratknair/assurity_web_guardian.git")).toBe("saratknair/assurity_web_guardian");
+    expect(remoteDisplayName(EXAMPLE_REMOTE_HTTPS)).toBe(EXAMPLE_REPOSITORY);
+    expect(remoteDisplayName(EXAMPLE_REMOTE_SSH)).toBe(EXAMPLE_REPOSITORY);
     expect(remoteDisplayName("ssh://git@github.com/o/r")).toBe("o/r");
   });
 

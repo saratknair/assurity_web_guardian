@@ -52,7 +52,7 @@ describe("published domain field", () => {
     expect(by("run-b").domain).toBe("new.test");
     expect("domain" in by("run-c")).toBe(false);
     // Latest run (run-c) has no determinable domain, so the label is empty, not a fixed host.
-    expect(idx.domain).not.toBe("assurity.nz");
+    expect(idx.domain).not.toBe("example.com");
     const dash = JSON.parse(readFileSync(join(o1, "data", "dashboard.json"), "utf8"));
     expect(dash.runs.find((r: any) => r.runId === "run-a").domain).toBe("old.test");
     expect("domain" in dash.runs.find((r: any) => r.runId === "run-c")).toBe(false);
