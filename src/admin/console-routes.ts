@@ -153,14 +153,14 @@ const SETUP_LOG_GROUP: RouteDef[] = [
   { method: "GET", pattern: "/api/setup-log", mutating: false, maxBodyBytes: 0, handler: getSetupLog },
 ];
 
-/** Retired controls: explicit 410 after the central guard; nothing is started or written. */
+/** Disabled controls: explicit 410 after the central guard; nothing is started or written. */
 async function retiredRun(): Promise<ConsoleResponse> {
   return {
     status: 410,
     json: {
       error: "retired",
       use: "POST /api/publish",
-      message: "A run on GitHub starts when you publish. This console no longer starts a local run.",
+      message: "A run on GitHub starts when you publish. This console does not start local runs.",
     },
   };
 }

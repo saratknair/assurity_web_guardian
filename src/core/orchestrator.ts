@@ -1,4 +1,4 @@
-﻿import { chromium } from "@playwright/test";
+import { chromium } from "@playwright/test";
 import AxeBuilderModule from "@axe-core/playwright";
 const AxeBuilder = ((AxeBuilderModule as unknown as { default?: unknown }).default ?? AxeBuilderModule) as unknown as (new (opts: { page: unknown }) => { withTags(tags: string[]): { analyze(): Promise<{ violations: { id: string; impact: string | null; help?: string; helpUrl?: string; nodes?: { target?: string[] }[] }[] }> } });
 import { resolve, join } from "node:path";
@@ -58,7 +58,7 @@ export function writeRunSourceMarker(runDir: string, env: Record<string, string 
 }
 
 /**
- * Write `dispositions-applied.json` into the run directory (design I.6).
+ * Write `dispositions-applied.json` into the run directory.
  * Status is `unavailable` (no entries) when the CI restore status says so or the log cannot be read.
  * Never throws and never modifies the log.
  */
@@ -97,7 +97,7 @@ export function freezeDispositions(
 }
 
 /**
- * Conventional local Pages output directory for the published bundle (Req 6.7).
+ * Conventional local Pages output directory for the published bundle.
  * The same tree the CI `run` job assembles in `./_site` is produced locally here
  * so Live_Mode and Replay_Mode publish identically. Kept in one place so the
  * local publisher and other tooling agree on it.
@@ -132,17 +132,17 @@ export function sanitizeVisual(
 }
 
 /**
- * Orchestrator (Req 28, 29, 31.4). Coordinates the full multi-page workflow
+ * Orchestrator. Coordinates the full multi-page workflow
  * under one correlationId across ALL approved pages, emits truthful agent-status
  * events, and NEVER approves any finding or baseline. Runs deterministic checks
- * live on desktop+mobile, computes visual diffs vs approved screenshot baselines
- * (Phase 2), classifies outcomes, invokes AI agents (labeled), and writes the
+ * live on desktop+mobile, computes visual diffs vs approved screenshot baselines,
+ * classifies outcomes, invokes AI agents (labeled), and writes the
  * report + static dashboard. Preserves existing homepage history.
  */
 export async function runGuardian(cfg: AppConfig): Promise<string> {
-  // Phase 2 (Req 5.7, 12.6): scan the human-approved Full_Site_Scope
-  // (`config/scope/<domain>.approved.json`) when present — capped at
-  // `maxApprovedPages` — otherwise fall back to the legacy page-seed.json. Only
+  // Scan the human-approved Full_Site_Scope
+  // (`config/scope/<domain>.approved.json`) when present - capped at
+  // `maxApprovedPages` - otherwise fall back to the legacy page-seed.json. Only
   // the APPROVED scope is ever scanned (never the proposed one), preserving
   // human-in-control. Conservative pacing is unchanged.
   const scope = resolveApprovedUrls(cfg);
@@ -159,7 +159,7 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
   const startedAt = new Date().toISOString();
   tel.event("run.started", { data: { replaySchema: 1, pages: approvedUrls.length, scopeSource: scope.source } });
 
-  // Setup phase (Req 1-4): each run re-reads the human-approved Page_Seed_File
+  // Setup phase: each run re-reads the human-approved Page_Seed_File
   // and confirms the approved baselines that govern this run. These agents did
   // their primary work at seed/approval time; here they re-validate, so the
   // office shows them active at the start of every run (genuine, not synthetic).
@@ -182,7 +182,7 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
         tel.event("page.skipped", { data: { url, slug, reason: "no approved baseline" } });
         continue;
       }
-      // Test generation from the approved baseline (Req 5).
+      // Test generation from the approved baseline.
       tel.agentStatus("Test_Generator", "deterministic", "working");
       generated.push(
         await recordStep(
@@ -203,7 +203,7 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
         { name: "mobile" as const, size: cfg.viewports.mobile },
       ]) {
         tel.agentStatus("Observation_Runner", "deterministic", "working", undefined);
-        // Conservative pacing between page loads (Req 12.1).
+        // Conservative pacing between page loads.
         await new Promise((r) => setTimeout(r, cfg.limits.requestSpacingMs));
         const stepMeta = { agent: "Observation_Runner", pageUrl: url, slug, viewport: vp.name, seq } as const;
         const loaded = await recordStep(
@@ -214,7 +214,7 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
             const page = await context.newPage();
             const consoleErrors: string[] = [];
             page.on("console", (m) => m.type() === "error" && consoleErrors.push(m.text()));
-            gateway.guardUrl(url); // domain boundary (Req 13)
+            gateway.guardUrl(url); // domain boundary
             const resp = await page.goto(url, { waitUntil: "load", timeout: cfg.limits.navTimeoutMs }).catch(() => null);
             const status = resp?.status() ?? 0;
             const title = (await page.title()).trim();
@@ -247,7 +247,7 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
         );
         pageEvidence.push({ kind: `screenshot-${vp.name}`, path: shot });
 
-        // Visual comparison vs approved screenshot baseline (Phase 2).
+        // Visual comparison vs approved screenshot baseline.
         const visual = await recordStep(
           tel,
           { ...stepMeta, step: "visual-compare" },
@@ -347,14 +347,13 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
   }
 
   writeTestManifest(store.runDir, generated);
-  // Phase 2 migration (Req 8.2, 11.8): test-manifest.json now stores repo-relative
-  // specPath values (no absolute/internal paths). Record the migration as an
-  // append-only audit note. Existing on-disk manifests are left as-is and are
-  // sanitized at publish time.
+  // test-manifest.json stores repo-relative specPath values (no absolute/internal
+  // paths). Record that as an append-only audit note. Older on-disk manifests are
+  // left as-is and are sanitized at publish time.
   tel.audit({
     type: "migration",
-    reason: "test-manifest.specPath is now repo-relative (Req 8.2, 11.8)",
-    detail: "Phase 2: absolute specPath no longer written; legacy manifests sanitized at publish.",
+    reason: "test-manifest.specPath is repo-relative",
+    detail: "Absolute specPath is not written; older manifests are sanitized at publish.",
   });
   store.writeJson("results.json", { pages: pageReports.map((p) => ({ page: p.page, slug: p.slug, checks: p.checks })) });
 
@@ -461,14 +460,14 @@ export async function runGuardian(cfg: AppConfig): Promise<string> {
   tel.event("run.finished", { data: { health, failedChecks: totalFailedChecks, pages: pageReports.length } });
   applyRetention("artifacts/runs", cfg.retention.maxRuns, cfg.retention.maxAgeDays);
 
-  // Local publish on SUCCESSFUL run completion only (Req 6.7). We reach this
-  // point exclusively on the success path — a dashboard/report failure above
+  // Local publish on SUCCESSFUL run completion only. We reach this
+  // point exclusively on the success path - a dashboard/report failure above
   // throws before here, so a thrown run never publishes.
   //
   // NON-FATAL by design: publishing is a downstream artifact step, not part of
   // the observation run's correctness. If publish fails it MUST leave the prior
-  // published bundle untouched (the publisher guarantees this, Req 6.8/6.9) and
-  // MUST NOT retroactively fail an otherwise-good run — a publish hiccup should
+  // published bundle untouched (the publisher guarantees this) and
+  // MUST NOT retroactively fail an otherwise-good run - a publish hiccup should
   // never discard a valid observation. So we record a telemetry event and carry
   // on, returning the runId regardless. The office is the static, no-build
   // `office/` app (copied as-is into the Pages output); the publisher only

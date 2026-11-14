@@ -1,4 +1,4 @@
-﻿import {
+import {
   copyFileSync,
   existsSync,
   mkdirSync,
@@ -54,7 +54,7 @@ const AGENT_IDENTITIES = new Set([
 ]);
 
 /**
- * Approval_Gate (Req 4, 10, 14, 15, 31.4). The ONLY path that promotes a draft
+ * Approval_Gate. The ONLY path that promotes a draft
  * to a baseline. Human-driven, atomic, audited, never self-approved.
  */
 export class ApprovalGate {
@@ -64,7 +64,7 @@ export class ApprovalGate {
     private readonly baselinesRoot = "baselines",
   ) {}
 
-  /** Promote a draft to a versioned baseline atomically, then audit (Req 4.3, 4.7). */
+  /** Promote a draft to a versioned baseline atomically, then audit. */
   approveSpecification(
     d: HumanDecision,
     opts: { baselinesRoot?: string } = {},
@@ -85,7 +85,7 @@ export class ApprovalGate {
     const reviewId = newReviewId();
 
     // Atomic: write promoted content to temp, then rename into place. The audit
-    // success entry is written ONLY after the rename succeeds (Req 4.3, 4.7).
+    // success entry is written ONLY after the rename succeeds.
     try {
       const tmp = finalPath + ".tmp";
       const body = readFileSync(draftPath, "utf8").replace("- **State:** draft", `- **State:** baseline v${version} (approved by ${d.reviewer})`);
@@ -115,7 +115,7 @@ export class ApprovalGate {
     return { baselinePath: finalPath, version, reviewId };
   }
 
-  /** Record a finding disposition (accept/reject/dismiss). Never auto. (Req 15.3) */
+  /** Record a finding disposition (accept/reject/dismiss). Never auto. */
   disposeFinding(d: HumanDecision & { findingId: string; detail?: DispositionDetail }): string {
     this.assertHuman(d);
     const reviewId = newReviewId();
@@ -132,7 +132,7 @@ export class ApprovalGate {
     return reviewId;
   }
 
-  /** Record a durable disposition decision (Req 18.9, 18.10, 17.11). */
+  /** Record a durable disposition decision. */
   recordDispositionDecision(args: {
     id: string;
     kind: DispositionKind;
@@ -151,7 +151,7 @@ export class ApprovalGate {
     });
   }
 
-  /** Authorize a console setup/config action (Req 21.5, 22.12, 24.7, 25.4). */
+  /** Authorize a console setup/config action. */
   authorizeSetupAction(args: {
     reviewer: string;
     action: string;
@@ -174,7 +174,7 @@ export class ApprovalGate {
     return reviewId;
   }
 
-  /** Audit a visual baseline approval/update (Req 24.4). Same keys as the CLI script plus source and sha16. */
+  /** Audit a visual baseline approval/update. Same keys as the CLI script plus source and sha16. */
   approveVisualBaseline(args: {
     reviewer: string;
     slug: string;

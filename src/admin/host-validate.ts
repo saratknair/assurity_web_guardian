@@ -1,5 +1,5 @@
 /**
- * New-domain host validation (design J.3.2; Requirements 21.4, 21.5).
+ * New-domain host validation.
  *
  * SYNTAX ONLY. This module deliberately does NOT consult the current approvedDomain,
  * config/domains/*.json, or any allow-list: choosing the new domain is itself the trust

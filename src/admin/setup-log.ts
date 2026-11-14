@@ -1,5 +1,5 @@
 /**
- * Setup_Activity_Log (design J.7, Requirement 25): an append-only, ASCII-only JSONL record of
+ * Setup_Activity_Log: an append-only, ASCII-only JSONL record of
  * setup actions at artifacts/admin/setup-activity.jsonl. Local only. It is never read by the
  * Publisher or the Virtual Office and never goes through TelemetryEmitter.
  * Exports append and read only: no edit, truncate, or delete exists. No AI, no network.

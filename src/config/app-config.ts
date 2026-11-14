@@ -1,4 +1,4 @@
-﻿import { readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { readApprovedScope } from "../agents/scope-store.js";
 
@@ -16,28 +16,28 @@ export interface AppLimits {
   navTimeoutMs: number;
   runTimeoutMs: number;
   /**
-   * Phase 2: upper bound on how many approved pages the Observation_Runner may
-   * scan (Req 5.7). Replaces the legacy `pages > 10` milestone guard. Defaults
+   * Upper bound on how many approved pages the Observation_Runner may
+   * scan. Defaults
    * to DEFAULT_MAX_APPROVED_PAGES when absent; capped at MAX_APPROVED_PAGES_HARD_CAP.
    */
   maxApprovedPages?: number;
   /**
-   * Phase 2: upper bound on BFS discovery (Req 5.1, default 500). Mirrors the
+   * Upper bound on BFS discovery (default 500). Mirrors the
    * per-domain Domain_Config value; present here for app-level overrides.
    */
   maxDiscoveryCount?: number;
   /**
-   * Phase 2: above this many discovered pages, Scope_Approval presentation groups
-   * by path segment (Req 5.6, default 25).
+   * Above this many discovered pages, Scope_Approval presentation groups
+   * by path segment (default 25).
    */
   largeScopeThreshold?: number;
 }
 
-/** Default approved-page cap when `limits.maxApprovedPages` is not set (Req 5.7). */
+/** Default approved-page cap when `limits.maxApprovedPages` is not set. */
 export const DEFAULT_MAX_APPROVED_PAGES = 500;
-/** Sane hard upper bound on the approved-page cap (Req 5.7). */
+/** Sane hard upper bound on the approved-page cap. */
 export const MAX_APPROVED_PAGES_HARD_CAP = 500;
-/** Default Large_Scope_Threshold for grouped Scope_Approval (Req 5.6). */
+/** Default Large_Scope_Threshold for grouped Scope_Approval. */
 export const DEFAULT_LARGE_SCOPE_THRESHOLD = 25;
 
 export interface RetentionPolicy {
@@ -53,9 +53,9 @@ export interface AppConfig {
   retention: RetentionPolicy;
   viewports: { desktop: Viewport; mobile: Viewport };
   /**
-   * Phase 2: slug of the active Domain_Config under `config/domains/<slug>.json`
+   * Slug of the active Domain_Config under `config/domains/<slug>.json`
    * (e.g. "assurity-nz"), loadable via `loadDomainConfig(domain)`. Optional for
-   * backward compatibility with pre-Phase-2 configs.
+   * configs that predate domain configs.
    */
   domain?: string;
 }
@@ -85,14 +85,14 @@ export function loadSeed(cfg: AppConfig): PageSeedFile {
 }
 
 /**
- * Resolve the effective approved-page cap (Req 5.7): the configured
+ * Resolve the effective approved-page cap: the configured
  * `limits.maxApprovedPages`, or DEFAULT_MAX_APPROVED_PAGES when absent.
  */
 export function maxApprovedPages(cfg: AppConfig): number {
   return cfg.limits.maxApprovedPages ?? DEFAULT_MAX_APPROVED_PAGES;
 }
 
-/** Where the effective observation URL list came from (Req 5.7). */
+/** Where the effective observation URL list came from. */
 export type ScopeSource = "approved-scope" | "seed";
 
 /** The effective page list the Observation_Runner will scan, with provenance. */
@@ -102,12 +102,12 @@ export interface ResolvedScope {
 }
 
 /**
- * Resolve the effective URL list the Observation_Runner scans (Req 5.7, 12.6).
+ * Resolve the effective URL list the Observation_Runner scans.
  *
  * Human-in-control resolution:
  *  1. WHEN a configured `cfg.domain` slug has a human-approved Full_Site_Scope at
  *     `config/scope/<slug>.approved.json` (read via `readApprovedScope`) with at
- *     least one page, scan that APPROVED scope — never the proposed one — capped
+ *     least one page, scan that APPROVED scope - never the proposed one - capped
  *     at `maxApprovedPages(cfg)`.
  *  2. OTHERWISE fall back to the legacy `page-seed.json` (`loadSeed().approvedUrls`),
  *     preserving the existing single-page / 10-page behavior exactly.
@@ -135,19 +135,18 @@ function validateConfig(cfg: AppConfig): void {
   const l = cfg.limits;
   for (const [k, v] of Object.entries(l)) {
     if (v === undefined) {
-      // Optional Phase 2 limits may be omitted; they fall back to defaults.
+      // Optional limits may be omitted; they fall back to defaults.
       continue;
     }
     if (typeof v !== "number" || v < 0) {
       throw new Error(`Invalid limit ${k}: ${String(v)}`);
     }
   }
-  // Conservative_Request_Rate: 1 req/s/host minimum (Req 12.6, 5.3) — preserved.
+  // Conservative_Request_Rate: 1 req/s/host minimum - preserved.
   if (l.requestSpacingMs < 1000) {
     throw new Error("requestSpacingMs must be >= 1000 (1 req/s/host)");
   }
-  // Phase 2 (Req 5.7): the legacy `pages > 10` milestone guard is replaced by a
-  // configurable approved-page cap with a sane upper bound.
+  // The approved-page cap is configurable with a sane upper bound.
   const cap = l.maxApprovedPages ?? DEFAULT_MAX_APPROVED_PAGES;
   if (cap > MAX_APPROVED_PAGES_HARD_CAP) {
     throw new Error(

@@ -1,7 +1,7 @@
-﻿import { randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 
 /**
- * Identifier model (Req 20.3, 20.4). Every child entity references the parent
+ * Identifier model. Every child entity references the parent
  * correlationId. IDs are prefixed and time-sortable (timestamp + random tail).
  */
 export type IdPrefix = "run" | "cor" | "task" | "chk" | "fnd" | "evd" | "rev";

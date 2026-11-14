@@ -1,6 +1,6 @@
 /**
  * Redactor removes tokens, credentials, personal data and secrets before any
- * telemetry/log/report write (Req 20.13, 22.1, 22.2). Pure function over the
+ * telemetry/log/report write. Pure function over the
  * record; deep-clones and replaces matched values with a placeholder.
  */
 const PLACEHOLDER = "[REDACTED]";

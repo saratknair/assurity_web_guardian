@@ -5,7 +5,7 @@ import { PNG } from "pngjs";
 import pixelmatch from "pixelmatch";
 
 /**
- * Visual comparison (Phase 2, Req 27). Compares a current screenshot against an
+ * Visual comparison. Compares a current screenshot against an
  * approved screenshot baseline and produces a diff image + metadata. NEVER
  * auto-fails on pixel percentage; NEVER auto-updates the baseline. When no
  * baseline exists yet, the current shot is recorded as the proposed baseline

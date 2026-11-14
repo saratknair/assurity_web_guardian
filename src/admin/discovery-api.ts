@@ -1,5 +1,5 @@
 /**
- * Discovery API (design J.5, Requirement 23). Handlers use ports only (ConsoleDeps).
+ * Discovery API. Handlers use ports only (ConsoleDeps).
  *
  * - POST /api/discovery/run starts the local Discovery_Crawler job (no GitHub, no push).
  * - GET /api/jobs/status reports the single current or last job.

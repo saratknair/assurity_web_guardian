@@ -1,9 +1,9 @@
-﻿import { newFindingId } from "../core/ids.js";
+import { newFindingId } from "../core/ids.js";
 import type { FindingClassification } from "../telemetry/types.js";
 import type { Outcome } from "./comparator.js";
 
 /**
- * AI-assisted agents (Req 8.5, 8.6, 26, 31.1). Their outputs are SEPARATE,
+ * AI-assisted agents. Their outputs are SEPARATE,
  * linked records (relatedFindingId) classified ai-generated-analysis or
  * agent-recommendation. They NEVER overwrite a deterministic finding's
  * classification and are always labeled, never presented as fact.

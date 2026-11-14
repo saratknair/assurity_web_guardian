@@ -1,5 +1,5 @@
 /**
- * Synchronisation of decisions to the `runs-data` branch (design I.8).
+ * Synchronisation of decisions to the `runs-data` branch.
  *
  * Push path: fetch, read the remote log, union with the local log (mergeLogs), build ONE
  * additive commit on the fetched tip, and push it without force. The commit is built with

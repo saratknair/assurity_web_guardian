@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 
 /**
- * Domain_Config — the guarded domain described as data.
+ * Domain_Config - the guarded domain described as data.
  *
  * The system is multi-domain-ready: each guarded domain is a JSON file under
  * `config/domains/<slug>.json`. It operates against the single configured

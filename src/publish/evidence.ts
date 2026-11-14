@@ -3,7 +3,6 @@ import { redact } from "../safety/redactor.js";
 
 /**
  * Evidence sanitizer and caps for published axe violations (pure, no I/O).
- * Requirements 1.1-1.6, 1.8, 1.10, 1.12, 17.6.
  */
 
 export interface PublishCaps {

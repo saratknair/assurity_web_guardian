@@ -1,6 +1,6 @@
 /**
- * Hand-written, pure five-field cron validation for GitHub Actions schedules
- * (design J.10.1). No dependencies, no I/O.
+ * Hand-written, pure five-field cron validation for GitHub Actions schedules.
+ * No dependencies, no I/O.
  *
  * Grammar per field: comma list of star, star/n, a, a-b, a-b/n (ascending
  * ranges, n >= 1). Names: months JAN-DEC, weekdays SUN-SAT (their own field

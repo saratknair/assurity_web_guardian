@@ -9,7 +9,7 @@ import { join, dirname, basename } from "node:path";
 import { redact } from "../safety/redactor.js";
 
 /**
- * Publish-time sanitizer (Requirement 8). Produces Pages-safe copies of a run's
+ * Publish-time sanitizer. Produces Pages-safe copies of a run's
  * publishable JSON files with secrets/PII redacted and absolute/internal
  * filesystem paths stripped. Fail-closed: any file that cannot be confirmed
  * clean is withheld (never written) and recorded with a reason.
@@ -32,7 +32,7 @@ export interface SanitizeReport {
 const PATH_REMOVED = "[path removed]";
 
 /**
- * Absolute / internal filesystem path patterns (Requirement 8.2).
+ * Absolute / internal filesystem path patterns.
  * Order matters: UNC before drive-letter, longest/most-specific first.
  * All are global so every occurrence in a string is scrubbed.
  */
@@ -145,12 +145,12 @@ function writeSanitizedJson(outPath: string, data: unknown): void {
  * present. Each is run through `sanitizeJson`, then re-scanned; a clean result
  * is written to `outDir`.
  *
- * Excluded (never copied): `traces/`, raw console logs, and otel dumps
- * (Requirement 8.3). Screenshot images are copied by the publisher (task 9.7)
+ * Excluded (never copied): `traces/`, raw console logs, and any other file not listed above.
+ * Screenshot images are copied by the publisher
  * after their metadata passes; this function only sanitizes JSON/metadata and
  * exposes `sanitizeScreenshotName` for filename scrubbing.
  *
- * Fail-closed (Requirement 8.5): if a file's sanitization throws, or a
+ * Fail-closed: if a file's sanitization throws, or a
  * disallowed path pattern remains after scrubbing on the re-scan, that file is
  * WITHHELD (not written) and recorded in `withheld` with a `reasons[name]`
  * entry. Other files still publish. `ok` is true iff nothing was withheld.
@@ -213,7 +213,7 @@ export function sanitizeRun(runDir: string, outDir: string): SanitizeReport {
 }
 
 /**
- * Screenshot filename scrubber (Requirement 8.4). The publisher copies images
+ * Screenshot filename scrubber. The publisher copies images
  * under this sanitized base name after metadata passes. Strips any directory
  * component (so an absolute source path never leaks into the published name)
  * and removes residual path patterns from the bare filename.

@@ -1,6 +1,5 @@
 /**
- * Approved_URL set rules (design J.4.1, J.4.2; Requirements 22.2 to 22.6, 22.10, 22.11,
- * 22.17, 22.19). PURE and total: no I/O, never throws.
+ * Approved_URL set rules. PURE and total: no I/O, never throws.
  *
  * - Normalisation: approved scheme, in-domain, no fragment, no default port, max 2048 chars,
  *   trailing "/" when the last path segment has no dot.
@@ -147,7 +146,7 @@ export interface UrlOpOutcome {
   reason?: string;
   /** Normalised URL that was added (add or edit). */
   added?: string;
-  /** URL that was removed (remove or edit). */
+  /** URL taken out of the set (remove or edit). */
   removed?: string;
 }
 

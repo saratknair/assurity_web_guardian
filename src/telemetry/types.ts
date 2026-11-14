@@ -1,4 +1,4 @@
-﻿/** Telemetry types and the OpenTelemetry-ready exporter interface (Req 18-20, 23, 25). */
+/** Telemetry types and the OpenTelemetry-ready exporter interface. */
 
 export type AgentStatus =
   | "queued"
@@ -101,7 +101,7 @@ export interface AgentTaskRecord {
   humanDecisionReason?: string;
 }
 
-/** OpenTelemetry can be added later behind this interface (Req 20.12, 25.3). */
+/** OpenTelemetry can be added later behind this interface. */
 export interface TelemetryExporter {
   export(event: TelemetryEvent): void;
   flush(): Promise<void>;

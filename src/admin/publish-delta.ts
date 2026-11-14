@@ -1,5 +1,5 @@
 /**
- * Config_Publish delta computation (design J.8.2). Pure: no I/O.
+ * Config_Publish delta computation. Pure: no I/O.
  * Maps are repo-relative path -> blob id.
  */
 import { isConfigPath } from "./publish-paths.js";

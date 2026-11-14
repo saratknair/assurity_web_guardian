@@ -16,24 +16,23 @@ import { promisify } from "node:util";
 const execFileAsync = promisify(execFile);
 
 /**
- * Cloud-to-local run synchronization (Phase 2, Requirements 7.3–7.6, 7.8).
+ * Cloud-to-local run synchronization.
  *
  * `Cloud_Sync` is READ-ONLY with respect to the cloud and ADDITIVE with respect
  * to the local store. It fetches the `runs-data` branch (a plain `git fetch`,
  * never a push/branch edit/commit), enumerates the run-id directories committed
  * on that branch under `artifacts/runs/<id>/`, and copies into the local
  * `runsRoot` ONLY the run-ids that are not already present locally. A run-id
- * that already exists locally is SKIPPED and never touched — existing runs,
+ * that already exists locally is SKIPPED and never touched - existing runs,
  * evidence, baselines, and audit history are inputs to sync, never outputs of
- * it, so nothing local is overwritten or deleted (Req 7.3, 7.5, 7.8).
+ * it, so nothing local is overwritten or deleted.
  *
  * Each newly synced run gets an `origin` marker file containing `cloud` written
- * into its directory, matching `published-data.ts` → `originForRun` precedence
+ * into its directory, matching `published-data.ts` -> `originForRun` precedence
  * (a per-run `origin` marker whose content is exactly `cloud` wins), so synced
- * runs surface with origin `"cloud"` in the Admin GUI and published index
- * (Req 7.7).
+ * runs surface with origin `"cloud"` in the Admin GUI and published index.
  *
- * FAIL SAFE (Req 7.6): if the machine is offline, the fetch fails, or any error
+ * FAIL SAFE: if the machine is offline, the fetch fails, or any error
  * occurs mid-sync, `cloudSync` resolves `{ ok: false, reason }` and leaves the
  * local store UNCHANGED. Each run is reconstructed into a private temp staging
  * area first and only MOVED into `runsRoot` once fully materialized, so a
@@ -41,7 +40,7 @@ const execFileAsync = promisify(execFile);
  * directories are never written through.
  */
 
-/** Result of a `cloudSync` invocation (design → function-signature sketch). */
+/** Result of a `cloudSync` invocation (run-ids added and skipped). */
 export interface CloudSyncResult {
   /** Run-ids newly copied in from the cloud branch. */
   added: string[];
@@ -66,7 +65,7 @@ export interface CloudSyncResult {
  * contains only cloud ids not in `localIds`, `toSkip` contains only cloud ids
  * that are in `localIds`, and the two partitions are disjoint and cover every
  * distinct cloud id. Applying `toAdd` to the local set yields exactly
- * `localIds ∪ cloudIds`.
+ * the union of `localIds` and `cloudIds`.
  */
 export function partitionRuns(
   localIds: Iterable<string>,
@@ -158,7 +157,7 @@ async function materializeRun(
     mkdirSync(dirname(outPath), { recursive: true });
     writeFileSync(outPath, stdout as unknown as Buffer);
   }
-  // Mark provenance so published-data.ts → originForRun reports "cloud".
+  // Mark provenance so published-data.ts -> originForRun reports "cloud".
   writeFileSync(join(destRunDir, "origin"), "cloud", "utf8");
 }
 
@@ -175,7 +174,7 @@ export async function cloudSync(opts: {
   const { repoDir, branch, runsRoot } = opts;
 
   // 1. READ-ONLY fetch of the runs-data branch. No push, no branch edit, no
-  //    commit — just update the remote-tracking ref so we can read it.
+  //    commit - just update the remote-tracking ref so we can read it.
   try {
     await execFileAsync("git", ["fetch", "origin", branch], {
       cwd: repoDir,
@@ -216,7 +215,7 @@ export async function cloudSync(opts: {
 
   // Stage every new run into a private temp area first, then MOVE completed
   // run dirs into place. On any error we remove the staging area and leave the
-  // local store byte-for-byte unchanged (Req 7.6). We never write through an
+  // local store byte-for-byte unchanged. We never write through an
   // existing local run directory.
   const staging = mkdtempSync(join(tmpdir(), "awg-cloud-sync-"));
   const added: string[] = [];

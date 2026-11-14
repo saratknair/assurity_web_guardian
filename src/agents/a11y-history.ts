@@ -1,10 +1,10 @@
-﻿import { createHash } from "node:crypto";
+import { createHash } from "node:crypto";
 
 /**
- * Accessibility finding fingerprinting + recurrence (Phase 3, Req 3-series).
+ * Accessibility finding fingerprinting + recurrence.
  * A fingerprint deterministically identifies "the same" finding across runs
  * using Axe rule + page + viewport + stable element context + failure summary.
- * The Axe rule ID ALONE is never used to decide identity.
+ * The Axe rule ID ALONE never decides identity on its own.
  */
 export interface A11yViolationInput {
   ruleId: string;
@@ -85,8 +85,8 @@ export function updateHistory(
     }
   }
 
-  // Findings not seen this run but previously unresolved => resolved (only if
-  // they were previously present AND not seen now). Never auto-dismiss.
+  // Findings that were present in an earlier run but are not seen now become
+  // resolved. Never auto-dismiss.
   for (const [fp, f] of Object.entries(next)) {
     if (!currentFps.has(fp) && f.state !== "resolved" && f.humanDisposition !== "dismissed") {
       f.state = "resolved";

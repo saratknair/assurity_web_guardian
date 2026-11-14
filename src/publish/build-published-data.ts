@@ -1,14 +1,14 @@
 import { buildPublishedData } from "./published-data.js";
 
 /**
- * CLI entry for the publisher / CI workflow (design → Cloud_Runner step
+ * CLI entry for the publisher / CI workflow (Cloud_Runner step
  * `node dist/publish/build-published-data.js`). Thin wrapper: reads the output
  * directory from argv or env and delegates to `buildPublishedData`.
  *
  * Usage:
  *   node dist/publish/build-published-data.js [outDir]
  * Env:
- *   AWG_PUBLISH_OUT_DIR  output dir (default "." → writes ./data/*)
+ *   AWG_PUBLISH_OUT_DIR  output dir (default "." -> writes ./data/*)
  *   AWG_RUNS_ROOT        raw run store (default "artifacts/runs")
  *   AWG_A11Y_HISTORY     a11y history path (default "artifacts/a11y-history.json")
  *   AWG_DOMAIN           domain label (default: latest run's domain)

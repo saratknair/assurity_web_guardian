@@ -1,5 +1,5 @@
 /**
- * Config_Publish API (design J.8, Requirements 26, 27, 30). "Publish to GitHub" builds ONE
+ * Config_Publish API. "Publish to GitHub" builds ONE
  * commit as a child of origin/main that contains only the configuration delta (CONFIG_PATHSPECS),
  * using git plumbing and a temporary index file. It pushes additively to main: no force, no
  * rebase, no merge, no checkout. Unrelated working-tree changes are never staged.
@@ -91,7 +91,7 @@ function record(deps: ConsoleDeps, input: GitFeedbackInput): GitFeedbackRecord |
 }
 
 // ---------------------------------------------------------------------------
-// Delta gathering (design J.8.2)
+// Delta gathering
 // ---------------------------------------------------------------------------
 
 interface Gathered {
@@ -307,7 +307,7 @@ export async function publishOverview(
 }
 
 // ---------------------------------------------------------------------------
-// Commit message (design J.8.5): pure, ASCII, no paths
+// Commit message: pure, ASCII, no paths
 // ---------------------------------------------------------------------------
 
 export interface CommitMessageInput {

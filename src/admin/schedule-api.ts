@@ -1,5 +1,5 @@
 /**
- * Schedule API (design J.10, Requirements 28). The schedule lives only in the cron line of
+ * Schedule API. The schedule lives only in the cron line of
  * .github/workflows/guardian.yml. An edit changes that one value in the working tree, logs a
  * `schedule-changed` entry, and never pushes: it reaches GitHub when the user publishes.
  * The old local-only schedule (schedule.ts / Task Scheduler) is not used here.

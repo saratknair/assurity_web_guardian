@@ -1,14 +1,14 @@
-﻿import { newFindingId } from "../core/ids.js";
+import { newFindingId } from "../core/ids.js";
 import type { FindingClassification } from "../telemetry/types.js";
 
 /**
- * Comparator (Req 8, 26, 27). Classifies comparison outcomes rather than
+ * Comparator. Classifies comparison outcomes rather than
  * treating every difference as a failure:
  *   - violated explicit deterministic expectation => Failed_Check (deterministic-test-evidence)
  *   - difference w/o violated expectation => Observed_Website_Change (observed-website-change)
  *   - screenshot difference => Visual_Finding (observed-website-change), UNLESS a
  *     deterministic rule is violated in the same comparison => only the
- *     Failed_Check is recorded and the Visual_Finding is suppressed (Req 8.4).
+ *     Failed_Check is recorded and the Visual_Finding is suppressed.
  */
 export type OutcomeKind = "failed-check" | "observed-website-change" | "visual-finding";
 
@@ -69,7 +69,7 @@ export function compare(input: ComparatorInput): ComparisonResult {
 
   // 3. Screenshot difference => Visual_Finding, UNLESS a deterministic rule was
   //    violated in the same comparison (then only the Failed_Check stands, and
-  //    the standalone Visual_Finding is suppressed — Req 8.4). Visual evidence
+  //    the standalone Visual_Finding is suppressed). Visual evidence
   //    is still attached to the deterministic finding by the caller; it is not
   //    discarded.
   if (input.screenshotDiffers) {

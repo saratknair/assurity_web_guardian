@@ -1,15 +1,15 @@
-﻿import { appendFileSync, existsSync, readFileSync } from "node:fs";
+import { appendFileSync, existsSync, readFileSync } from "node:fs";
 
 /**
- * Append-only JSONL log (Req 20.7-20.9, 24.5). Application-level only:
+ * Append-only JSONL log. Application-level only:
  *  - the only public write operation is append();
  *  - there is NO edit/overwrite operation;
  *  - a would-be overwrite (by index) is rejected with an integrity error and
  *    the existing content is preserved unchanged.
  *
- * Milestone-one immutability is application-level. The underlying file remains
+ * Immutability is application-level. The underlying file remains
  * technically modifiable by anyone with filesystem access; this is NOT
- * cryptographic or regulatory-grade immutability (Req 20.10).
+ * cryptographic or regulatory-grade immutability.
  */
 export class IntegrityError extends Error {
   constructor(message: string) {
@@ -26,7 +26,7 @@ export class AppendOnlyLog {
     appendFileSync(this.path, line + "\n", "utf8");
   }
 
-  /** Reject any attempt to modify an existing entry (Req 24.5). */
+  /** Reject any attempt to modify an existing entry. */
   overwriteAt(_index: number, _record: Record<string, unknown>): never {
     throw new IntegrityError(
       "Append-only log: editing or overwriting existing entries is not permitted. " +

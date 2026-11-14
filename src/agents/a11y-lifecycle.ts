@@ -1,7 +1,7 @@
 import type { TrackedFinding } from "./a11y-history.js";
 
 /**
- * Pure accessibility/finding lifecycle (dashboard-usability-overhaul, design section C).
+ * Pure accessibility/finding lifecycle .
  * No I/O. Identity key is `${pageUrl}|${viewport}|${ruleId}`.
  */
 export type LifecycleState = "new" | "recurring" | "existing-unresolved" | "resolved";
@@ -60,7 +60,7 @@ export function emptyHistory(): HistoryV2 {
   return { schemaVersion: 2, runs: [], findings: {} };
 }
 
-/** Transition table (R13.4-R13.7). `undefined` result means "no state". */
+/** Transition table. `undefined` result means "no state". */
 export function nextState(prev: LifecycleState | undefined, present: boolean): LifecycleState | undefined {
   if (present) {
     if (prev === undefined || prev === "resolved") return "new";

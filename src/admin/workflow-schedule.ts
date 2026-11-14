@@ -1,5 +1,5 @@
 /**
- * Read and edit the one cron value in .github/workflows/guardian.yml (design J.10.2).
+ * Read and edit the one cron value in .github/workflows/guardian.yml.
  * No YAML parser: the text is scanned line by line. An edit changes only the characters
  * of the cron value; quote style, indentation, comments, EOL style, final newline, and
  * every other byte are kept. Fail-closed: if the result does not verify, nothing is

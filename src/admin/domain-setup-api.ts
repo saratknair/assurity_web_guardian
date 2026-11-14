@@ -1,5 +1,5 @@
 /**
- * New_Domain_Setup wizard, DRAFT part (design J.3, Requirement 21). Handlers use ports only.
+ * New_Domain_Setup wizard, DRAFT part. Handlers use ports only.
  *
  * - GET  /api/domain/setup         draft state and the status of each wizard step.
  * - POST /api/domain/setup/start   {host, retypedHost, reviewer}: create the draft.

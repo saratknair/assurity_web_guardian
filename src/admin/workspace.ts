@@ -1,5 +1,5 @@
 /**
- * Workspace roots (design J.3.4, J.1.1). A Workspace tells URL, discovery, and baseline code
+ * Workspace roots. A Workspace tells URL, discovery, and baseline code
  * where to read and write, so the same code serves the normal console (scope "project", real
  * files) and the New_Domain_Setup wizard (scope "draft", the staging area under
  * artifacts/admin/new-domain/). PURE: builds path strings only, performs no I/O.

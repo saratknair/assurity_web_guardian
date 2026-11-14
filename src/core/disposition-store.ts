@@ -1,5 +1,5 @@
 /**
- * Disposition store (design Section I.8, local part). File I/O around the pure
+ * Disposition store (local part). File I/O around the pure
  * log in dispositions.ts: safe read, atomic write, a locked read-merge-write step
  * so concurrent CLI and GUI writers lose nothing, and sync bookkeeping.
  * No clock except the caller-supplied "now"; no randomness; no dependencies.

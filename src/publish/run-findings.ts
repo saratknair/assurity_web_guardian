@@ -24,10 +24,9 @@ import {
 } from "./evidence.js";
 
 /**
- * Per-run Finding builder (design section B). `loadRawRunInputs` is a thin,
+ * Per-run Finding builder. `loadRawRunInputs` is a thin,
  * tolerant I/O shell; `buildRunFindings` is pure and total (never throws on
- * malformed input). Requirements 2.1, 2.3, 2.6, 2.8, 2.9, 1.9, 4.2, 4.5,
- * 12.4, 12.5, 13.9, 13.10, 17.9.
+ * malformed input).
  */
 
 export type Viewport = "desktop" | "mobile";
@@ -44,7 +43,7 @@ export interface RawRunInputs {
   dispositions?: FrozenDispositions | null;
 }
 
-/** The run's frozen applied set (design I.6). Never the live log. */
+/** The run's frozen applied set. Never the live log. */
 export interface FrozenDispositions {
   status: "applied" | "unavailable";
   entries: DispositionEntry[];
@@ -647,7 +646,7 @@ export function buildRunFindings(inputs: RawRunInputs, opts: { caps?: PublishCap
         a.id.localeCompare(b.id),
     );
 
-  // ---- disposition overlay (design I.4 to I.6); frozen set only, never the live log ----
+  // ---- disposition overlay; frozen set only, never the live log ----
   let findings: PublishedFinding[] = detectedAll;
   let ignoredList: PublishedFinding[] = [];
   let resolvedOut: unknown[] = resolved;

@@ -1,5 +1,5 @@
 /**
- * Run viewer routes (design J.11; Requirement 29) and the cloud pull (Requirement 29, J.9.1).
+ * Run viewer routes and the cloud pull.
  *
  *   GET  /api/runs                         known runs, newest first, latest flagged
  *   GET  /api/runs/:id                     details and the available logs; each section reads alone
@@ -292,7 +292,7 @@ async function getRun(ctx: HandlerContext): Promise<ConsoleResponse> {
 
 // ---- GET /api/runs/:id/log -------------------------------------------------------------------
 
-/** One JSONL record as "time type message key=value ..."; a non-JSON line is kept as raw text. */
+/** One JSONL record as "time type message key=value..."; a non-JSON line is kept as raw text. */
 export function formatLogLine(raw: string): string {
   let parsed: unknown;
   try {

@@ -1,10 +1,10 @@
-﻿import { writeFileSync, existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { writeFileSync, existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { computeAnalytics, type Analytics } from "../core/analytics.js";
 import { buildDashboardData } from "./dashboard-data.js";
 
 /**
- * Phase 5 dashboard builder. Upgrades (does not replace) the static dashboard
+ * Dashboard builder. Upgrades (does not replace) the static dashboard
  * with an Executive view and an Operational view driven by deterministic
  * historical analytics. Local, database-free. Evidence links use lazy loading.
  * AI-generated content stays visually distinct from deterministic evidence.
@@ -16,7 +16,7 @@ function esc(s: unknown): string {
 function sparkline(values: number[]): string {
   if (values.length === 0) return "";
   const max = Math.max(1, ...values);
-  const bars = "▁▂▃▄▅▆▇█";
+  const bars = "\u2581\u2582\u2583\u2584\u2585\u2586\u2587\u2588";
   return values.map((v) => bars[Math.min(bars.length - 1, Math.round((v / max) * (bars.length - 1)))]).join("");
 }
 
@@ -108,24 +108,24 @@ export function buildDashboard(outPath = "artifacts/dashboard.html"): string {
     ? `<p>Latest run evidence: <a href="runs/${esc(latestRunDirName)}/report/index.html" loading="lazy">open run report</a></p>`
     : "";
 
-  const html = `<!doctype html><html><head><meta charset="utf-8"><title>Assurity Web Guardian — Dashboard</title><style>${STYLE}</style></head>
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>Assurity Web Guardian \u2014 Dashboard</title><style>${STYLE}</style></head>
 <body>
-<header><h1>Assurity Web Guardian — Dashboard</h1><div>Generated ${esc(new Date().toISOString())} · ${esc(analytics.totalRuns)} run(s)</div></header>
+<header><h1>Assurity Web Guardian \u2014 Dashboard</h1><div>Generated ${esc(new Date().toISOString())} \u00b7 ${esc(analytics.totalRuns)} run(s)</div></header>
 <main>
 <div class="tabs"><button id="btn-exec" class="active" onclick="showView('exec')">Executive</button><button id="btn-ops" onclick="showView('ops')">Operational</button></div>
 
 <div id="exec" class="view active">
   <div>${execKpis}</div>
   <div class="band det"><span class="tag">Deterministic trends</span>
-    <h2>Deterministic failures — last 7 runs</h2><div class="spark">${esc(sparkline(failTrend7))}</div>
-    <h2>Deterministic failures — last 30 runs</h2><div class="spark">${esc(sparkline(failTrend30))}</div>
+    <h2>Deterministic failures \u2014 last 7 runs</h2><div class="spark">${esc(sparkline(failTrend7))}</div>
+    <h2>Deterministic failures \u2014 last 30 runs</h2><div class="spark">${esc(sparkline(failTrend30))}</div>
   </div>
   <div class="band det"><span class="tag">Accessibility by severity</span>
     <table><thead><tr><th>Severity</th><th>Tracked findings</th></tr></thead><tbody>${sevRows}</tbody></table>
     <p class="disclaimer">Automated WCAG 2.2 AA checks do not establish full conformance; manual accessibility testing remains necessary.</p>
   </div>
   <div class="band"><h2>Finding lifecycle</h2>
-    <p>new=${lc.new} · recurring=${lc.recurring} · resolved=${lc.resolved} · reopened=${lc.reopened} · dismissed-reappeared=${lc.dismissedReappeared}</p>
+    <p>new=${lc.new} \u00b7 recurring=${lc.recurring} \u00b7 resolved=${lc.resolved} \u00b7 reopened=${lc.reopened} \u00b7 dismissed-reappeared=${lc.dismissedReappeared}</p>
   </div>
   ${evidenceLink}
 </div>
@@ -148,8 +148,8 @@ export function buildDashboard(outPath = "artifacts/dashboard.html"): string {
   writeFileSync(resolve(outPath), html, "utf8");
 
   // Additionally emit the machine-readable DashboardData contract that the new
-  // static dashboard (tasks 4.4–4.6) renders from. Written alongside the HTML.
-  // Contains only run-relative references — never absolute filesystem paths.
+  // static dashboard renders from. Written alongside the HTML.
+  // Contains only run-relative references - never absolute filesystem paths.
   const dataPath = resolve(outPath, "..", "dashboard-data.json");
   writeFileSync(dataPath, JSON.stringify(buildDashboardData(), null, 2), "utf8");
 

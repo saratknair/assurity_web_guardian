@@ -1,11 +1,11 @@
-﻿import { writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { join, relative, isAbsolute } from "node:path";
 import type { Outcome, DeterministicCheck } from "../agents/comparator.js";
 import type { AiItem } from "../agents/ai-agents.js";
 import type { VisualResult } from "../agents/visual-compare.js";
 
 /**
- * Reporting (Req 9, 21, 26). Multi-page consolidated HTML report + static
+ * Reporting. Multi-page consolidated HTML report + static
  * dashboard with an Executive view and an Operational view. Deterministic
  * evidence is visually distinct from AI-generated analysis (never shown as fact).
  */
@@ -68,7 +68,7 @@ function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.
 /**
  * Convert an evidence path into a link relative to the report directory
  * (`<runDir>/report`). Absolute filesystem paths are made run-relative so the
- * per-run report is publishable and leaks no absolute path (Req 11.8); paths
+ * per-run report is publishable and leaks no absolute path; paths
  * that are already relative are passed through with normalized separators.
  */
 function evidenceHref(absOrRel: string, reportDir?: string): string {
@@ -81,22 +81,22 @@ function evidenceHref(absOrRel: string, reportDir?: string): string {
 
 function pageOps(p: PageReport, reportDir?: string): string {
   const checks = p.checks.map((c) =>
-    `<div class="item"><span class="${c.passed ? "ok" : "fail"}">${c.passed ? "PASS" : "FAIL"}</span> ${esc(c.name)} — ${esc(c.detail)}</div>`).join("");
+    `<div class="item"><span class="${c.passed ? "ok" : "fail"}">${c.passed ? "PASS" : "FAIL"}</span> ${esc(c.name)} \u2014 ${esc(c.detail)}</div>`).join("");
   const outcomes = p.outcomes.map((o) => {
     const cls = o.kind === "failed-check" ? "fail" : o.kind === "visual-finding" ? "visual" : "change";
     return `<div class="item"><span class="${cls}">${esc(o.kind)}</span> ${esc(o.detail)} <small>(${esc(o.classification)}, findingId=${esc(o.findingId)})</small></div>`;
   }).join("");
   const ai = p.aiItems.map((a) =>
-    `<div class="item"><span class="tag">${esc(a.label)}</span> <strong>${esc(a.agent)}</strong> — ${esc(a.text)} <small>(relatedFindingId=${esc(a.relatedFindingId)})</small></div>`).join("");
+    `<div class="item"><span class="tag">${esc(a.label)}</span> <strong>${esc(a.agent)}</strong> \u2014 ${esc(a.text)} <small>(relatedFindingId=${esc(a.relatedFindingId)})</small></div>`).join("");
   const visual = Object.entries(p.visual).map(([vp, v]) =>
-    `<div class="item">${esc(vp)}: ${v.differs ? '<span class="visual">visual difference</span>' : '<span class="ok">no visual difference</span>'} — ${esc(v.note)}</div>`).join("");
+    `<div class="item">${esc(vp)}: ${v.differs ? '<span class="visual">visual difference</span>' : '<span class="ok">no visual difference</span>'} \u2014 ${esc(v.note)}</div>`).join("");
   const evidence = p.evidence.map((e) =>
     `<li>${esc(e.kind)}: <a href="${esc(evidenceHref(e.path, reportDir))}" loading="lazy">${esc(e.path.split(/[\\/]/).pop() || e.path)}</a></li>`).join("");
-  return `<details><summary>${esc(p.page)} — baseline ${esc(p.baselineVersion)}</summary>
+  return `<details><summary>${esc(p.page)} \u2014 baseline ${esc(p.baselineVersion)}</summary>
     <div class="band det"><span class="tag">Deterministic</span><h2>Checks</h2>${checks}
       <h2>Outcomes</h2>${outcomes || "<div class='item'>none</div>"}
       <h2>Visual comparison</h2>${visual || "<div class='item'>none</div>"}</div>
-    <div class="band ai"><span class="tag">AI-generated — not a deterministic fact</span><h2>AI analysis & recommendations</h2>${ai || "<div class='item'>none</div>"}</div>
+    <div class="band ai"><span class="tag">AI-generated \u2014 not a deterministic fact</span><h2>AI analysis & recommendations</h2>${ai || "<div class='item'>none</div>"}</div>
     <div class="band"><h2>Evidence</h2><ul>${evidence}</ul></div>
   </details>`;
 }
@@ -115,13 +115,13 @@ export function renderReportHtml(m: ReportModel, reportDir?: string): string {
     ["Pending review", m.pendingReview ? "yes" : "no"],
   ].map(([l, n]) => `<div class="kpi"><div class="n">${esc(n)}</div><div class="l">${esc(l)}</div></div>`).join("");
 
-  const baselineList = m.pages.map((p) => `<div class="item">${esc(p.slug)} — baseline ${esc(p.baselineVersion)}</div>`).join("");
+  const baselineList = m.pages.map((p) => `<div class="item">${esc(p.slug)} \u2014 baseline ${esc(p.baselineVersion)}</div>`).join("");
   const ops = m.pages.map((p) => pageOps(p, reportDir)).join("");
   const agents = m.agentStatuses.map((s) => `<span>${esc(s.agent)}: ${esc(s.status)}</span>`).join("");
 
-  return `<!doctype html><html><head><meta charset="utf-8"><title>Assurity Web Guardian — Run ${esc(m.runId)}</title><style>${STYLE}</style></head>
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Assurity Web Guardian \u2014 Run ${esc(m.runId)}</title><style>${STYLE}</style></head>
 <body>
-<header><h1>Assurity Web Guardian</h1><div class="meta">Run ${esc(m.runId)} · correlationId ${esc(m.correlationId)} · ${esc(m.generatedAt)}</div></header>
+<header><h1>Assurity Web Guardian</h1><div class="meta">Run ${esc(m.runId)} \u00b7 correlationId ${esc(m.correlationId)} \u00b7 ${esc(m.generatedAt)}</div></header>
 <main>
 <div class="tabs"><button id="btn-exec" class="active" onclick="showView('exec')">Executive</button><button id="btn-ops" onclick="showView('ops')">Operational</button></div>
 

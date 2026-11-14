@@ -96,7 +96,7 @@ export function computeLifecycleForRun(
   if (migrated) {
     tel?.audit({
       type: "migration",
-      reason: "a11y-history.json converted from v1 to v2 (dashboard-usability-overhaul, R13)",
+      reason: "a11y-history.json converted from v1 to v2",
       detail: "Per-fingerprint entries collapsed to per-key entries; no entries removed.",
     });
   }

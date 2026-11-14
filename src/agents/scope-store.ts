@@ -4,7 +4,7 @@ import { AppendOnlyLog } from "../telemetry/audit-log.js";
 import { newReviewId } from "../core/ids.js";
 
 /**
- * Scope_Store (Req 5.4-5.6). Manages the two-tier scope model used by the
+ * Scope_Store. Manages the two-tier scope model used by the
  * discovery + approval flow:
  *
  *  - PROPOSED scope: written by the crawler to
@@ -23,14 +23,14 @@ export interface ScopeFile {
   pages: string[];
 }
 
-/** An exact set partition of proposed vs approved pages (Req 5.5). */
+/** An exact set partition of proposed vs approved pages. */
 export interface ScopeDifference {
   added: string[];
   removed: string[];
   unchanged: string[];
 }
 
-/** A group of pages sharing the same first URL path segment (Req 5.6). */
+/** A group of pages sharing the same first URL path segment. */
 export interface ScopeGroup {
   segment: string;
   pages: string[];
@@ -56,7 +56,7 @@ function makeScopeFile(domain: string, pages: string[], generatedAt: string): Sc
  * Write the PROPOSED scope for a domain to
  * `artifacts/pending-review/scope/<domain>.proposed.json`, creating the
  * directory if missing. Returns the written path. This never touches the
- * authoritative approved file (Req 5.4).
+ * authoritative approved file.
  */
 export function writeProposedScope(domain: string, pages: string[]): string {
   const dir = resolve("artifacts/pending-review/scope");
@@ -95,12 +95,12 @@ export function readProposedScope(domain: string): ScopeFile | null {
   return makeScopeFile(parsed.domain ?? domain, parsed.pages ?? [], parsed.generatedAt ?? "");
 }
 
-/** Raised when a scope approval is not attributed to a human reviewer (Req 12.2, 12.7). */
+/** Raised when a scope approval is not attributed to a human reviewer. */
 export class ScopeApprovalError extends Error {}
 
 /**
  * Agent/process identities that may NEVER approve a scope. Mirrors the
- * no-self-approval semantics of `ApprovalGate` (Req 12.2, 12.7): a scope must be
+ * no-self-approval semantics of `ApprovalGate`: a scope must be
  * approved by a human, not by the crawler or any other agent.
  */
 const AGENT_IDENTITIES = new Set([
@@ -114,8 +114,8 @@ const AGENT_IDENTITIES = new Set([
 ]);
 
 /**
- * Promote a set of pages to the AUTHORITATIVE human-approved scope for a domain
- * (Req 5.4, 12.2, 12.7). Writes `config/scope/<domain>.approved.json` (creating
+ * Promote a set of pages to the AUTHORITATIVE human-approved scope for a domain.
+ * Writes `config/scope/<domain>.approved.json` (creating
  * `config/scope/` if missing) and appends an append-only audit record of the
  * approval to `artifacts/audit.jsonl`, reusing the same `AppendOnlyLog`
  * mechanism as `ApprovalGate`. Returns the written path.
@@ -158,16 +158,16 @@ export function approveScope(domain: string, pages: string[], reviewer: string):
 }
 
 /**
- * Compute the exact set partition between a previously approved scope and a
- * proposed scope (Req 5.5). Pure and total; a `null` approved scope is treated
+ * Compute the exact set partition between the current approved scope and a
+ * proposed scope. Pure and total; a `null` approved scope is treated
  * as the empty set.
  *
  *   added     = proposed \ approved
  *   removed   = approved \ proposed
- *   unchanged = approved ∩ proposed
+ *   unchanged = approved INTERSECT proposed
  *
- * Guarantees validated by Property 12: `added ∪ unchanged = proposed`,
- * `removed ∪ unchanged = approved`, and the three result sets are pairwise
+ * Guarantees validated by Property 12: `added UNION unchanged = proposed`,
+ * `removed UNION unchanged = approved`, and the three result sets are pairwise
  * disjoint. Each result list is sorted for determinism.
  */
 export function diffScope(approved: ScopeFile | null, proposed: ScopeFile): ScopeDifference {
@@ -203,7 +203,7 @@ function firstPathSegment(page: string): string {
   try {
     pathname = new URL(page).pathname;
   } catch {
-    // Not an absolute URL — treat the raw string as a path.
+    // Not an absolute URL - treat the raw string as a path.
     pathname = page.startsWith("/") ? page : `/${page}`;
   }
   const first = pathname.split("/").filter((s) => s.length > 0)[0];
@@ -211,7 +211,7 @@ function firstPathSegment(page: string): string {
 }
 
 /**
- * Group pages by their first URL path segment (Req 5.6), used when the proposed
+ * Group pages by their first URL path segment, used when the proposed
  * scope exceeds `largeScopeThreshold`. Pure, total, and lossless: the union of
  * all group pages equals the deduped input set (Property 13), every page shares
  * its group's segment, and groups + their pages are sorted for determinism.

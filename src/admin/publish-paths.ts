@@ -1,5 +1,5 @@
 /**
- * Config_Publish path rules (design J.8.1). Pure: no I/O.
+ * Config_Publish path rules. Pure: no I/O.
  * Nothing under artifacts/ is ever a configuration path.
  */
 export const CONFIG_PATHSPECS = [

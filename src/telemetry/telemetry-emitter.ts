@@ -1,4 +1,4 @@
-﻿import { AppendOnlyLog } from "./audit-log.js";
+import { AppendOnlyLog } from "./audit-log.js";
 import { redact } from "../safety/redactor.js";
 import type { AuditSink } from "../safety/form-guard.js";
 import type {
@@ -11,7 +11,7 @@ import type {
 } from "./types.js";
 
 /**
- * TelemetryEmitter (Req 18-20, 22). Produces structured JSON events, routes
+ * TelemetryEmitter. Produces structured JSON events, routes
  * every record through the Redactor before any write, maintains correlation,
  * and emits truthful agent-status events. Implements AuditSink so safety guards
  * can record blocked actions.
@@ -55,7 +55,7 @@ export class TelemetryEmitter implements AuditSink {
     this.exporter.export({ ...this.base("audit"), data: record });
   }
 
-  /** Truthful agent-status event (Req 19.7, 23). */
+  /** Truthful agent-status event. */
   agentStatus(
     agentName: string,
     agentRole: string,

@@ -1,5 +1,5 @@
 /**
- * Ports for the Management_Console pure API layer (design J.1). Handlers receive only
+ * Ports for the Management_Console pure API layer. Handlers receive only
  * these ports, so tests drive them with fakes: no sockets, no git, no child processes.
  * `realDeps()` is the production wiring. No AI, no network.
  */
@@ -25,7 +25,7 @@ export interface ProjectFs {
   listDir(rel: string): string[];
 }
 
-// GitPort, GitResult, and realGit live in git-port.ts (design J.8.3); re-exported here.
+// GitPort, GitResult, and realGit live in git-port.ts; re-exported here.
 export type { GitPort, GitResult } from "./git-port.js";
 export { realGit } from "./git-port.js";
 

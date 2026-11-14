@@ -1,5 +1,5 @@
 /**
- * Git_Feedback records (design J.8.6, Requirements 26.10, 30.1, 30.2, 30.9). Keeps the
+ * Git_Feedback records. Keeps the
  * last 50 records in artifacts/admin/git-feedback.json, written atomically. Every text
  * line passes through scrubForDisplay, so no secret and no local absolute path is kept.
  */

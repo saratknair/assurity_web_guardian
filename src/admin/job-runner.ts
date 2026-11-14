@@ -1,5 +1,5 @@
 /**
- * Single-flight job runner for the Management_Console (design J.5.2).
+ * Single-flight job runner for the Management_Console.
  *
  * One browser job at a time across all kinds. Only three fixed scripts can run; the
  * request never supplies a command or path. Spawned with an argument array and

@@ -3,7 +3,7 @@ import { resolve, join } from "node:path";
 import { readHistoryFindings } from "../agents/a11y-history-store.js";
 
 /**
- * Historical analytics (Phase 4, Req 4-series). DETERMINISTIC calculation over
+ * Historical analytics. DETERMINISTIC calculation over
  * completed run records. READ-ONLY: never rewrites history. Keeps objective
  * measurements strictly separate from prior AI analysis / recommendations /
  * human decisions. Previous AI output is NEVER promoted to objective evidence.

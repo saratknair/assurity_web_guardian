@@ -6,12 +6,12 @@ import pixelmatch from "pixelmatch";
 import { findingId } from "../core/finding-model.js";
 
 /**
- * Visual publishing (dashboard-usability-overhaul, task 4.2; R4, R5).
+ * Visual publishing.
  *
  * Pure with respect to the output tree: this module only READS from the run
  * directory and the baseline root. It returns the items for `visual.json`
  * plus the list of image copies to make (`copies`), so the caller (the size
- * budget in task 7.2) decides which copies actually happen. Items initially
+ * budget) decides which copies actually happen. Items initially
  * reference every image that exists; after budgeting the caller should pass the
  * dropped files to `applyDroppedImages` to null them with a reason.
  */

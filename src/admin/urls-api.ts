@@ -1,5 +1,5 @@
 /**
- * Approved URLs API (design J.4, Requirement 22). Handlers use ports only (ConsoleDeps).
+ * Approved URLs API. Handlers use ports only (ConsoleDeps).
  *
  * - scope "current": add / remove / edit are validated against the projected set (seed plus
  *   staged operations) and staged in artifacts/admin/pending-changes.json. Only

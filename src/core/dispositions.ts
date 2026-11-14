@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 
 /**
- * Disposition log (design Section I.2 to I.4, part 1: entries and log).
+ * Disposition log (part 1: entries and log).
  * Pure module: no I/O, no clock, no randomness. The caller supplies "now".
  * Human decisions (ignore / resolve / unignore) are stored in an append-only,
  * content-addressed log; ids are derived from content so tampering is detectable.
@@ -83,7 +83,7 @@ export function normalizePageUrl(url: string): string {
   return `${u.protocol}//${u.host}${path}${u.search}`;
 }
 
-/** Canonical matcher per scope (design I.4). Unused fields become empty strings. */
+/** Canonical matcher per scope. Unused fields become empty strings. */
 export function canonicalMatcher(
   decision: DispositionDecision,
   scope: DispositionScope,
@@ -363,7 +363,7 @@ export function effectiveEntries(log: DispositionLog, runFinishedAt: string): Di
 }
 
 // ---------------------------------------------------------------------------
-// Part 2: overlay (design I.4 and I.5). Pure: takes detected Findings plus the
+// Part 2: overlay. Pure: takes detected Findings plus the
 // frozen effective entries of the run and splits them. Nothing is mutated.
 // ---------------------------------------------------------------------------
 

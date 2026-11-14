@@ -1,4 +1,4 @@
-﻿import type { Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 export interface Heading { level: number; text: string }
 export interface LinkInfo { href: string; text: string; external: boolean }
@@ -17,8 +17,8 @@ export interface PageInventory {
 }
 
 /**
- * Inventory_Agent (Req 2, 31.3). Deterministic extraction of objective page
- * elements. Never submits a form; never records a field VALUE (no PII, Req 2.5).
+ * Inventory_Agent. Deterministic extraction of objective page
+ * elements. Never submits a form; never records a field VALUE (no PII).
  * Runs inside the browser via page.evaluate.
  */
 export async function extractInventory(
@@ -62,7 +62,7 @@ export async function extractInventory(
         .slice(0, 100);
       const forms = Array.from(document.querySelectorAll("form")).map((f) => ({
         name: f.getAttribute("name") ?? f.getAttribute("id") ?? "form",
-        // Record field name + type ONLY. Never the value (Req 2.5, 11.3).
+        // Record field name + type ONLY. Never the value.
         fields: Array.from(f.querySelectorAll("input,select,textarea")).map((el) => ({
           name: el.getAttribute("name") ?? el.getAttribute("id") ?? "",
           type: el.getAttribute("type") ?? el.tagName.toLowerCase(),

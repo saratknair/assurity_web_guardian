@@ -1,4 +1,4 @@
-﻿import {
+import {
   mkdirSync,
   writeFileSync,
   existsSync,
@@ -20,8 +20,8 @@ export interface EvidenceRef {
 }
 
 /**
- * EvidenceStore owns the per-run directory layout (Req 24) and atomic writes.
- * Retention never deletes or modifies a run awaiting human review (Req 10.5, 24.6).
+ * EvidenceStore owns the per-run directory layout and atomic writes.
+ * Retention never deletes or modifies a run awaiting human review.
  *
  * artifacts/runs/<run-id>/
  *   run.json events.jsonl results.json findings.json audit.jsonl test-manifest.json
@@ -84,7 +84,7 @@ export class EvidenceStore {
 
 /**
  * Retention cleanup honouring maxRuns / maxAgeDays, but NEVER deleting or
- * modifying a run directory that is awaiting human review (Req 10.5, 24.6).
+ * modifying a run directory that is awaiting human review.
  */
 export function applyRetention(
   rootDir: string,

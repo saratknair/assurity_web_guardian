@@ -1,6 +1,6 @@
-﻿import type { Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
-/** Minimal audit sink; the Telemetry_Emitter implements this in Phase 4. */
+/** Minimal audit sink; the Telemetry_Emitter implements this. */
 export interface AuditSink {
   audit(event: { type: string; reason: string; detail?: string }): void;
 }
@@ -8,7 +8,7 @@ export interface AuditSink {
 /** No-op sink for contexts without telemetry wired yet. */
 export const noopAudit: AuditSink = { audit: () => {} };
 
-// Conservative PII heuristics (Req 11.3, 11.4). Field is blocked if its
+// Conservative PII heuristics. Field is blocked if its
 // name/type/autocomplete signals personal data, or the value matches PII shapes.
 const PII_NAME = /(email|e-mail|phone|mobile|tel|name|first.?name|last.?name|surname|address|postcode|zip|dob|birth|ssn|passport|credit|card|cvv|iban|account)/i;
 const PII_VALUE = [
@@ -23,7 +23,7 @@ export function looksLikePii(fieldName: string, value: string): boolean {
 }
 
 /**
- * GuardedPage wraps a Playwright Page to block unsafe actions (Req 11):
+ * GuardedPage wraps a Playwright Page to block unsafe actions:
  *  - form submission is blocked and audited;
  *  - filling a field with PII is blocked and audited.
  * It never submits a production form and never enters personal data.
@@ -34,13 +34,13 @@ export class GuardedPage {
     private readonly audit: AuditSink = noopAudit,
   ) {}
 
-  /** Blocked: the system never submits a production form (Req 11.1, 11.2). */
+  /** Blocked: the system never submits a production form. */
   async submit(): Promise<never> {
     this.audit.audit({ type: "blocked-action", reason: "form-submit-blocked" });
-    throw new Error("Form submission is blocked by safety policy (Req 11.2).");
+    throw new Error("Form submission is blocked by safety policy.");
   }
 
-  /** Fills a field only if the value is not PII (Req 11.3, 11.4). */
+  /** Fills a field only if the value is not PII. */
   async fill(selector: string, value: string): Promise<void> {
     if (looksLikePii(selector, value)) {
       this.audit.audit({
@@ -48,7 +48,7 @@ export class GuardedPage {
         reason: "pii-populate-blocked",
         detail: selector,
       });
-      throw new Error("Populating a field with personal information is blocked (Req 11.4).");
+      throw new Error("Populating a field with personal information is blocked.");
     }
     await this.page.fill(selector, value);
   }

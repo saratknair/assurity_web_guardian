@@ -1,5 +1,5 @@
 /**
- * Management_Console router (design J.1.2). Pure: no sockets. Order inside `handle`:
+ * Management_Console router. Pure: no sockets. Order inside `handle`:
  * guard (every non-GET incl. unknown routes; Host-only on GET), route lookup (404/405),
  * body ceiling (413 on byte length), JSON parse (400), handler under the project lock for
  * mutating routes.

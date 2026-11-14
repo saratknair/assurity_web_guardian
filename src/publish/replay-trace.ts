@@ -2,11 +2,10 @@ import { findingKey } from "../core/finding-model.js";
 import { STEP_STATION, isStepName, type StationId, type StepName } from "../telemetry/step-model.js";
 
 /**
- * Pure replay publication (virtual-office-replay design section B). No fs.
+ * Pure replay publication for the Virtual Office. No fs.
  * Takes sanitized Run_Events plus the built run findings and returns the
  * compact ASCII events text, the run-level `replay` object, `producedAt`
  * per published finding id and the first-step time per page slug.
- * Requirements 1.11, 1.12, 1.13, 1.15, 12.5, 18.4.
  */
 
 export const EVENTS_CAP_BYTES = 262144;
@@ -345,7 +344,7 @@ export function capEvents(
   return { text: render(cur, trunc), truncated: trunc };
 }
 
-/** Entry point used by the Publisher (task 3.2 wires it in). Pure: no fs, no clock. */
+/** Entry point used by the Publisher. Pure: no fs, no clock. */
 export function buildReplayPublication(
   events: unknown[],
   built: ReplayBuiltInput,

@@ -7,11 +7,11 @@ import { allRoutes, type RouteDef } from "./console-routes.js";
 import { isLocalDashboardPath, readLocalDashboardFile, LOCAL_DASHBOARD_REL } from "./local-dashboard.js";
 
 /**
- * Management_Console HTTP adapter (design J.1.2). No business logic: it builds a
+ * Management_Console HTTP adapter. No business logic: it builds a
  * `ConsoleRequest`, calls `preflight`, streams the body with the route ceiling, calls
  * `handle`, and writes the response with the security headers.
  *
- * SAFETY - LOOPBACK ONLY: binds exclusively to 127.0.0.1 (Req 30.5). No CORS headers are
+ * SAFETY - LOOPBACK ONLY: binds exclusively to 127.0.0.1. No CORS headers are
  * ever written, so cross-origin JSON posts fail their preflight.
  */
 
@@ -172,7 +172,7 @@ function buildRequest(req: IncomingMessage, body: string | null): ConsoleRequest
   };
 }
 
-/** Largest declared ceiling among routes matching the path, used to bound streaming. */
+/** Largest declared ceiling among routes matching the path, which bounds streaming. */
 function ceilingFor(routes: RouteDef[], method: string, path: string): number {
   let max = 0;
   for (const r of routes) {
@@ -254,7 +254,7 @@ export function startAdminServer(opts: StartAdminServerOptions = {}): Server {
       }
     })();
   });
-  // LOOPBACK ONLY - never bind 0.0.0.0 or a public interface (Req 30.5).
+  // LOOPBACK ONLY - never bind 0.0.0.0 or a public interface.
   server.listen(port, HOST, () => {
     const addr = server.address();
     // Ephemeral port (0): the guard must compare against the port actually bound.

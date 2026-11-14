@@ -1,11 +1,11 @@
-﻿import { existsSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { resolve, join } from "node:path";
 
 /**
- * Test_Generator (Req 5, 24.7-24.8). Generates Playwright test source from an
- * APPROVED baseline only (Req 5.2). The source is written to the
- * version-controlled tests/generated/ dir and references the baseline version
- * (Req 5.4). The Evidence_Store keeps a manifest but is never the sole source.
+ * Test_Generator. Generates Playwright test source from an
+ * APPROVED baseline only. The source is written to the
+ * version-controlled tests/generated/ dir and references the baseline version.
+ * The Evidence_Store keeps a manifest but is never the sole source.
  */
 export interface GeneratedTest {
   slug: string;
@@ -31,7 +31,7 @@ export function generateTestFromBaseline(
 ): GeneratedTest {
   const version = latestBaselineVersion(slug, baselinesRoot);
   if (version === null) {
-    throw new Error(`No approved baseline for slug "${slug}"; cannot generate tests (Req 5.2).`);
+    throw new Error(`No approved baseline for slug "${slug}"; cannot generate tests.`);
   }
   const baselinePath = resolve(baselinesRoot, slug, `baseline.v${version}.md`);
   const baselineText = readFileSync(baselinePath, "utf8");
@@ -39,8 +39,8 @@ export function generateTestFromBaseline(
   const imgMatch = /Expect all (\d+) images to load/.exec(baselineText);
   const expectedImages = imgMatch ? Number(imgMatch[1]) : 0;
 
-  const spec = `// GENERATED from baseline ${slug} v${version} — do not edit by hand.
-// Source baseline: baselines/${slug}/baseline.v${version}.md (Req 5.4)
+  const spec = `// GENERATED from baseline ${slug} v${version} \u2014 do not edit by hand.
+// Source baseline: baselines/${slug}/baseline.v${version}.md
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
@@ -59,7 +59,7 @@ test.describe("Baseline-derived checks (${slug} v${version})", () => {
     expect(imgCount, "image count near baseline").toBeGreaterThanOrEqual(EXPECTED_IMAGES_MIN);
     const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag22aa"]).analyze();
     const criticalSerious = axe.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
-    // Critical/serious a11y => failing check requiring human review (Req 6.8).
+    // Critical/serious a11y => failing check requiring human review.
     expect(criticalSerious.length, "critical/serious a11y: " + criticalSerious.map((v) => v.id).join(", ")).toBe(0);
   });
 });
@@ -67,7 +67,7 @@ test.describe("Baseline-derived checks (${slug} v${version})", () => {
   // Write the spec file to its absolute location on disk (behavior unchanged).
   const absSpecPath = join(resolve(outDir), `${slug}.baseline-v${version}.spec.ts`);
   writeFileSync(absSpecPath, spec, "utf8");
-  // Phase 2 migration (Req 8.2, 11.8): the STORED specPath must be repo-relative
+  // The STORED specPath must be repo-relative
   // with forward slashes (e.g. "tests/generated/<slug>.baseline-v<N>.spec.ts"),
   // never an absolute/internal filesystem path. Absolute paths must not leak
   // into published data. Existing on-disk manifests are left untouched and are
@@ -77,7 +77,7 @@ test.describe("Baseline-derived checks (${slug} v${version})", () => {
   return { slug, baselineVersion: version, specPath };
 }
 
-/** Writes a test manifest into the run's evidence dir (Req 24.7). */
+/** Writes a test manifest into the run's evidence dir. */
 export function writeTestManifest(
   runDir: string,
   tests: GeneratedTest[],

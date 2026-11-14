@@ -12,21 +12,21 @@ import { dirname, join, resolve } from "node:path";
 import { buildPublishedData, type RunsIndex } from "./published-data.js";
 
 /**
- * Publisher orchestrator (Phase 2, Req 6.6, 6.7, 6.8, 6.9).
+ * Publisher orchestrator.
  *
  * `build-published-data.ts` (the CLI) produces the sanitized `data/` tree via
  * `buildPublishedData`. This module is the higher-level step that assembles the
  * *complete* GitHub Pages bundle and swaps it into place atomically-ish:
  *
  *   1. Build `Published_Data` into a STAGING directory (never directly onto the
- *      live `outDir`), so a failed/partial build cannot corrupt the previously
+ *      live `outDir`), so a failed/partial build cannot corrupt the current
  *      published site.
  *   2. Copy the static dashboard app (`dashboard/index.html`, `style.css`,
  *      `app.js`, `data-source.js`, `lib/`, `views/`, `vendor/`, ...) into the staging bundle so the
  *      Pages site is self-contained.
  *   3. Only once staging is fully built, swap it into `outDir` (move the old
  *      bundle aside, move staging into place, then drop the old bundle). If the
- *      swap fails midway, the old bundle is restored so previously published
+ *      swap fails midway, the old bundle is restored so the existing published
  *      data is left unchanged.
  *
  * The office is the static, no-build `office/` app; it is NOT produced here.
@@ -35,7 +35,7 @@ import { buildPublishedData, type RunsIndex } from "./published-data.js";
  * staging build of `Published_Data` plus the static dashboard assets and the
  * atomic-ish swap.
  *
- * Failure-preservation contract (Req 6.8, 6.9): if `buildPublishedData` throws
+ * Failure-preservation contract: if `buildPublishedData` throws
  * (run unusable / publish build failure), the existing `outDir` is left
  * completely untouched and `publish` returns `{ ok: false, reason }`. The old
  * `outDir` is only ever replaced after the staging bundle is confirmed built.
@@ -47,7 +47,7 @@ export interface PublishResult {
   ok: boolean;
   /** The latest (most-recent) run id that was published, when known. */
   publishedRunId?: string;
-  /** Flat list of `run/file` names the sanitizer withheld (fail-closed, Req 8.5). */
+  /** Flat list of `run/file` names the sanitizer withheld (fail-closed). */
   withheld: string[];
   /** Human-readable reason when `ok` is false. */
   reason?: string;
@@ -82,7 +82,7 @@ function dashboardSourceDir(): string {
 
 /**
  * Copy the static dashboard app into the staging bundle root. Files that do not
- * exist yet (e.g. `data-source.js` lands in task 4.5) are skipped silently so
+ * exist yet are skipped silently so
  * the publisher stays forward-compatible as the static app is filled in.
  */
 function copyStaticDashboard(stagingDir: string): void {
@@ -178,7 +178,7 @@ function flattenWithheld(withheld: Record<string, string[]>): string[] {
  *   - If `outDir` does not exist yet, just move staging into place.
  *   - Otherwise move the live `outDir` to a sibling backup, move staging into
  *     `outDir`, then delete the backup. If moving staging in fails, the backup
- *     is restored so the previously published data survives intact.
+ *     is restored so the existing published data survives intact.
  */
 function swapIntoPlace(stagingDir: string, outDir: string): void {
   const out = resolve(outDir);
@@ -235,7 +235,7 @@ export async function publish(opts: {
   }
 
   // 1. Build Published_Data + copy static assets into STAGING. Any throw here
-  //    must leave `out` untouched (Req 6.8, 6.9).
+  //    must leave `out` untouched.
   let withheldMap: Record<string, string[]> = {};
   let publishedRunId: string | undefined;
   try {
@@ -252,7 +252,7 @@ export async function publish(opts: {
     copyStaticDashboard(stagingDir);
     copyStaticOffice(stagingDir);
   } catch (err) {
-    // Build failed: discard staging, leave the previously published bundle as-is.
+    // Build failed: discard staging, leave the existing published bundle as-is.
     try {
       rmSync(stagingDir, { recursive: true, force: true });
     } catch {
@@ -265,7 +265,7 @@ export async function publish(opts: {
     };
   }
 
-  // 2. Staging built successfully — swap it into place. A swap failure also
+  // 2. Staging built successfully - swap it into place. A swap failure also
   //    leaves the previous bundle intact (restored from backup).
   try {
     swapIntoPlace(stagingDir, out);

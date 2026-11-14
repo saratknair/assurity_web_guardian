@@ -1,14 +1,14 @@
 /**
  * `POST /api/open/office` and `POST /api/open/dashboard` as route-table entries, so they
- * take the central guard (design J.1). Best-effort launch of the default browser.
+ * take the central guard. Best-effort launch of the default browser.
  *
- * Local Dashboard choice (task 40.3 c): the NEW Dashboard is the static site the local publish
- * step already builds into artifacts/published (index.html, app.js, views/, data/ ...). The
+ * Local Dashboard choice: the NEW Dashboard is the static site the local publish
+ * step already builds into artifacts/published (index.html, app.js, views/, data/...). The
  * route does not build anything. If artifacts/published/index.html exists it opens
  * http://127.0.0.1:<port>/local-dashboard/ (served read-only by the console, see
  * local-dashboard.ts), NOT a file:// URL: the Dashboard uses ES modules and fetch() for its
  * JSON, which browsers block over file://. If the file is missing it launches nothing and
- * tells the user how to build it. The legacy artifacts/dashboard.html is no longer opened.
+ * tells the user how to build it. The legacy artifacts/dashboard.html is not opened.
  */
 import { spawn } from "node:child_process";
 import type { ConsoleResponse, HandlerContext, RouteDef } from "./console-routes.js";

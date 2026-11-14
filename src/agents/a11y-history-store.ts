@@ -4,7 +4,7 @@ import { updateHistory, type TrackedFinding, type A11yViolationInput } from "./a
 import { emptyHistory, migrateV1, type HistoryV2, type HistoryStatus } from "./a11y-lifecycle.js";
 
 /**
- * Persistent accessibility history across runs (Phase 3). Reads the prior
+ * Persistent accessibility history across runs. Reads the prior
  * history file, merges the current run's violations, and writes it back WITHOUT
  * rewriting past run evidence. Human dispositions already recorded are kept.
  *

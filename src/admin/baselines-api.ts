@@ -1,5 +1,5 @@
 /**
- * Baselines API (design J.6, Requirements 24 and 25). Handlers use ports only (ConsoleDeps).
+ * Baselines API. Handlers use ports only (ConsoleDeps).
  *
  * - GET  /api/baselines            per-URL readiness and the size of baselines-visual/.
  * - POST /api/baselines/spec/draft starts the draft-writing job (make-all-drafts).
@@ -610,7 +610,7 @@ async function postApprove(ctx: HandlerContext): Promise<ConsoleResponse> {
 }
 
 // ---------------------------------------------------------------------------
-// Adopt a synced cloud run's screenshots as baselines (design J.6, Requirement 24.3)
+// Adopt a synced cloud run's screenshots as baselines
 // ---------------------------------------------------------------------------
 
 const NOT_CLOUD_TEXT = "That run was not taken by the cloud runner. Only screenshots from a pulled cloud run can be used.";

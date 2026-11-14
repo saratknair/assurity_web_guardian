@@ -1,5 +1,5 @@
-﻿/**
- * Domain-boundary helpers (Req 13). The system never leaves the approved domain
+/**
+ * Domain-boundary helpers. The system never leaves the approved domain
  * and never navigates external links during the browser workflow.
  */
 export function hostOf(url: string): string | null {

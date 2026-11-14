@@ -9,8 +9,7 @@ import type {
 } from "./run-findings.js";
 
 /**
- * Pure per-page history and dashboard aggregates (design section B).
- * Requirements 8.1, 8.2, 9.5, 10.1, 16.5.
+ * Pure per-page history and dashboard aggregates.
  */
 
 /**

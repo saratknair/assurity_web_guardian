@@ -1,5 +1,5 @@
 /**
- * GitPort for the Management_Console (design J.8.3). git is driven with execFile, an
+ * GitPort for the Management_Console. git is driven with execFile, an
  * argument array, and no shell. Only a fixed whitelist of subcommands may run, and
  * history-rewriting or force options are rejected before any process starts.
  * No AI, no network of its own (push and fetch use the Reviewer's own git credentials).

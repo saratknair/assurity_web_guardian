@@ -4,7 +4,7 @@ import { computeAnalytics, type Analytics } from "../core/analytics.js";
 import { readHistoryFindings } from "../agents/a11y-history-store.js";
 
 /**
- * Dashboard data contract (Phase 2, Req 1.2, 1.3, 1.7, 1.8, 11.8).
+ * Dashboard data contract.
  *
  * This module produces the machine-readable `DashboardData` JSON that the new
  * static dashboard renders from, replacing the approach where the dashboard
@@ -16,7 +16,7 @@ import { readHistoryFindings } from "../agents/a11y-history-store.js";
  * `buildRunHealthTrend`, `collectAiItems`) are exported so property tests can
  * target them directly (Property 1 breakdown-conservation, Property 2
  * trend-selection). None of these helpers touch the filesystem or embed
- * absolute paths — the contract carries only run-relative references.
+ * absolute paths - the contract carries only run-relative references.
  */
 
 /** A single run's health point, used for the chronological trend view (1.3). */
@@ -37,7 +37,7 @@ export interface DashboardAiItem {
 }
 
 /**
- * The data contract read by the dashboard (static, published data). Shape matches design.md → Data Models → DashboardData.
+ * The data contract read by the dashboard (static, published data). Shape is the `DashboardData` interface below.
  */
 export interface DashboardData {
   generatedAt: string;
@@ -50,9 +50,9 @@ export interface DashboardData {
   findingsBySeverity: Record<string, number>;
   /** New vs recurring accessibility findings from the lifecycle (1.2). */
   a11yNewVsRecurring: { new: number; recurring: number };
-  /** AI-assisted items; every one carries `.ai-assisted` treatment (1.8). */
+  /** AI-assisted items; every one carries `.ai-assisted` treatment. */
   aiItems: DashboardAiItem[];
-  /** True when there are no runs — drives the empty state (1.7). */
+  /** True when there are no runs - drives the empty state. */
   empty: boolean;
 }
 
@@ -71,12 +71,12 @@ export interface RunPoint extends RunHealthPoint {}
 // Pure assembly helpers (property-test targets). No filesystem, no abs paths.
 // ---------------------------------------------------------------------------
 
-/** Minimum number of trend points to show when enough runs exist (Req 1.3). */
+/** Minimum number of trend points to show when enough runs exist. */
 export const TREND_MIN = 10;
 
 /**
- * Property 2 — trend selection is the most-recent chronological suffix.
- * Given runs in chronological order (oldest→newest), return the most-recent
+ * Property 2 - trend selection is the most-recent chronological suffix.
+ * Given runs in chronological order (oldest->newest), return the most-recent
  * suffix of length `max(min(TREND_MIN, n), ...)`: at least the 10 newest when
  * >=10 exist, otherwise all. The result stays chronological and is exactly the
  * most-recent subset (no older run included while a newer one is dropped).
@@ -98,7 +98,7 @@ export function buildRunHealthTrend(runsChrono: RunPoint[], minPoints = TREND_MI
 }
 
 /**
- * Property 1 (part) — per-page finding counts conserve the total.
+ * Property 1 (part) - per-page finding counts conserve the total.
  * Counts every outcome across the provided pages; the sum of the returned
  * counts equals the total number of outcomes.
  */
@@ -116,7 +116,7 @@ export type SeverityBucket = (typeof SEVERITY_BUCKETS)[number];
 /**
  * Map an axe impact string to one of the canonical buckets. Unknown / missing
  * impacts fall into "minor" so every a11y finding lands in exactly one bucket
- * (keeps the partition total equal to the a11y finding total — Property 1).
+ * (keeps the partition total equal to the a11y finding total - Property 1).
  */
 export function severityBucketOf(impact: string | null | undefined): SeverityBucket {
   switch ((impact ?? "").toLowerCase()) {
@@ -132,7 +132,7 @@ export function severityBucketOf(impact: string | null | undefined): SeverityBuc
 }
 
 /**
- * Property 1 (part) — severity buckets partition the accessibility findings.
+ * Property 1 (part) - severity buckets partition the accessibility findings.
  * Each tracked a11y finding is placed in exactly one bucket by its impact, so
  * the bucket counts sum to the number of a11y findings provided.
  */
@@ -227,7 +227,7 @@ export function buildDashboardData(
         .sort((a, b) => statSync(join(root, a)).mtimeMs - statSync(join(root, b)).mtimeMs)
     : [];
 
-  // Chronological run points (oldest→newest) for the trend. Pair each run dir
+  // Chronological run points (oldest->newest) for the trend. Pair each run dir
   // with the analytics failedChecks (matched by runId) and its event health.
   const byId = new Map(analytics.runs.map((r) => [r.runId, r]));
   const runPoints: RunPoint[] = runDirs.map((id) => {

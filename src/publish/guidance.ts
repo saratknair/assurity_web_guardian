@@ -1,5 +1,5 @@
 /**
- * Deterministic Automated_Guidance (Requirements 7.3, 7.4, 7.5, 7.7, 7.9, 7.10).
+ * Deterministic Automated_Guidance.
  *
  * Pure. Built from Active_Findings only (run.runFindings.findings; the ignored
  * list is never read). Fixed templates by kind and severity; no model, no
@@ -29,7 +29,7 @@ export interface GuidanceResult {
 }
 
 // ---------------------------------------------------------------------------
-// isGenericGuidance: MUST mirror dashboard/lib/guidance.js exactly (R7.5).
+// isGenericGuidance: MUST mirror dashboard/lib/guidance.js exactly.
 // ---------------------------------------------------------------------------
 
 export const GENERIC_GUIDANCE_CORES: readonly string[] = Object.freeze([
@@ -146,7 +146,7 @@ export function buildGuidance(run: BuiltRun, visual: VisualItem[], caps: Publish
   let omitted = 0;
   for (const f of active) {
     const d = draft(f, visualById);
-    // Never publish generic text (R7.5); templates are specific, so this is a safety net.
+    // Never publish generic text; templates are specific, so this is a safety net.
     if (items.length >= caps.maxGuidancePerRun || isGenericGuidance(d.text)) {
       omitted++;
       continue;

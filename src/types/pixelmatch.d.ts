@@ -1,4 +1,4 @@
-﻿declare module "pixelmatch" {
+declare module "pixelmatch" {
   interface PixelmatchOptions {
     threshold?: number;
     includeAA?: boolean;

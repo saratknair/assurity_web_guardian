@@ -1,5 +1,5 @@
 /**
- * Decision sync routes (design I.8, J; Requirements 18.13, 20.5, 20.6).
+ * Decision sync routes.
  *
  * POST /api/dispositions/sync starts one push of the local decisions to `runs-data` and answers
  * 202 at once; 409 when a sync is already running (single-flight per project root).

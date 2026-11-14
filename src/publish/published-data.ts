@@ -47,12 +47,11 @@ import {
 } from "./pages.js";
 
 /**
- * Published-data contract builder (Phase 2, Req 6.6, 6.7, 7.7, 11.8).
+ * Published-data contract builder.
  *
  * Converts the local raw run store (`artifacts/runs/*`) into the static
- * `Published_Data` tree the GitHub Pages site serves, matching design.md →
- * Data Models (`RunsIndex`, `RunSummary` with `origin`, `Published_Data`
- * layout):
+ * `Published_Data` tree the GitHub Pages site serves, with this layout
+ * (`RunsIndex`, `RunSummary` with `origin`):
  *
  *   data/
  *     index.json                 # RunsIndex (runs newest-first, with origin)
@@ -63,7 +62,7 @@ import {
  *       findings.json            # sanitized findings (pages[] shape, unchanged)
  *       screenshots/*.png        # sanitized screenshots
  *
- * Sanitization is delegated to `./sanitizer.ts` (fail-closed, Req 8): each run's
+ * Sanitization is delegated to `./sanitizer.ts` (fail-closed): each run's
  * publishable JSON/JSONL is written through `sanitizeRun`, and screenshots are
  * copied only after that metadata pass. When a run withholds critical files the
  * builder still publishes whatever is clean (fail-closed semantics) and records
@@ -78,7 +77,7 @@ import {
 /** One run's health datapoint, mirrors dashboard-data's health vocabulary. */
 export type RunHealth = "healthy" | "attention" | "failing";
 
-/** Entry in the published runs index (design → RunsIndex.runs[]). */
+/** Entry in the published runs index (RunsIndex.runs[]). */
 export interface PublishedRunSummary {
   runId: string;
   finishedAt?: string;
@@ -87,7 +86,7 @@ export interface PublishedRunSummary {
   pages: number;
   failedChecks: number;
   pendingReview: boolean;
-  /** Where the run executed (Req 7.7); defaults "local". */
+  /** Where the run executed; defaults "local". */
   origin: "local" | "cloud";
   /** Additive (schema v2) fields; absent on older published data. */
   detailLevel?: "rule" | "legacy";
@@ -98,7 +97,7 @@ export interface PublishedRunSummary {
   domain?: string;
 }
 
-/** RunsIndex, newest-first (design → Data Models → RunsIndex). */
+/** RunsIndex, newest-first (RunsIndex). */
 export interface RunsIndex {
   schemaVersion?: 2;
   generatedAt: string;
@@ -107,7 +106,7 @@ export interface RunsIndex {
   runs: PublishedRunSummary[];
 }
 
-/** Per-run summary.json (design → Data Models → RunSummary). */
+/** Per-run summary.json (RunSummary). */
 export interface RunSummary extends PublishedRunSummary {
   schemaVersion?: 2;
   historyStatus?: string;
@@ -137,7 +136,7 @@ function healthFromFailedChecks(failedChecks: number): RunHealth {
 /**
  * The publishable facts for a single run. This is the shared source of truth
  * for per-run origin/status/summary derivation: the published `RunsIndex` and
- * the loopback Admin API (`src/admin/admin-server.ts` → `GET /api/runs`) both
+ * the loopback Admin API (`src/admin/admin-server.ts` -> `GET /api/runs`) both
  * read run facts through `readRunFacts` so they never drift.
  */
 export interface RunFacts {
@@ -248,7 +247,7 @@ export function listRunDirs(runsRoot: string): string[] {
  * Ordering matches the published `RunsIndex` exactly: by `finishedAt`
  * descending when present, otherwise by raw run-dir mtime descending. This is
  * the shared helper the Admin API (`GET /api/runs`) reuses so the admin view
- * and the published index agree on order and per-run facts (Req 4.3, 7.7).
+ * and the published index agree on order and per-run facts.
  */
 export function readRunsNewestFirst(runsRoot: string, envOrigin?: string): RunFacts[] {
   const root = resolve(runsRoot);
@@ -377,7 +376,7 @@ interface RunOutcome {
 }
 
 /**
- * Replay publication for one run (virtual-office-replay design B). Reads the
+ * Replay publication for one run. Reads the
  * sanitized events.json, rewrites it compact + ASCII, re-validates it and
  * mutates built.runFindings with replay, producedAt and replayT. Returns the
  * withheld file name when events.json had to be deleted, otherwise null.

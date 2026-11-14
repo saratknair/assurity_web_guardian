@@ -1,5 +1,5 @@
 /**
- * Dispositions API (design I.7, Requirements 18, 20). Testable without sockets: every function
+ * Dispositions API. Testable without sockets: every function
  * takes plain ports (artifacts folder, gate, audit, clock) and returns `{ status, json }`.
  * Order for a new decision: validate, Approval_Gate (human check and audit), append to the
  * local log. The server sets `at` and the id. No AI, no network.
@@ -29,7 +29,7 @@ import { readRunFacts } from "../publish/published-data.js";
 import { scrubForDisplay } from "./scrub.js";
 import type { ConsoleResponse, HandlerContext, RouteDef } from "./console-routes.js";
 
-/** Ceiling for node targets returned per Finding (Req 18.3). */
+/** Ceiling for node targets returned per Finding. */
 export const MAX_NODE_TARGETS = 50;
 const MAX_TARGET_CHARS = 300;
 const RUN_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;

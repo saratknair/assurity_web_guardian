@@ -1,11 +1,11 @@
-﻿import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync } from "node:fs";
 import { resolve, join } from "node:path";
 import type { PageInventory } from "./inventory-agent.js";
 
 /**
- * Spec_Generator / Specification_Agent (Req 3, 4.2). Turns a deterministic
+ * Spec_Generator / Specification_Agent. Turns a deterministic
  * inventory into a Markdown Draft_Specification, marked "draft", written to the
- * Pending_Review_Area. It is NOT a baseline until a human approves it (Req 4.1).
+ * Pending_Review_Area. It is NOT a baseline until a human approves it.
  */
 export function generateDraftSpec(inv: PageInventory): string {
   const lines: string[] = [];
@@ -44,7 +44,7 @@ export function generateDraftSpec(inv: PageInventory): string {
   lines.push("");
   lines.push(`## Forms (${inv.forms.length})`);
   for (const f of inv.forms) {
-    lines.push(`- **${f.name}** — ${f.fields.length} fields, ${f.buttons.length} buttons (never submitted; no PII captured)`);
+    lines.push(`- **${f.name}** \u2014 ${f.fields.length} fields, ${f.buttons.length} buttons (never submitted; no PII captured)`);
   }
   lines.push("");
   lines.push(`## Accessibility`);

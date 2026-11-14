@@ -1,10 +1,10 @@
-﻿import type { Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import type { AppConfig } from "../config/app-config.js";
 
 /**
- * SiteGateway (Phase 2 minimal): the single choke point for application-owned
+ * SiteGateway: the single choke point for application-owned
  * Playwright navigation. Enforces the approved-domain boundary and the
- * navigation timeout. Rate limiter / retry / form guards arrive in Phase 3.
+ * navigation timeout.
  *
  * NOTE: This gateway governs APPLICATION-OWNED Playwright activity only.
  * It does not and cannot intercept Playwright MCP browser traffic.
