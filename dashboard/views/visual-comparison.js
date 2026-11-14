@@ -1,4 +1,4 @@
-// Assurity Web Guardian - Visual_Comparison view (#/visual/<runId>/<slug>/<viewport>).
+// Web Guardian - Visual_Comparison view (#/visual/<runId>/<slug>/<viewport>).
 // Three figures (Approved baseline, Current run, Difference highlight), an
 // in-place baseline/current switch, honest reasons for missing images, and a
 // lightbox opened from each figure. createElement / textContent only.

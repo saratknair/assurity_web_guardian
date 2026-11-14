@@ -1,4 +1,4 @@
-// Assurity Web Guardian - chart helpers (trend, severity, lifecycle).
+// Web Guardian - chart helpers (trend, severity, lifecycle).
 // Plain browser ES module, ASCII-only. NOT a routed view: the overview and run
 // views call these helpers with a host element and the view ctx.
 //

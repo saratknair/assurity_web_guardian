@@ -1,4 +1,4 @@
-// Assurity Web Guardian - Page_Detail_View (#/page/<slug>?run=<runId>).
+// Web Guardian - Page_Detail_View (#/page/<slug>?run=<runId>).
 // Plain browser ES module, ASCII-only.
 //
 // Full-width layout (.detail-layout, no side panel). Sections: heading with

@@ -1,4 +1,4 @@
-// Assurity Web Guardian - Finding_Detail_View (route #/finding/<runId>/<findingId>).
+// Web Guardian - Finding_Detail_View (route #/finding/<runId>/<findingId>).
 // Plain browser ES module, ASCII-only. See the VIEW MODULE CONTRACT in app.js.
 //
 // Every published string reaches the DOM through textContent / createElement

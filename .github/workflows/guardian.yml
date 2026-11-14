@@ -13,7 +13,7 @@
 # NOTE: the pinned commit SHAs below should be re-verified by a human against the
 # upstream release tags before merging. The VERSION in each trailing comment is the
 # intended release; confirm the 40-char SHA resolves to that tag.
-name: guardian
+name: Web Guardian
 
 on:
   schedule:

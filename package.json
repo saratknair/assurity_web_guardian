@@ -1,9 +1,9 @@
 {
-  "name": "assurity-web-guardian",
+  "name": "web-guardian",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Human-supervised website quality monitor for assurity.nz",
+  "description": "Deterministic website quality monitor with a local admin console, static dashboard and virtual office.",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",

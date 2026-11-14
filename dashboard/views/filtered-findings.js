@@ -1,4 +1,4 @@
-// Assurity Web Guardian - Filtered_Findings_View (#/findings?...).
+// Web Guardian - Filtered_Findings_View (#/findings?...).
 // Plain browser ES module, ASCII-only.
 //
 // Contract: `export async function render(container, ctx)` (see the VIEW MODULE

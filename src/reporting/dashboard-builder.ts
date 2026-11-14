@@ -108,9 +108,9 @@ export function buildDashboard(outPath = "artifacts/dashboard.html"): string {
     ? `<p>Latest run evidence: <a href="runs/${esc(latestRunDirName)}/report/index.html" loading="lazy">open run report</a></p>`
     : "";
 
-  const html = `<!doctype html><html><head><meta charset="utf-8"><title>Assurity Web Guardian \u2014 Dashboard</title><style>${STYLE}</style></head>
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>Web Guardian \u2014 Dashboard</title><style>${STYLE}</style></head>
 <body>
-<header><h1>Assurity Web Guardian \u2014 Dashboard</h1><div>Generated ${esc(new Date().toISOString())} \u00b7 ${esc(analytics.totalRuns)} run(s)</div></header>
+<header><h1>Web Guardian \u2014 Dashboard</h1><div>Generated ${esc(new Date().toISOString())} \u00b7 ${esc(analytics.totalRuns)} run(s)</div></header>
 <main>
 <div class="tabs"><button id="btn-exec" class="active" onclick="showView('exec')">Executive</button><button id="btn-ops" onclick="showView('ops')">Operational</button></div>
 

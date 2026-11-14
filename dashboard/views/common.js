@@ -1,4 +1,4 @@
-// Assurity Web Guardian - shared DOM helpers for dashboard views.
+// Web Guardian - shared DOM helpers for dashboard views.
 // Plain browser ES module, ASCII-only. NOT a routed view.
 //
 // Every helper builds nodes with createElement / textContent only (never

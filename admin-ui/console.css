@@ -1,5 +1,5 @@
 /*
- * Assurity Web Guardian local console stylesheet. Same dark analytics look as
+ * Web Guardian local console stylesheet. Same dark analytics look as
  * dashboard/style.css (same palette tokens, system font stack, card panels).
  * No external fonts, images or CDN: the server CSP only allows 'self'.
  * WCAG 2.2 AA is a GOAL; it needs manual testing with assistive technologies.

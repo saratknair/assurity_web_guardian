@@ -1,4 +1,4 @@
-// Assurity Web Guardian - run domain helpers ("Different site").
+// Web Guardian - run domain helpers ("Different site").
 // Plain ES module, ASCII-only, no DOM access, runs under Node.
 //
 // A run may carry an optional `domain` string (published by the Publisher).

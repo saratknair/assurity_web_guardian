@@ -98,13 +98,13 @@ async function loadSection() {
   } catch (e) {
     if (token !== loadToken) return;
     host.replaceChildren(errorPanel(label, e && e.message ? e.message : "Unknown error."));
-    document.title = label + " - Assurity Web Guardian Console";
+    document.title = label + " - Web Guardian Console";
     return;
   }
   if (token !== loadToken) return;
   const section = el("section", { "aria-labelledby": "section-title" }, [el("h2", { id: "section-title", text: label })]);
   host.replaceChildren(section);
-  document.title = label + " - Assurity Web Guardian Console";
+  document.title = label + " - Web Guardian Console";
   try {
     await mod.render(section, { api, el, announce, showAlert });
   } catch (e) {

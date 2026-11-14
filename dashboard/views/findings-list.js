@@ -1,4 +1,4 @@
-// Assurity Web Guardian - shared findings list renderer.
+// Web Guardian - shared findings list renderer.
 // Plain browser ES module, ASCII-only. NOT a routed view.
 //
 // Used by the Run_View (views/run-view.js) and the Filtered_Findings_View

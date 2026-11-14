@@ -1,4 +1,4 @@
-// Assurity Web Guardian - static dashboard shell.
+// Web Guardian - static dashboard shell.
 // Plain browser ES module (no build step). ASCII-only on purpose.
 //
 // This file is the BOOTSTRAP and ROUTER only:
@@ -90,7 +90,7 @@ const IMPORTERS = {
   visual: () => import("./views/visual-comparison.js"),
 };
 
-const TITLE = "Assurity Web Guardian";
+const TITLE = "Web Guardian";
 
 const state = {
   dashboard: null,

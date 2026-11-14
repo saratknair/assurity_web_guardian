@@ -1,4 +1,4 @@
-// Assurity Web Guardian - image lightbox. NOT a routed view.
+// Web Guardian - image lightbox. NOT a routed view.
 // Native <dialog> opened with showModal(): the platform provides focus
 // trapping, Escape-to-close and an inert background. Not a route, so Back
 // does not reopen it. DOM is built with createElement / textContent only.

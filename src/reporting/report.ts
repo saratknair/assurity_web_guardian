@@ -119,9 +119,9 @@ export function renderReportHtml(m: ReportModel, reportDir?: string): string {
   const ops = m.pages.map((p) => pageOps(p, reportDir)).join("");
   const agents = m.agentStatuses.map((s) => `<span>${esc(s.agent)}: ${esc(s.status)}</span>`).join("");
 
-  return `<!doctype html><html><head><meta charset="utf-8"><title>Assurity Web Guardian \u2014 Run ${esc(m.runId)}</title><style>${STYLE}</style></head>
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Web Guardian \u2014 Run ${esc(m.runId)}</title><style>${STYLE}</style></head>
 <body>
-<header><h1>Assurity Web Guardian</h1><div class="meta">Run ${esc(m.runId)} \u00b7 correlationId ${esc(m.correlationId)} \u00b7 ${esc(m.generatedAt)}</div></header>
+<header><h1>Web Guardian</h1><div class="meta">Run ${esc(m.runId)} \u00b7 correlationId ${esc(m.correlationId)} \u00b7 ${esc(m.generatedAt)}</div></header>
 <main>
 <div class="tabs"><button id="btn-exec" class="active" onclick="showView('exec')">Executive</button><button id="btn-ops" onclick="showView('ops')">Operational</button></div>
 

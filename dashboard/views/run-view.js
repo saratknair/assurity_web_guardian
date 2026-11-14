@@ -1,4 +1,4 @@
-// Assurity Web Guardian - Run_View (one run: metadata, totals, findings).
+// Web Guardian - Run_View (one run: metadata, totals, findings).
 // Plain browser ES module, ASCII-only.
 //
 // Contract: `export async function render(container, ctx)` (see the VIEW MODULE

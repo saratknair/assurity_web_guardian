@@ -1,4 +1,4 @@
-// Assurity Web Guardian - Overview view (run selector, KPI cards, charts and
+// Web Guardian - Overview view (run selector, KPI cards, charts and
 // the page explorer). Plain browser ES module, ASCII-only.
 //
 // Contract: `export async function render(container, ctx)` (see the VIEW MODULE

@@ -67,8 +67,8 @@ function resolveAsset(path: string): Asset | null {
 }
 
 const FALLBACK_PAGE =
-  '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" /><title>Assurity Web Guardian - Console</title></head>' +
-  "<body><h1>Assurity Web Guardian - Console</h1><p>The console UI files are not installed yet.</p></body></html>";
+  '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" /><title>Web Guardian - Console</title></head>' +
+  "<body><h1>Web Guardian - Console</h1><p>The console UI files are not installed yet.</p></body></html>";
 
 function baseHeaders(contentType: string): Record<string, string> {
   const h: Record<string, string> = {
