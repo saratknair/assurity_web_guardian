@@ -88,7 +88,7 @@ function roleDescription(f) {
 
 /**
  * Evidence_Caption, e.g.
- * "Current run - https://assurity.nz/ - desktop - run_abc - 27 Oct 2026 08:15 UTC - full-page capture at the desktop viewport"
+ * "Current run - https://example.com/ - desktop - run_abc - 27 Oct 2026 08:15 UTC - full-page capture at the desktop viewport"
  * ctx: { role: "baseline"|"current"|"diff", pageUrl, viewport, runId, runFinishedAt,
  *        baselineApprovedAt?, baselineSourceRunId? }  (unknown role is treated as "current")
  */

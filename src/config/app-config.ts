@@ -54,7 +54,7 @@ export interface AppConfig {
   viewports: { desktop: Viewport; mobile: Viewport };
   /**
    * Slug of the active Domain_Config under `config/domains/<slug>.json`
-   * (e.g. "assurity-nz"), loadable via `loadDomainConfig(domain)`. Optional for
+   * (e.g. "example-com"), loadable via `loadDomainConfig(domain)`. Optional for
    * configs that predate domain configs.
    */
   domain?: string;
@@ -133,7 +133,7 @@ export interface ResolvedScope {
  *     preserving the existing single-page / 10-page behavior exactly.
  *
  * The scope file is keyed by the Domain_Config slug (`cfg.domain`, e.g.
- * "assurity-nz"), matching the `scopeFile` declared in `config/domains/<slug>.json`
+ * "example-com"), matching the `scopeFile` declared in `config/domains/<slug>.json`
  * and the file written by `approveScope`. Conservative pacing
  * (`requestSpacingMs >= 1000`) is enforced by `validateConfig` and applied by the
  * runner regardless of source, so it is unchanged here.

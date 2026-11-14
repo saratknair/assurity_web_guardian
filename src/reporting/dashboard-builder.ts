@@ -2,6 +2,16 @@ import { writeFileSync, existsSync, readFileSync, readdirSync, statSync } from "
 import { resolve, join } from "node:path";
 import { computeAnalytics, type Analytics } from "../core/analytics.js";
 import { buildDashboardData } from "./dashboard-data.js";
+import { loadConfig } from "../config/app-config.js";
+
+/** Approved domain from the app config; empty when the config cannot be read. */
+function configuredDomain(): string {
+  try {
+    return loadConfig().approvedDomain;
+  } catch {
+    return "";
+  }
+}
 
 /**
  * Dashboard builder. Upgrades (does not replace) the static dashboard
@@ -151,7 +161,7 @@ export function buildDashboard(outPath = "artifacts/dashboard.html"): string {
   // static dashboard renders from. Written alongside the HTML.
   // Contains only run-relative references - never absolute filesystem paths.
   const dataPath = resolve(outPath, "..", "dashboard-data.json");
-  writeFileSync(dataPath, JSON.stringify(buildDashboardData(), null, 2), "utf8");
+  writeFileSync(dataPath, JSON.stringify(buildDashboardData("artifacts/runs", "artifacts/a11y-history.json", configuredDomain()), null, 2), "utf8");
 
   return resolve(outPath);
 }

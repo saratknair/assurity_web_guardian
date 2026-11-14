@@ -10,9 +10,9 @@ import { resolve } from "node:path";
  * matter of dropping in another file.
  */
 export interface DomainConfig {
-  /** The guarded host, e.g. "assurity.nz". Read as data, never hard-coded. */
+  /** The guarded host, e.g. "example.com". Read as data, never hard-coded. */
   domain: string;
-  /** Canonical entry point, e.g. "https://assurity.nz". */
+  /** Canonical entry point, e.g. "https://example.com". */
   baseUrl: string;
   /** URL schemes permitted for this domain, e.g. ["https"]. */
   approvedSchemes: string[];

@@ -215,9 +215,9 @@ function runPointFromEvents(runDir: string, runId: string, failedChecks: number)
  * and the latest-run page/template breakdowns.
  */
 export function buildDashboardData(
-  runsRoot = "artifacts/runs",
-  historyPath = "artifacts/a11y-history.json",
-  domain = "assurity.nz",
+  runsRoot: string,
+  historyPath: string,
+  domain: string,
 ): DashboardData {
   const analytics: Analytics = computeAnalytics(runsRoot, historyPath);
   const root = resolve(runsRoot);

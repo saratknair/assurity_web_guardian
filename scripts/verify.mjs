@@ -2,6 +2,11 @@ import { readdirSync, existsSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { AppendOnlyLog, IntegrityError } from "../dist/telemetry/audit-log.js";
 
+// Instance settings: approved host and domain slug come from the app config.
+const appConfig = JSON.parse(readFileSync(resolve("config/app.config.json"), "utf8"));
+const approvedDomain = String(appConfig.approvedDomain ?? "");
+const domainSlug = String(appConfig.domain ?? "");
+
 const runsRoot = resolve("artifacts/runs");
 const runs = readdirSync(runsRoot)
   .filter((n) => statSync(join(runsRoot, n)).isDirectory())
@@ -58,15 +63,15 @@ try { audit.overwriteAt(0, { x: 1 }); } catch (e) { editRejected = e instanceof 
 ok("audit-not-editable", editRejected);
 
 // 8. Approved baseline exists (human-gated).
-ok("baseline-exists", existsSync(resolve("baselines/assurity-nz/baseline.v2.md")) || existsSync(resolve("baselines/assurity-nz/baseline.v1.md")));
+ok("baseline-exists", existsSync(resolve("baselines", domainSlug, "baseline.v2.md")) || existsSync(resolve("baselines", domainSlug, "baseline.v1.md")));
 
 // 9. Dashboard generated.
 ok("dashboard-exists", existsSync(resolve("artifacts/dashboard.html")) && statSync(resolve("artifacts/dashboard.html")).size > 0);
 
-// 10. Approved-domain-only: every page in the latest run is on assurity.nz.
+// 10. Approved-domain-only: every page in the latest run is on the approved domain.
 for (const r of runs.slice(-1)) {
   const results = JSON.parse(readFileSync(join(runsRoot, r, "results.json"), "utf8"));
-  const domOk = Array.isArray(results.pages) && results.pages.length > 0 && results.pages.every((p) => p.page.includes("assurity.nz"));
+  const domOk = Array.isArray(results.pages) && results.pages.length > 0 && results.pages.every((p) => approvedDomain !== "" && p.page.includes(approvedDomain));
   ok(`${r}:approved-domain-only`, domOk, `${results.pages?.length ?? 0} pages`);
 }
 
@@ -108,8 +113,8 @@ try {
 //     key), run the real `stripPaths`, and assert none of them survive.
 try {
   const { stripPaths } = await import("../dist/publish/sanitizer.js");
-  const WIN_PATH = "C:\\Users\\nairs\\secret\\creds.txt";
-  const POSIX_PATH = "/Users/nairs/project/evidence.png";
+  const WIN_PATH = "C:\\Users\\example-user\\secret\\creds.txt";
+  const POSIX_PATH = "/Users/example-user/project/evidence.png";
   const UNC_PATH = "\\\\fileserver\\share\\internal\\dump.log";
   const sample = {
     spec: WIN_PATH,
@@ -121,7 +126,7 @@ try {
   const pathsGone =
     !out.includes("C:\\\\Users") &&
     !out.includes("C:\\Users") &&
-    !out.includes("/Users/nairs") &&
+    !out.includes("/Users/example-user") &&
     !out.includes("fileserver\\\\share") &&
     !out.includes("fileserver\\share");
   const relativeKept = out.includes("tests/generated/x.spec.ts");
@@ -401,8 +406,7 @@ try {
 // --- scope + workflow + deps + cloud-sync ----------------------
 
 // 16. approved-scope-only: every page scanned in the latest run belongs to an
-//     APPROVED host - generalized beyond a literal "assurity.nz"
-//     string. Derive the approved host(s) from the Domain_Config (and the
+//     APPROVED host. Derive the approved host(s) from the Domain_Config (and the
 //     per-domain approved scope file when present), then assert every page URL
 //     host in the latest run's results.json is in the approved set. This keeps
 //     the system multi-domain-ready (the host is read as data, never hard-coded)
