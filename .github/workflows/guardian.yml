@@ -128,7 +128,6 @@ jobs:
           echo "dispositions status: $status"
       - name: Run Guardian
         # The real orchestrated run entry is scripts/run-guardian.mjs.
-        # (dist/index.js "run" is not used in CI.)
         # AWG_RUN_ORIGIN=cloud marks published runs as cloud-origin.
         # AWG_SKIP_LOCAL_PUBLISH=1: CI assembles ./_site via its own pipeline
         # (build-published-data + dashboard copy + static office copy), so the

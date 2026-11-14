@@ -1,0 +1,33 @@
+import { readFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
+import { describe, it, expect } from "vitest";
+
+const root = resolve(__dirname, "../..");
+const scripts: Record<string, string> = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8")).scripts;
+
+const REQUIRED = ["console", "guardian", "build", "test", "verify", "typecheck", "init-config", "scan:history"];
+
+describe("package.json scripts", () => {
+  it("defines the required script set", () => {
+    for (const name of REQUIRED) expect(scripts[name], name).toBeTruthy();
+  });
+
+  it("has no scripts that only print a pointer", () => {
+    expect(scripts.run).toBeUndefined();
+    expect(scripts.report).toBeUndefined();
+  });
+
+  it("uses only portable Node commands", () => {
+    const banned = /\b(rm|cp|mv|export|set|powershell|pwsh|cmd)\b|\.ps1|\.cmd\b|\$\(|%[A-Z_]+%/;
+    for (const [name, cmd] of Object.entries(scripts)) {
+      expect(banned.test(cmd), `${name}: ${cmd}`).toBe(false);
+    }
+  });
+
+  it("points node scripts at files that exist", () => {
+    for (const [name, cmd] of Object.entries(scripts)) {
+      const m = /^node (scripts\/\S+)$/.exec(cmd);
+      if (m) expect(existsSync(resolve(root, m[1])), name).toBe(true);
+    }
+  });
+});

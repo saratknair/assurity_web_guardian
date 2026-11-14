@@ -81,7 +81,7 @@ describe("browser launcher", () => {
     const r = await open(false, "/api/open/dashboard");
     expect(urls).toEqual([]);
     expect(r.json).toMatchObject({ launched: false, built: false, message: DASHBOARD_MISSING_TEXT });
-    expect(DASHBOARD_MISSING_TEXT).toContain("node dist/index.js run");
+    expect(DASHBOARD_MISSING_TEXT).toContain("npm run guardian");
     expect(DASHBOARD_MISSING_TEXT).not.toContain("dashboard.html");
   });
 

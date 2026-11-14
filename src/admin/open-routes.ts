@@ -21,7 +21,7 @@ export const DASHBOARD_ENTRY = `${LOCAL_DASHBOARD_REL}/index.html`;
 /** Shown when the Dashboard has not been built yet. */
 export const DASHBOARD_MISSING_TEXT =
   "The local Dashboard has not been built yet, so nothing was opened. Run the checks once with " +
-  "`node dist/index.js run` (npm run run). That step builds the Dashboard into artifacts/published " +
+  "`npm run guardian`. That step builds the Dashboard into artifacts/published " +
   "(`node dist/publish/build-published-data.js artifacts/published` rebuilds only its data). Then press this button again.";
 
 export type BrowserLauncher = (url: string) => boolean;
