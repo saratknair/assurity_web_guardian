@@ -1,19 +1,18 @@
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { listDomains, loadDomainConfig } from "../../src/config/domain-config.js";
 import { loadConfig } from "../../src/config/app-config.js";
+// @ts-expect-error plain .mjs module without type declarations
+import { initConfig } from "../../scripts/init-config.mjs";
 
 const repoRoot = resolve(__dirname, "../..");
-const scriptUrl = pathToFileURL(join(repoRoot, "scripts", "init-config.mjs")).href;
 
 type InitResult = { copied: string[]; skipped: string[] };
 async function run(root: string): Promise<InitResult> {
-  const mod = (await import(/* @vite-ignore */ scriptUrl)) as { initConfig: (r: string) => InitResult };
-  return mod.initConfig(root);
+  return (initConfig as (r: string) => InitResult)(root);
 }
 
 const dirs: string[] = [];
