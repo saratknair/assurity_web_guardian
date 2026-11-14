@@ -7,7 +7,8 @@
 #       * publish job: pages:write / id-token:write (Pages deploy only)
 #       * commit-runs-data job: contents:write (additive push of one run dir to runs-data only)
 #   - raw run artifacts are committed ONLY to the runs-data branch, never to main
-#   - fork-PR privileged execution blocked via the `if:` guard; no pull_request_target
+#   - pull requests run only the read-only verify-platform job, and only for same-repo
+#     branches; no pull_request_target
 #   - no untrusted ${{ github.event.* }} interpolation into any run: shell
 #
 # NOTE: the pinned commit SHAs below should be re-verified by a human against the
@@ -21,6 +22,8 @@ on:
     - cron: "0 17 * * *"
   # manual on-demand dispatch
   workflow_dispatch: {}
+  # Pull requests run only verify-platform (every other job is skipped for them).
+  pull_request: {}
   # Publish-path changes on main re-run Guardian. Branch is
   # exactly main (no wildcard); runs-data is never a trigger, so the runs-data
   # push by commit-runs-data cannot start a run.
@@ -37,9 +40,11 @@ on:
 permissions:
   contents: read
 
-# No overlapping cloud runs; let an in-flight run finish rather than cancel it
+# No overlapping cloud runs; let an in-flight run finish rather than cancel it.
+# Pull request runs use a per-ref group so they never queue behind or replace a
+# scheduled or manual run.
 concurrency:
-  group: guardian
+  group: ${{ github.event_name == 'pull_request' && format('guardian-pr-{0}', github.ref) || 'guardian' }}
   cancel-in-progress: false
 
 jobs:
@@ -47,11 +52,8 @@ jobs:
     runs-on: ubuntu-latest
     # Hard cap so a stuck run cannot hold the runner or replace published data
     timeout-minutes: 30
-    # Fork-PR guard: run on schedule / manual dispatch / same-repo push only;
-    # for a pull_request event, require the head repo to be this repository (never a fork).
-    if: >-
-      github.event_name != 'pull_request' ||
-      github.event.pull_request.head.repo.full_name == github.repository
+    # Publishing jobs never run for pull requests; PRs only get verify-platform.
+    if: github.event_name != 'pull_request'
     # Read-only token for the run job - it never needs to write to the repo
     permissions:
       contents: read
@@ -238,6 +240,38 @@ jobs:
           if-no-files-found: warn
           retention-days: 1
 
+  # Confirms the build and the test suite pass on Linux and macOS (the main run
+  # job is Linux only and does not run the tests). No browsers are installed here.
+  verify-platform:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Setup Node
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm test
+
   publish:
     needs: run
     runs-on: ubuntu-latest
@@ -270,10 +304,8 @@ jobs:
     # Only this job may write repo contents, and only to push one run dir.
     permissions:
       contents: write
-    # Fork-PR guard mirrors the run job: never push from an untrusted fork.
-    if: >-
-      github.event_name != 'pull_request' ||
-      github.event.pull_request.head.repo.full_name == github.repository
+    # Never push from a pull request event.
+    if: github.event_name != 'pull_request'
     steps:
       # Normal checkout (default branch). This always succeeds and gives us a
       # working .git with the GITHUB_TOKEN persisted for the later push. We do NOT

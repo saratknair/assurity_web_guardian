@@ -61,6 +61,48 @@ describe("guardian.yml workflow smoke test", () => {
     for (const l of pushLines) expect(l).not.toMatch(/\s-f\b|--force/);
   });
 
+  describe("verify-platform job", () => {
+    const start = code.indexOf("  verify-platform:\n");
+    const end = code.indexOf("\n  publish:\n");
+    const job = code.slice(start, end);
+
+    it("exists on a Linux and macOS matrix with a read-only token and a timeout", () => {
+      expect(start).toBeGreaterThan(-1);
+      expect(end).toBeGreaterThan(start);
+      expect(job).toMatch(/runs-on:\s*\$\{\{\s*matrix\.os\s*\}\}/);
+      expect(job).toContain("ubuntu-latest");
+      expect(job).toContain("macos-latest");
+      expect(job).toMatch(/permissions:\s*\n\s+contents:\s*read\b/);
+      expect(job).toMatch(/timeout-minutes:\s*\d+/);
+    });
+
+    it("uses pinned actions and runs install, build and test", () => {
+      const uses = [...job.matchAll(/uses:\s*(\S+)/g)].map((m) => m[1]);
+      expect(uses.length).toBeGreaterThan(0);
+      for (const u of uses) expect(u).toMatch(/@[0-9a-f]{40}$/);
+      expect(job).toMatch(/node-version-file:\s*"\.nvmrc"/);
+      const cmds = [...job.matchAll(/run:\s*(.+)$/gm)].map((m) => m[1].trim());
+      expect(cmds).toEqual(["npm ci", "npm run build", "npm test"]);
+    });
+
+    it("runs only for pull requests and manual dispatch, never push or schedule", () => {
+      const cond = job.slice(job.indexOf("if:"), job.indexOf("runs-on:"));
+      expect(cond).toContain("workflow_dispatch");
+      expect(cond).toContain("pull_request");
+      expect(cond).not.toMatch(/\bpush\b|\bschedule\b/);
+    });
+  });
+
+  it("keeps the publishing jobs off pull requests", () => {
+    const runJob = code.slice(code.indexOf("\n  run:\n"), code.indexOf("\n  verify-platform:\n"));
+    const commitJob = code.slice(code.indexOf("\n  commit-runs-data:\n"));
+    for (const body of [runJob, commitJob]) {
+      expect(body.length).toBeGreaterThan(10);
+      expect(body).toContain("if: github.event_name != 'pull_request'");
+    }
+    expect(code).toMatch(/\n  publish:\n    needs: run\n/);
+  });
+
   it("keeps every action pinned to a 40-hex SHA", () => {
     const uses = [...code.matchAll(/^\s*(?:-\s+)?uses:\s*(\S+)/gm)].map((m) => m[1]);
     expect(uses.length).toBeGreaterThan(0);
