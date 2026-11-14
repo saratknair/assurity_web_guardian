@@ -549,41 +549,30 @@ try {
 }
 
 // 18. deps-pinned: dependencies are pinned/vendored. Assert
-//     `package-lock.json` exists at the repo root, and that the vendored
-//     Chart.js pin matches the version recorded in DEPENDENCIES.md.
-//
-//     TOLERANCE (documented): as of scaffolding the build machine had no
-//     network, so the real `dashboard/vendor/chart.umd.min.js` may be absent
-//     and only the `*.NEEDS_VENDORING` placeholder present. In that case we PASS
-//     with an explicit "chart.js vendoring pending" detail rather than failing
-//     the whole gate - but we STILL require DEPENDENCIES.md to record a pinned
-//     Chart.js version string (so the pin is never lost). Once the real bundle
-//     is dropped in, this check continues to pass (lock + recorded pin present).
+//     `package-lock.json` exists at the repo root, that docs/VENDORED.md
+//     records a Chart.js version, and that the vendored bundle is present,
+//     non-empty and carries that version in its header.
 try {
   const problems = [];
   if (!existsSync(resolve("package-lock.json"))) problems.push("package-lock.json missing");
 
-  // DEPENDENCIES.md must record a pinned Chart.js version (e.g. "4.4.6").
-  const deps = existsSync(resolve("DEPENDENCIES.md")) ? readFileSync(resolve("DEPENDENCIES.md"), "utf8") : "";
-  const pinMatch = deps.match(/Chart\.js[^\n|]*?\|?\s*(\d+\.\d+\.\d+)/i) || deps.match(/chart\.js@(\d+\.\d+\.\d+)/i);
+  // docs/VENDORED.md must record the Chart.js version (e.g. "4.4.6").
+  const docPath = resolve("docs/VENDORED.md");
+  const deps = existsSync(docPath) ? readFileSync(docPath, "utf8") : "";
+  const pinMatch = deps.match(/\|\s*Chart\.js\s*\|\s*(\d+\.\d+\.\d+)/i);
   const recordedPin = pinMatch ? pinMatch[1] : null;
-  if (!recordedPin) problems.push("DEPENDENCIES.md records no pinned Chart.js version");
+  if (!recordedPin) problems.push("docs/VENDORED.md records no Chart.js version");
 
   const realVendor = resolve("dashboard/vendor/chart.umd.min.js");
-  const placeholder = resolve("dashboard/vendor/chart.umd.min.js.NEEDS_VENDORING");
-  let detail;
+  let detail = "no chart.js vendor file";
   if (existsSync(realVendor)) {
-    // Real bundle present: confirm it is non-empty. (A strict byte-level pin
-    // match would require a hash in DEPENDENCIES.md; we assert presence + the
-    // recorded version pin, which is what the ledger tracks today.)
     if (statSync(realVendor).size === 0) problems.push("vendored chart.umd.min.js is empty");
+    else if (recordedPin && !readFileSync(realVendor, "utf8").slice(0, 400).includes(`Chart.js v${recordedPin}`)) {
+      problems.push(`vendored chart.umd.min.js header does not match recorded version ${recordedPin}`);
+    }
     detail = `chart.js pinned ${recordedPin ?? "?"}, vendored bundle present`;
-  } else if (existsSync(placeholder)) {
-    // TOLERANT PASS: vendoring pending, but the pin is still recorded.
-    detail = `chart.js vendoring pending (placeholder present); pin recorded as ${recordedPin ?? "?"}`;
   } else {
-    problems.push("neither vendored chart.umd.min.js nor its NEEDS_VENDORING placeholder is present");
-    detail = "no chart.js vendor file";
+    problems.push("dashboard/vendor/chart.umd.min.js is missing");
   }
 
   const pass = problems.length === 0;
