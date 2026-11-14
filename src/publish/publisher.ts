@@ -9,6 +9,7 @@ import {
   statSync,
 } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { buildPublishedData, type RunsIndex } from "./published-data.js";
 import { loadDisplayTitle } from "../config/app-config.js";
 
@@ -67,10 +68,8 @@ function dashboardSourceDir(): string {
   const cwdCandidate = resolve(process.cwd(), "dashboard");
   if (existsSync(cwdCandidate)) return cwdCandidate;
   // Fall back to walking up from the module file location.
-  let dir = dirname(new URL(import.meta.url).pathname);
-  // On Windows the pathname starts with a leading "/"; strip it so `resolve`
-  // produces a usable path.
-  if (/^\/[A-Za-z]:\//.test(dir)) dir = dir.slice(1);
+  // fileURLToPath handles drive letters and %20 on Windows, which URL.pathname does not.
+  let dir = dirname(fileURLToPath(import.meta.url));
   for (let i = 0; i < 6; i++) {
     const candidate = join(dir, "dashboard");
     if (existsSync(candidate)) return candidate;
@@ -99,8 +98,7 @@ function copyStaticDashboard(stagingDir: string): void {
 function officeSourceDir(): string {
   const cwdCandidate = resolve(process.cwd(), "office");
   if (existsSync(cwdCandidate)) return cwdCandidate;
-  let dir = dirname(new URL(import.meta.url).pathname);
-  if (/^\/[A-Za-z]:\//.test(dir)) dir = dir.slice(1);
+  let dir = dirname(fileURLToPath(import.meta.url));
   for (let i = 0; i < 6; i++) {
     const candidate = join(dir, "office");
     if (existsSync(join(candidate, "index.html"))) return candidate;

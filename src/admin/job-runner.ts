@@ -147,21 +147,31 @@ export function defaultPreflight(projectRoot: string): JobRunnerOptions["preflig
   };
 }
 
+/**
+ * How to kill a job's process tree. Windows runs taskkill (args array, no shell) with /T for
+ * the tree. POSIX jobs are spawned detached (own process group), so a negative pid signals
+ * the whole group.
+ */
+export function killPlan(
+  platform: string,
+  pid: number,
+): { kind: "taskkill"; cmd: string; args: string[] } | { kind: "group"; pid: number; signal: "SIGKILL" } {
+  if (platform === "win32") return { kind: "taskkill", cmd: "taskkill", args: ["/pid", String(pid), "/T", "/F"] };
+  return { kind: "group", pid: -pid, signal: "SIGKILL" };
+}
+
 function defaultKillTree(platform: string): (child: ChildLike) => void {
   return (child) => {
     const pid = child.pid;
     try {
       if (typeof pid === "number") {
-        if (platform === "win32") {
-          const k = nodeSpawn("taskkill", ["/pid", String(pid), "/T", "/F"], {
-            shell: false,
-            windowsHide: true,
-            stdio: "ignore",
-          });
+        const plan = killPlan(platform, pid);
+        if (plan.kind === "taskkill") {
+          const k = nodeSpawn(plan.cmd, plan.args, { shell: false, windowsHide: true, stdio: "ignore" });
           k.on("error", () => undefined);
           return;
         }
-        process.kill(-pid, "SIGKILL");
+        process.kill(plan.pid, plan.signal);
         return;
       }
     } catch {

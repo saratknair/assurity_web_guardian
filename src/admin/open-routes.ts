@@ -26,13 +26,32 @@ export const DASHBOARD_MISSING_TEXT =
 
 export type BrowserLauncher = (url: string) => boolean;
 
-/** The real launcher: spawn the default browser. Never throws. */
+/** Only loopback http URLs built by this console may be handed to the OS opener. */
+const OPENABLE_URL = /^http:\/\/127\.0\.0\.1:\d{1,5}\/[A-Za-z0-9\-._~/]*$/;
+
+/**
+ * Pick the per-platform command that opens a URL. Pure, no shell: Windows uses
+ * rundll32 (not `cmd /c start`, which would re-parse `&` and `^` in the URL).
+ * Returns null when the URL is not a plain loopback URL.
+ */
+export function browserCommand(platform: string, url: string): { cmd: string; args: string[] } | null {
+  if (!OPENABLE_URL.test(url)) return null;
+  if (platform === "win32") return { cmd: "rundll32", args: ["url.dll,FileProtocolHandler", url] };
+  if (platform === "darwin") return { cmd: "open", args: [url] };
+  return { cmd: "xdg-open", args: [url] };
+}
+
+/** The real launcher: spawn the default browser. Never throws; a failure is only logged. */
 export function spawnBrowser(url: string): boolean {
   try {
-    const child =
-      process.platform === "win32"
-        ? spawn("cmd", ["/c", "start", "", url], { detached: true, stdio: "ignore", windowsHide: true })
-        : spawn(process.platform === "darwin" ? "open" : "xdg-open", [url], { detached: true, stdio: "ignore" });
+    const command = browserCommand(process.platform, url);
+    if (command === null) return false;
+    const child = spawn(command.cmd, command.args, {
+      detached: true,
+      stdio: "ignore",
+      windowsHide: true,
+      shell: false,
+    });
     child.on("error", (err) => {
       console.warn(`open: failed to launch browser: ${err.message}`);
     });
