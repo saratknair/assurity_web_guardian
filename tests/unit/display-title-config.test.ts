@@ -7,6 +7,7 @@ import {
   loadConfig,
   resolveDisplayTitle,
 } from "../../src/config/app-config.js";
+import { completeAppConfig } from "../helpers/config-fixture.js";
 
 const dir = mkdtempSync(join(tmpdir(), "display-title-"));
 afterAll(() => rmSync(dir, { recursive: true, force: true }));
@@ -15,18 +16,7 @@ function load(extra: Record<string, unknown>): ReturnType<typeof loadConfig> {
   const file = join(dir, "app.config.json");
   writeFileSync(
     file,
-    JSON.stringify({
-      approvedDomain: "example.com",
-      baseUrl: "https://example.com",
-      seedFilePath: "config/page-seed.json",
-      limits: { requestSpacingMs: 1000 },
-      retention: { maxRuns: 1, maxAgeDays: 1 },
-      viewports: {
-        desktop: { width: 1, height: 1 },
-        mobile: { width: 1, height: 1 },
-      },
-      ...extra,
-    }),
+    JSON.stringify({ ...completeAppConfig(), ...extra }),
   );
   return loadConfig(file);
 }

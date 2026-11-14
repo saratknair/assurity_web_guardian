@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { DOMAIN_CONFIG_REQUIRED, assertRequiredSettings } from "./required-settings.js";
 
 /**
  * Domain_Config - the guarded domain described as data.
@@ -75,15 +76,12 @@ function resolveDefaultDomain(): string {
 }
 
 function validateDomainConfig(slug: string, cfg: DomainConfig): void {
-  const requiredStrings: (keyof DomainConfig)[] = ["domain", "baseUrl", "scopeFile"];
-  for (const key of requiredStrings) {
-    if (typeof cfg[key] !== "string" || (cfg[key] as string).length === 0) {
-      throw new Error(`Domain config ${slug}: missing or invalid "${String(key)}"`);
-    }
-  }
-  if (!Array.isArray(cfg.approvedSchemes) || cfg.approvedSchemes.length === 0) {
-    throw new Error(`Domain config ${slug}: "approvedSchemes" must be a non-empty array`);
-  }
+  assertRequiredSettings(
+    cfg,
+    DOMAIN_CONFIG_REQUIRED,
+    `${DOMAINS_DIR}/${slug}.json`,
+    `${DOMAINS_DIR}/example-com.example.json`,
+  );
   const requiredNumbers: (keyof DomainConfig)[] = [
     "maxDiscoveryCount",
     "largeScopeThreshold",
@@ -91,7 +89,7 @@ function validateDomainConfig(slug: string, cfg: DomainConfig): void {
   ];
   for (const key of requiredNumbers) {
     const v = cfg[key];
-    if (typeof v !== "number" || !Number.isFinite(v) || v < 0) {
+    if (typeof v !== "number" || v < 0) {
       throw new Error(`Domain config ${slug}: invalid "${String(key)}": ${String(v)}`);
     }
   }

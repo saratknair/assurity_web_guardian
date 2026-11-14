@@ -1,6 +1,11 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { readApprovedScope } from "../agents/scope-store.js";
+import {
+  APP_CONFIG_REQUIRED,
+  PAGE_SEED_REQUIRED,
+  assertRequiredSettings,
+} from "./required-settings.js";
 
 export interface Viewport {
   width: number;
@@ -95,6 +100,12 @@ export function loadConfig(path = "config/app.config.json"): AppConfig {
 export function loadSeed(cfg: AppConfig): PageSeedFile {
   const raw = readFileSync(resolve(cfg.seedFilePath), "utf8");
   const seed = JSON.parse(raw) as PageSeedFile;
+  assertRequiredSettings(
+    seed,
+    PAGE_SEED_REQUIRED,
+    "config/page-seed.json",
+    "config/page-seed.example.json",
+  );
   if (seed.approvedUrls.length > seed.maxUrls) {
     throw new Error(`Page seed exceeds maxUrls (${seed.maxUrls})`);
   }
@@ -152,6 +163,12 @@ export function resolveApprovedUrls(cfg: AppConfig): ResolvedScope {
 }
 
 function validateConfig(cfg: AppConfig): void {
+  assertRequiredSettings(
+    cfg,
+    APP_CONFIG_REQUIRED,
+    "config/app.config.json",
+    "config/app.config.example.json",
+  );
   const l = cfg.limits;
   for (const [k, v] of Object.entries(l)) {
     if (v === undefined) {
