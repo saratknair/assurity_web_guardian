@@ -75,6 +75,7 @@ skipped check fails instead.
 | `init-config` | Create config files from the examples |
 | `scan:history` | Comment policy scan |
 | `scan:secrets` | Secret scan |
+| `check:links` | Doc link and reference check |
 
 ## Scans
 
@@ -87,6 +88,8 @@ Run these before opening a change:
   `scripts/dev/secret-scan.allow.json`, each with a reason. Stale entries fail
   the scan. Tests that need secret-shaped fixtures must build them at runtime
   instead of committing them.
+- `npm run check:links` checks the docs: relative links and anchors, `npm run`
+  names and repo paths must exist. External links are listed, not fetched.
 - `node scripts/dev/hash-vendored.mjs --check` verifies vendored files against
   the recorded hashes.
 - The self-scans check an assembled site: `scripts/scan-dashboard.mjs`,

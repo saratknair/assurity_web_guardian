@@ -18,7 +18,8 @@
     "list-pending": "node dist/index.js list-pending",
     "init-config": "node scripts/init-config.mjs",
     "scan:history": "node scripts/dev/scan-history-comments.mjs",
-    "scan:secrets": "node scripts/dev/scan-secrets.mjs"
+    "scan:secrets": "node scripts/dev/scan-secrets.mjs",
+    "check:links": "node scripts/dev/check-doc-links.mjs"
   },
   "engines": {
     "node": ">=22 <23"
