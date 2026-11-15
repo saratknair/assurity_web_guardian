@@ -64,6 +64,15 @@ export function isAllowed(file, lineText) {
   return ALLOWLIST.some((a) => a.path === p && lineText.includes(a.contains));
 }
 
+// The product spec states requirements, so requirement numbers and
+// "Validates:" lines are legitimate there. Every other kind still applies.
+const REQUIREMENT_KINDS = new Set(["requirement-number", "requirement-header"]);
+
+export function allowsRequirementRefs(file) {
+  const p = file.replace(/\\/g, "/");
+  return KEEP_PREFIXES.some((k) => p.startsWith(k));
+}
+
 export function shouldScan(file) {
   const p = file.replace(/\\/g, "/");
   if (KEEP_PREFIXES.some((k) => p.startsWith(k))) return true;
@@ -78,8 +87,10 @@ export function shouldScan(file) {
 export function scanText(file, text) {
   const out = [];
   const lines = text.split(/\r?\n/);
+  const specFile = allowsRequirementRefs(file);
   for (let i = 0; i < lines.length; i++) {
     for (const { kind, re } of PATTERNS) {
+      if (specFile && REQUIREMENT_KINDS.has(kind)) continue;
       const m = re.exec(lines[i]);
       if (m && !isAllowed(file, lines[i])) {
         out.push({ path: file, line: i + 1, kind, match: m[0].trim() });

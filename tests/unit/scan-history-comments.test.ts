@@ -33,6 +33,14 @@ describe("scan-history-comments", () => {
     expect(scanText("src/admin/console-routes.ts", "// previously used")).toHaveLength(1);
   });
 
+  it("allows requirement references in the product spec but flags other history", () => {
+    const spec = ".kiro/specs/web-guardian/design.md";
+    const text = "### Requirement 3: Title\n**Validates: Requirements 3.2**\nPhase 2 notes\ncaf\u00e9";
+    const kinds = scanText(spec, text).map((h: { kind: string }) => h.kind);
+    expect(kinds).toEqual(["phase-narration", "non-ascii"]);
+    expect(scanText("src/x.ts", "// Requirement 3.2")).toHaveLength(1);
+  });
+
   it("skips vendored, lock and instance files", () => {
     expect(shouldScan("office/vendor/three.module.min.js")).toBe(false);
     expect(shouldScan("package-lock.json")).toBe(false);
