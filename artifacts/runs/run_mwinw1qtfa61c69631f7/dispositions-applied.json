@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "runId": "run_mwinw1qtfa61c69631f7",
+  "finishedAt": "2026-11-16T02:47:39.891Z",
+  "status": "applied",
+  "logDigest": "6f574fc81e2baca2",
+  "entries": [
+    {
+      "id": "dsp_220ff9409c78d62b",
+      "decision": "ignore",
+      "scope": "site-rule",
+      "matcher": {
+        "pageUrl": "",
+        "viewport": "",
+        "ruleId": "visual-diff",
+        "cssTarget": ""
+      },
+      "reason": "Baseline Fix",
+      "reviewer": "Sarat Nair",
+      "at": "2026-11-16T02:44:34.923Z",
+      "undoes": null,
+      "source": "admin-gui"
+    }
+  ]
+}
