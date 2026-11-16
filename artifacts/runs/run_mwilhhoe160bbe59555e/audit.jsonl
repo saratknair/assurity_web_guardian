@@ -1,0 +1,1 @@
+{"ts":"2026-11-16T01:40:11.034Z","correlationId":"cor_mwilhhoef1b386cf0ac8","runId":"run_mwilhhoe160bbe59555e","type":"migration","reason":"test-manifest.specPath is repo-relative","detail":"Absolute specPath is not written; older manifests are sanitized at publish."}
