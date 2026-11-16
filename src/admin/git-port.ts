@@ -111,6 +111,9 @@ export function checkGitArgs(args: readonly string[]): string | null {
   return null;
 }
 
+/** A git command that runs longer than this is stopped, so no sync can hang forever. */
+export const GIT_TIMEOUT_MS = 120_000;
+
 export function realGit(root: string): GitPort {
   return {
     run: (args, opts) => {
@@ -125,7 +128,8 @@ export function realGit(root: string): GitPort {
             windowsHide: true,
             shell: false,
             maxBuffer: 16 * 1024 * 1024,
-            env: { ...process.env, ...(opts?.env ?? {}), GIT_TERMINAL_PROMPT: "0" },
+            timeout: GIT_TIMEOUT_MS,
+            env: { ...process.env, ...(opts?.env ?? {}), GIT_TERMINAL_PROMPT: "0", GCM_INTERACTIVE: "never" },
           },
           (err, stdout, stderr) => {
             const code = err ? (typeof (err as { code?: unknown }).code === "number" ? (err as { code: number }).code : 1) : 0;

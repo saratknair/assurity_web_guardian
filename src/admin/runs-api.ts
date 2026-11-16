@@ -36,7 +36,7 @@ export const LOG_WHITELIST: Readonly<Record<string, string>> = { events: "events
 
 /** Replaceable in tests so nothing touches a real remote. */
 export const runsApiHooks: {
-  cloudSync: (opts: { repoDir: string; branch: string; runsRoot: string }) => Promise<CloudSyncResult>;
+  cloudSync: (opts: { repoDir: string; branch: string; runsRoot: string; onProgress?: (done: number, total: number) => void }) => Promise<CloudSyncResult>;
   pullDispositions: typeof pullDispositions;
 } = { cloudSync, pullDispositions };
 
@@ -444,6 +444,7 @@ interface RunsSyncRecord {
   finishedAt: string | null;
   runs: { ok: boolean; added: number; skipped: number; reason: string | null } | null;
   decisions: { ok: boolean; added: number; reason: string | null } | null;
+  progress: { done: number; total: number } | null;
   done: Promise<void> | null;
 }
 
@@ -452,7 +453,7 @@ const syncRecords = new Map<string, RunsSyncRecord>();
 function syncRecord(root: string): RunsSyncRecord {
   let r = syncRecords.get(root);
   if (!r) {
-    r = { state: "idle", startedAt: null, finishedAt: null, runs: null, decisions: null, done: null };
+    r = { state: "idle", startedAt: null, finishedAt: null, runs: null, decisions: null, progress: null, done: null };
     syncRecords.set(root, r);
   }
   return r;
@@ -484,10 +485,15 @@ async function postSync(ctx: HandlerContext): Promise<ConsoleResponse> {
   rec.finishedAt = null;
   rec.runs = null;
   rec.decisions = null;
+  rec.progress = null;
   rec.done = (async () => {
     try {
       try {
-        const r = await runsApiHooks.cloudSync({ repoDir: deps.fs.root, branch: REMOTE_BRANCH, runsRoot: runsRoot(deps) });
+        const r = await runsApiHooks.cloudSync({ repoDir: deps.fs.root, branch: REMOTE_BRANCH, runsRoot: runsRoot(deps),
+          onProgress: (done, total) => {
+            rec.progress = { done, total };
+          },
+        });
         rec.runs = {
           ok: r.ok,
           added: r.added.length,
@@ -528,6 +534,7 @@ async function getSyncStatus(ctx: HandlerContext): Promise<ConsoleResponse> {
       finishedAt: rec.finishedAt,
       runs: rec.runs,
       decisions: rec.decisions,
+      progress: rec.progress,
     },
   };
 }

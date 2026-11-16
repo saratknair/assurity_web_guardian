@@ -250,7 +250,9 @@ export async function render(root, ctx) {
   // ---- Pull / poll ----
   function showSync(st, final) {
     const parts = [syncPart("Runs", st.runs), syncPart("Decisions", st.decisions)];
-    pullStatus.textContent = (final ? "Pull finished. " : "Pulling from GitHub... ") + parts.join(" ");
+    const p = st.progress;
+    const prog = !final && p && typeof p.done === "number" ? " Copied " + p.done + " of " + p.total + " new runs." : "";
+    pullStatus.textContent = (final ? "Pull finished. " : "Pulling from GitHub..." + prog + " ") + parts.join(" ");
   }
 
   function poll(count) {

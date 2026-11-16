@@ -1,4 +1,4 @@
-import { execFile } from "node:child_process";
+﻿import { execFile, spawn } from "node:child_process";
 import {
   existsSync,
   mkdirSync,
@@ -115,6 +115,77 @@ export function isSafeRelativePath(rel: string): boolean {
 /** POSIX-style prefix the branch stores run artifacts under. */
 const RUNS_PREFIX = "artifacts/runs";
 
+/** Time limits so a stalled git process can never leave a pull running forever. */
+export const FETCH_TIMEOUT_MS = 120_000;
+export const READ_TIMEOUT_MS = 60_000;
+
+/** Environment for git children: never wait for a credential prompt. */
+export function gitChildEnv(base: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+  return { ...base, GIT_TERMINAL_PROMPT: "0", GCM_INTERACTIVE: "never" };
+}
+
+/** One blob of the cloud branch tree. */
+interface CloudFile {
+  path: string;
+  oid: string;
+}
+
+/**
+ * Reads many blobs with ONE `git cat-file --batch` process (a process per file took minutes
+ * for a few thousand files on Windows). Returns the contents in the order of `oids`.
+ */
+export function readBlobs(repoDir: string, oids: string[], timeoutMs = READ_TIMEOUT_MS): Promise<Buffer[]> {
+  return new Promise<Buffer[]>((resolveAll, reject) => {
+    if (oids.length === 0) {
+      resolveAll([]);
+      return;
+    }
+    const child = spawn("git", ["cat-file", "--batch"], {
+      cwd: repoDir,
+      windowsHide: true,
+      shell: false,
+      env: gitChildEnv(),
+    });
+    const chunks: Buffer[] = [];
+    let settled = false;
+    const finish = (err: Error | null, value?: Buffer[]): void => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (err) {
+        child.kill();
+        reject(err);
+      } else resolveAll(value ?? []);
+    };
+    const timer = setTimeout(() => finish(new Error("git cat-file timed out")), timeoutMs);
+    child.on("error", (e) => finish(e));
+    child.stdin.on("error", () => {
+      /* the close handler reports the failure */
+    });
+    child.stdout.on("data", (c: Buffer) => chunks.push(c));
+    child.on("close", () => {
+      const all = Buffer.concat(chunks);
+      const out: Buffer[] = [];
+      let pos = 0;
+      for (const oid of oids) {
+        const nl = all.indexOf(0x0a, pos);
+        if (nl === -1) return finish(new Error("unexpected git cat-file output"));
+        const header = all.subarray(pos, nl).toString("utf8").split(" ");
+        const size = Number(header[2]);
+        if (header[0] !== oid || header[1] !== "blob" || !Number.isInteger(size) || size < 0) {
+          return finish(new Error("could not read " + oid));
+        }
+        const start = nl + 1;
+        if (start + size > all.length) return finish(new Error("truncated git cat-file output"));
+        out.push(all.subarray(start, start + size));
+        pos = start + size + 1;
+      }
+      finish(null, out);
+    });
+    child.stdin.end(oids.join("\n") + "\n");
+  });
+}
+
 /**
  * Enumerate the run-id directory names committed on `origin/<branch>` under
  * `artifacts/runs/`. Returns the distinct first-level directory names and the
@@ -123,17 +194,22 @@ const RUNS_PREFIX = "artifacts/runs";
 async function listCloudRuns(
   repoDir: string,
   branch: string,
-): Promise<{ runIds: string[]; files: string[] }> {
+): Promise<{ runIds: string[]; files: CloudFile[] }> {
   const ref = `origin/${branch}`;
   const { stdout } = await execFileAsync(
     "git",
-    ["ls-tree", "-r", "--name-only", "-z", ref, "--", RUNS_PREFIX],
-    { cwd: repoDir, maxBuffer: 64 * 1024 * 1024 },
+    ["ls-tree", "-r", "-z", ref, "--", RUNS_PREFIX],
+    { cwd: repoDir, maxBuffer: 64 * 1024 * 1024, env: gitChildEnv(), timeout: READ_TIMEOUT_MS },
   );
-  const files = stdout.split("\0").filter((p) => p.length > 0);
+  const files: CloudFile[] = [];
+  for (const rec of stdout.split("\0")) {
+    // "<mode> blob <oid>\t<path>"
+    const m = /^\d+ blob ([0-9a-f]{40,64})\t(.+)$/s.exec(rec);
+    if (m) files.push({ oid: m[1] as string, path: m[2] as string });
+  }
   const runIds = new Set<string>();
   const prefix = `${RUNS_PREFIX}/`;
-  for (const p of files) {
+  for (const { path: p } of files) {
     if (!p.startsWith(prefix)) continue;
     const rest = p.slice(prefix.length);
     const slash = rest.indexOf("/");
@@ -154,27 +230,26 @@ async function materializeRun(
   repoDir: string,
   branch: string,
   runId: string,
-  runFiles: string[],
+  runFiles: CloudFile[],
   destRunDir: string,
 ): Promise<void> {
-  const ref = `origin/${branch}`;
   const runPrefix = `${RUNS_PREFIX}/${runId}/`;
-  for (const filePath of runFiles) {
-    if (!filePath.startsWith(runPrefix)) continue;
-    const relative = filePath.slice(runPrefix.length);
+  const mine: { relative: string; oid: string }[] = [];
+  for (const f of runFiles) {
+    if (!f.path.startsWith(runPrefix)) continue;
+    const relative = f.path.slice(runPrefix.length);
     if (relative.length === 0) continue;
     // A remote tree is untrusted data: refuse any path that could leave destRunDir.
     if (!isSafeRelativePath(relative)) throw new Error("unsafe path in remote run");
-    // Read the blob as raw bytes so screenshots/traces survive intact.
-    const { stdout } = await execFileAsync("git", ["show", `${ref}:${filePath}`], {
-      cwd: repoDir,
-      encoding: "buffer",
-      maxBuffer: 256 * 1024 * 1024,
-    });
-    const outPath = join(destRunDir, ...relative.split(posix.sep));
-    mkdirSync(dirname(outPath), { recursive: true });
-    writeFileSync(outPath, stdout as unknown as Buffer);
+    mine.push({ relative, oid: f.oid });
   }
+  // Read the blobs as raw bytes so screenshots/traces survive intact.
+  const blobs = await readBlobs(repoDir, mine.map((m) => m.oid));
+  mine.forEach((m, i) => {
+    const outPath = join(destRunDir, ...m.relative.split(posix.sep));
+    mkdirSync(dirname(outPath), { recursive: true });
+    writeFileSync(outPath, blobs[i] as Buffer);
+  });
   // Mark provenance so published-data.ts -> originForRun reports "cloud".
   writeFileSync(join(destRunDir, "origin"), "cloud", "utf8");
 }
@@ -188,8 +263,10 @@ export async function cloudSync(opts: {
   repoDir: string;
   branch: string;
   runsRoot: string;
+  /** Called as runs are copied in, so a caller can show progress. */
+  onProgress?: (done: number, total: number) => void;
 }): Promise<CloudSyncResult> {
-  const { repoDir, branch, runsRoot } = opts;
+  const { repoDir, branch, runsRoot, onProgress } = opts;
   // The branch goes to git as an argument; refuse anything that could parse as an option.
   if (!isSafeBranchName(branch)) return { added: [], skipped: [], ok: false, reason: "invalid branch name" };
 
@@ -199,6 +276,8 @@ export async function cloudSync(opts: {
     await execFileAsync("git", ["fetch", "origin", branch], {
       cwd: repoDir,
       maxBuffer: 64 * 1024 * 1024,
+      env: gitChildEnv(),
+      timeout: FETCH_TIMEOUT_MS,
     });
   } catch (err) {
     return {
@@ -210,7 +289,7 @@ export async function cloudSync(opts: {
   }
 
   // 2. Enumerate run-id directories present on the fetched branch.
-  let cloud: { runIds: string[]; files: string[] };
+  let cloud: { runIds: string[]; files: CloudFile[] };
   try {
     cloud = await listCloudRuns(repoDir, branch);
   } catch (err) {
@@ -257,6 +336,7 @@ export async function cloudSync(opts: {
       }
       renameSync(stageDir, dest);
       added.push(runId);
+      onProgress?.(added.length, toAdd.length);
     }
   } catch (err) {
     // Fail safe: discard anything staged. Runs already moved in are complete
