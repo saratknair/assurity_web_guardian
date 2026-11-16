@@ -305,6 +305,18 @@ export async function render(root, ctx) {
     }
   }, POLL_MS);
 
+  // A pull keeps running on the console when this section is left; pick it up again.
+  try {
+    const st = await api("/api/sync/status");
+    if (st && st.state === "running") {
+      pullBtn.disabled = true;
+      showSync(st, false);
+      poll(0);
+    }
+  } catch {
+    /* the pull status is optional here */
+  }
+
   try {
     await loadRuns();
   } catch (e) {
