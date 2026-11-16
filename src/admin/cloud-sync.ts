@@ -1,4 +1,4 @@
-﻿import { execFile, spawn } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
 import {
   existsSync,
   mkdirSync,
