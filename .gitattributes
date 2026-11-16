@@ -1,0 +1,4 @@
+# Vendored libraries are checked byte for byte against docs/VENDORED.md,
+# so git must never rewrite their line endings on checkout.
+office/vendor/** -text
+dashboard/vendor/** -text
