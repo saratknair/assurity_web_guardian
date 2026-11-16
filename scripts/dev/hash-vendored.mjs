@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 // Lists the SHA-256 of every vendored library file and, with --check,
 // compares them with the table in docs/VENDORED.md.
 //
