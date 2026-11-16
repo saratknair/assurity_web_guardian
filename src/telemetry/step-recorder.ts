@@ -1,4 +1,4 @@
-/** Step recorder (virtual-office-replay): honest timing plus a pure Result_Summary per Step_Name. */
+/** Step recorder: honest timing plus a pure Result_Summary per Step_Name. */
 
 import { STEP_IS_TEMPLATE, type StepName } from "./step-model.js";
 import type { StepEventData, StepResult } from "./types.js";

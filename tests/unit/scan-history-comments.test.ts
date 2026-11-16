@@ -22,6 +22,18 @@ describe("scan-history-comments", () => {
     expect(kinds).toContain("non-ascii");
   });
 
+  it("flags stage spec names", () => {
+    for (const name of [
+      "guardian-phase2-overhaul",
+      "dashboard-usability-overhaul",
+      "virtual-office-replay",
+      "project-consolidation",
+    ]) {
+      const kinds = scanText("x.ts", `// see ${name}`).map((h: { kind: string }) => h.kind);
+      expect(kinds).toContain("stage-name");
+    }
+  });
+
   it("leaves clean text alone", () => {
     expect(scanText("x.ts", "// Retries the fetch once on timeout.")).toEqual([]);
   });

@@ -116,7 +116,7 @@ export interface PublishedFinding {
   lifecycle: Lifecycle;
   ignoredNodeCount: number;
   legacyFindingId?: string;
-  /** Replay link (virtual-office-replay): null when the run has no enriched trace. */
+  /** Replay link to the step that produced the finding; null when the run has no enriched trace. */
   producedAt?: { entryId: string; t: number; station: string } | null;
   [extra: string]: unknown;
 }
@@ -152,7 +152,7 @@ export interface RunFindingsFile {
   resolved: unknown[];
   ignored: PublishedFinding[];
   omissions: Omission[];
-  /** Added by the Publisher (virtual-office-replay). */
+  /** Replay metadata, added by the Publisher. */
   replay?: { enriched: boolean; durationMs: number };
 }
 

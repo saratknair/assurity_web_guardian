@@ -1,4 +1,4 @@
-/** Step model: the single Guardian-side source of the Station_Mapping (virtual-office-replay). */
+/** Step model: the single Guardian-side source of the Station_Mapping for the office replay. */
 
 export const STEP_NAMES = [
   "test-plan",

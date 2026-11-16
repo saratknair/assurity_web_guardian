@@ -17,7 +17,10 @@ export const PATTERNS = [
     kind: "history-word",
     re: /\b(?:retired|previously|formerly|used to|no longer|legacy note|was removed|moved from|originally)\b/i,
   },
-  { kind: "stage-name", re: /\b(?:PoC|proof of concept|stage \d|iteration \d|overhaul)\b/i },
+  {
+    kind: "stage-name",
+    re: /\b(?:PoC|proof of concept|stage \d|iteration \d|overhaul|virtual-office-replay|project-consolidation)\b/i,
+  },
   {
     kind: "design-narration",
     re: /\b(?:per the design|see design|spec says|as specified in)\b/i,

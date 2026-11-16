@@ -41,7 +41,7 @@ export type StepResultValue =
 
 export type StepResult = Record<string, StepResultValue>;
 
-/** Data of a `step.completed` event (virtual-office-replay). */
+/** Data of a `step.completed` event recorded by the step recorder. */
 export interface StepEventData {
   seq: number;
   step: StepName;
