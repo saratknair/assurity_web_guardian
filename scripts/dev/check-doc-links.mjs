@@ -25,6 +25,10 @@ export const RUNTIME_PATHS = [
   "dist/",
   "artifacts/",
   "node_modules/",
+  // Instance-owned paths: created when a baseline is approved or instance tests are added.
+  "baselines/",
+  "baselines-visual/",
+  "tests/instance/",
 ];
 
 const PATH_ROOTS = [

@@ -46,7 +46,6 @@ const ALLOWED_PREFIXES = [
 
 // Never exported, even when a path also matches the allowlist.
 const DENIED_PREFIXES = [
-  ".kiro/specs/project-consolidation/",
   "_site/",
   "artifacts/",
   "baselines-visual/",
@@ -148,9 +147,12 @@ function toPosix(p) {
   return p.split("\\").join("/");
 }
 
-/** True when a repo-relative path is a dispositions log, wherever it lives. */
+/**
+ * True when a repo-relative path is a dispositions data log (JSON or JSONL), wherever it lives.
+ * Source and test modules such as src/core/dispositions.ts are product code and stay exportable.
+ */
 function isDispositionsFile(rel) {
-  return /^dispositions[^/]*$/i.test(rel.split("/").pop() ?? "");
+  return /^dispositions[^/]*\.jsonl?$/i.test(rel.split("/").pop() ?? "");
 }
 
 /** True when the path matches a denylist rule. */
@@ -159,6 +161,8 @@ export function isDeniedPath(rel) {
   if (DENIED_FILES.has(p)) return true;
   if (DENIED_PREFIXES.some((d) => p.startsWith(d))) return true;
   if (isDispositionsFile(p)) return true;
+  // Kiro files other than the product spec (instance specs, steering, hooks, settings).
+  if (p.startsWith(".kiro/") && !p.startsWith(".kiro/specs/web-guardian/")) return true;
   // Any config/domains file that is not an example, and any other real config at config/ top level.
   if (p.startsWith("config/domains/")) return !/^config\/domains\/[^/]+\.example\.json$/.test(p);
   if (p.startsWith("config/")) return !/^config\/[^/]+\.example\.json$/.test(p);

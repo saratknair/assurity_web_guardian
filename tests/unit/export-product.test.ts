@@ -58,10 +58,23 @@ describe("allowlist and denylist", () => {
       "data/dispositions-log.json",
       "dist/index.js",
       "node_modules/x/index.js",
-      ".kiro/specs/project-consolidation/tasks.md",
+      ".kiro/specs/other-spec/tasks.md",
+      ".kiro/steering/notes.md",
     ]) {
       expect(isDeniedPath(p), p).toBe(true);
       expect(isAllowedPath(p), p).toBe(false);
+    }
+  });
+
+  it("keeps dispositions source and test modules exportable", () => {
+    for (const p of [
+      "src/core/dispositions.ts",
+      "src/admin/dispositions-api.ts",
+      "tests/unit/dispositions-api.test.ts",
+      "tests/property/dispositions-log.test.ts",
+    ]) {
+      expect(isDeniedPath(p), p).toBe(false);
+      expect(isAllowedPath(p), p).toBe(true);
     }
   });
 
