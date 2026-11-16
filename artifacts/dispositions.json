@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "dsp_220ff9409c78d62b",
+      "decision": "ignore",
+      "scope": "site-rule",
+      "matcher": {
+        "pageUrl": "",
+        "viewport": "",
+        "ruleId": "visual-diff",
+        "cssTarget": ""
+      },
+      "reason": "Baseline Fix",
+      "reviewer": "Sarat Nair",
+      "at": "2026-11-16T02:44:34.923Z",
+      "undoes": null,
+      "source": "admin-gui"
+    }
+  ]
+}
