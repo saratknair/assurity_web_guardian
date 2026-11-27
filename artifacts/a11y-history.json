@@ -27,7 +27,8 @@
     "run_mwsejyixd49646843d29",
     "run_mwu4do6x8b55d6493278",
     "run_mwvfqbpp15932cb45bc5",
-    "run_mwwu9nfv5f1bdbdbe8d8"
+    "run_mwwu9nfv5f1bdbdbe8d8",
+    "run_mwy9wvma091a8e3b2537"
   ],
   "findings": {
     "https://assurity.nz/business-analysis/|desktop|link-name": {
@@ -68,10 +69,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/business-analysis/|desktop|target-size": {
       "fingerprint": "https://assurity.nz/business-analysis/|desktop|target-size",
@@ -111,10 +112,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/business-analysis/|mobile|button-name": {
       "fingerprint": "https://assurity.nz/business-analysis/|mobile|button-name",
@@ -154,10 +155,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/business-analysis/|mobile|link-name": {
       "fingerprint": "https://assurity.nz/business-analysis/|mobile|link-name",
@@ -197,10 +198,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/business-analysis/|mobile|target-size": {
       "fingerprint": "https://assurity.nz/business-analysis/|mobile|target-size",
@@ -240,10 +241,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|link-name": {
       "fingerprint": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|link-name",
@@ -283,10 +284,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|button-name": {
       "fingerprint": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|button-name",
@@ -326,10 +327,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|link-name": {
       "fingerprint": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|link-name",
@@ -369,10 +370,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|link-name": {
       "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|link-name",
@@ -412,10 +413,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|button-name": {
       "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|button-name",
@@ -455,10 +456,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|link-name": {
       "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|link-name",
@@ -498,10 +499,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/careers/|desktop|label": {
       "fingerprint": "https://assurity.nz/careers/|desktop|label",
@@ -541,10 +542,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/careers/|desktop|link-name": {
       "fingerprint": "https://assurity.nz/careers/|desktop|link-name",
@@ -584,10 +585,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/careers/|desktop|select-name": {
       "fingerprint": "https://assurity.nz/careers/|desktop|select-name",
@@ -627,10 +628,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/careers/|mobile|button-name": {
       "fingerprint": "https://assurity.nz/careers/|mobile|button-name",
@@ -670,10 +671,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/careers/|mobile|label": {
       "fingerprint": "https://assurity.nz/careers/|mobile|label",
@@ -713,10 +714,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/careers/|mobile|link-name": {
       "fingerprint": "https://assurity.nz/careers/|mobile|link-name",
@@ -756,10 +757,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/careers/|mobile|select-name": {
       "fingerprint": "https://assurity.nz/careers/|mobile|select-name",
@@ -799,10 +800,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/case-studies/|desktop|link-name": {
       "fingerprint": "https://assurity.nz/case-studies/|desktop|link-name",
@@ -842,10 +843,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/case-studies/|mobile|button-name": {
       "fingerprint": "https://assurity.nz/case-studies/|mobile|button-name",
@@ -885,10 +886,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/case-studies/|mobile|link-name": {
       "fingerprint": "https://assurity.nz/case-studies/|mobile|link-name",
@@ -928,10 +929,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/contact/|desktop|color-contrast": {
       "fingerprint": "https://assurity.nz/contact/|desktop|color-contrast",
@@ -940,8 +941,8 @@
       "viewport": "desktop",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 27,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 28,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
@@ -969,10 +970,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1014,10 +1016,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/contact/|mobile|button-name": {
       "fingerprint": "https://assurity.nz/contact/|mobile|button-name",
@@ -1057,10 +1059,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/contact/|mobile|color-contrast": {
       "fingerprint": "https://assurity.nz/contact/|mobile|color-contrast",
@@ -1069,8 +1071,8 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 27,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 28,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
@@ -1098,10 +1100,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1143,10 +1146,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/engagement-models/|desktop|link-name": {
       "fingerprint": "https://assurity.nz/engagement-models/|desktop|link-name",
@@ -1186,10 +1189,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/engagement-models/|desktop|target-size": {
       "fingerprint": "https://assurity.nz/engagement-models/|desktop|target-size",
@@ -1229,10 +1232,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/engagement-models/|mobile|button-name": {
       "fingerprint": "https://assurity.nz/engagement-models/|mobile|button-name",
@@ -1272,10 +1275,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/engagement-models/|mobile|link-name": {
       "fingerprint": "https://assurity.nz/engagement-models/|mobile|link-name",
@@ -1315,10 +1318,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/engagement-models/|mobile|target-size": {
       "fingerprint": "https://assurity.nz/engagement-models/|mobile|target-size",
@@ -1358,10 +1361,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/performance-testing/|desktop|link-name": {
       "fingerprint": "https://assurity.nz/performance-testing/|desktop|link-name",
@@ -1401,10 +1404,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/performance-testing/|desktop|target-size": {
       "fingerprint": "https://assurity.nz/performance-testing/|desktop|target-size",
@@ -1444,10 +1447,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/performance-testing/|mobile|button-name": {
       "fingerprint": "https://assurity.nz/performance-testing/|mobile|button-name",
@@ -1487,10 +1490,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/performance-testing/|mobile|link-name": {
       "fingerprint": "https://assurity.nz/performance-testing/|mobile|link-name",
@@ -1530,10 +1533,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/performance-testing/|mobile|target-size": {
       "fingerprint": "https://assurity.nz/performance-testing/|mobile|target-size",
@@ -1573,10 +1576,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/software-quality-services/|desktop|link-name": {
       "fingerprint": "https://assurity.nz/software-quality-services/|desktop|link-name",
@@ -1616,10 +1619,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/software-quality-services/|mobile|button-name": {
       "fingerprint": "https://assurity.nz/software-quality-services/|mobile|button-name",
@@ -1659,10 +1662,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/software-quality-services/|mobile|link-name": {
       "fingerprint": "https://assurity.nz/software-quality-services/|mobile|link-name",
@@ -1702,10 +1705,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/|desktop|link-name": {
       "fingerprint": "https://assurity.nz/|desktop|link-name",
@@ -1745,10 +1748,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/|desktop|nested-interactive": {
       "fingerprint": "https://assurity.nz/|desktop|nested-interactive",
@@ -1788,10 +1791,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/|mobile|button-name": {
       "fingerprint": "https://assurity.nz/|mobile|button-name",
@@ -1831,10 +1834,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/|mobile|color-contrast": {
       "fingerprint": "https://assurity.nz/|mobile|color-contrast",
@@ -1843,8 +1846,8 @@
       "viewport": "mobile",
       "impact": "serious",
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 8,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 9,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
@@ -1853,10 +1856,11 @@
         "run_mwinw1qtfa61c69631f7",
         "run_mwjyxwzva97673dd6514",
         "run_mwo6khxm4971384a0a7e",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
-      "state": "new",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "state": "recurring",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1898,10 +1902,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/|mobile|nested-interactive": {
       "fingerprint": "https://assurity.nz/|mobile|nested-interactive",
@@ -1941,10 +1945,10 @@
         "run_mwvfqbpp15932cb45bc5",
         "run_mwwu9nfv5f1bdbdbe8d8"
       ],
-      "state": "recurring",
+      "state": "resolved",
       "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
-      "resolvedRun": null,
-      "resolutionDate": null
+      "resolvedRun": "run_mwy9wvma091a8e3b2537",
+      "resolutionDate": "2026-11-27T01:00:06.597Z"
     },
     "https://assurity.nz/business-analysis/|desktop|visual-diff": {
       "fingerprint": "https://assurity.nz/business-analysis/|desktop|visual-diff",
@@ -1953,8 +1957,8 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 27,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 28,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
@@ -1982,10 +1986,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -1996,8 +2001,8 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 27,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 28,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
@@ -2025,10 +2030,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2039,8 +2045,8 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 27,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 28,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
@@ -2068,10 +2074,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2082,8 +2089,8 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 27,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 28,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
@@ -2111,10 +2118,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2125,8 +2133,8 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T22:29:23.562Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 27,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 28,
       "runsSeen": [
         "run_mw5jpa783ab13fb2feeb",
         "run_mw5kszth9581d6e80fcd",
@@ -2154,10 +2162,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2168,8 +2177,8 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2196,10 +2205,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2210,8 +2220,8 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2238,10 +2248,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2252,8 +2263,8 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2280,10 +2291,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2294,8 +2306,8 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2322,10 +2334,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2336,8 +2349,8 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2364,10 +2377,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2378,8 +2392,8 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2406,10 +2420,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2420,8 +2435,8 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2448,10 +2463,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2462,8 +2478,8 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2490,10 +2506,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2504,8 +2521,8 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2532,10 +2549,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2546,8 +2564,8 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2574,10 +2592,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2588,8 +2607,8 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2616,10 +2635,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2630,8 +2650,8 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2658,10 +2678,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2672,8 +2693,8 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2700,10 +2721,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2714,8 +2736,8 @@
       "viewport": "desktop",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2742,10 +2764,11 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     },
@@ -2756,8 +2779,8 @@
       "viewport": "mobile",
       "impact": null,
       "firstSeen": "2026-11-06T23:00:17.529Z",
-      "lastSeen": "2026-11-26T00:54:52.457Z",
-      "occurrenceCount": 26,
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 27,
       "runsSeen": [
         "run_mw5kszth9581d6e80fcd",
         "run_mw6vgpahe99614b4412a",
@@ -2784,10 +2807,980 @@
         "run_mwsejyixd49646843d29",
         "run_mwu4do6x8b55d6493278",
         "run_mwvfqbpp15932cb45bc5",
-        "run_mwwu9nfv5f1bdbdbe8d8"
+        "run_mwwu9nfv5f1bdbdbe8d8",
+        "run_mwy9wvma091a8e3b2537"
       ],
       "state": "recurring",
-      "lastSeenRun": "run_mwwu9nfv5f1bdbdbe8d8",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/business-analysis/|desktop|color-contrast": {
+      "fingerprint": "https://assurity.nz/business-analysis/|desktop|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/business-analysis/|mobile|color-contrast": {
+      "fingerprint": "https://assurity.nz/business-analysis/|mobile|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|color-contrast": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|color-contrast": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|color-contrast": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|color-contrast": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|desktop|color-contrast": {
+      "fingerprint": "https://assurity.nz/careers/|desktop|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|mobile|color-contrast": {
+      "fingerprint": "https://assurity.nz/careers/|mobile|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/case-studies/|desktop|color-contrast": {
+      "fingerprint": "https://assurity.nz/case-studies/|desktop|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/case-studies/|mobile|color-contrast": {
+      "fingerprint": "https://assurity.nz/case-studies/|mobile|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/engagement-models/|desktop|color-contrast": {
+      "fingerprint": "https://assurity.nz/engagement-models/|desktop|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/engagement-models/|mobile|color-contrast": {
+      "fingerprint": "https://assurity.nz/engagement-models/|mobile|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/performance-testing/|desktop|color-contrast": {
+      "fingerprint": "https://assurity.nz/performance-testing/|desktop|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/performance-testing/|mobile|color-contrast": {
+      "fingerprint": "https://assurity.nz/performance-testing/|mobile|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/software-quality-services/|desktop|color-contrast": {
+      "fingerprint": "https://assurity.nz/software-quality-services/|desktop|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/software-quality-services/|mobile|color-contrast": {
+      "fingerprint": "https://assurity.nz/software-quality-services/|mobile|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "mobile",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/|desktop|color-contrast": {
+      "fingerprint": "https://assurity.nz/|desktop|color-contrast",
+      "ruleId": "color-contrast",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "desktop",
+      "impact": "serious",
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/|desktop|check:http": {
+      "fingerprint": "https://assurity.nz/|desktop|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/|desktop|check:nav": {
+      "fingerprint": "https://assurity.nz/|desktop|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/|mobile|check:http": {
+      "fingerprint": "https://assurity.nz/|mobile|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/|mobile|check:nav": {
+      "fingerprint": "https://assurity.nz/|mobile|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/software-quality-services/|desktop|check:http": {
+      "fingerprint": "https://assurity.nz/software-quality-services/|desktop|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/software-quality-services/|desktop|check:nav": {
+      "fingerprint": "https://assurity.nz/software-quality-services/|desktop|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/software-quality-services/|mobile|check:http": {
+      "fingerprint": "https://assurity.nz/software-quality-services/|mobile|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/software-quality-services/|mobile|check:nav": {
+      "fingerprint": "https://assurity.nz/software-quality-services/|mobile|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/performance-testing/|desktop|check:http": {
+      "fingerprint": "https://assurity.nz/performance-testing/|desktop|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/performance-testing/|desktop|check:nav": {
+      "fingerprint": "https://assurity.nz/performance-testing/|desktop|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/performance-testing/|mobile|check:http": {
+      "fingerprint": "https://assurity.nz/performance-testing/|mobile|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/performance-testing/|mobile|check:nav": {
+      "fingerprint": "https://assurity.nz/performance-testing/|mobile|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/business-analysis/|desktop|check:http": {
+      "fingerprint": "https://assurity.nz/business-analysis/|desktop|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/business-analysis/|desktop|check:nav": {
+      "fingerprint": "https://assurity.nz/business-analysis/|desktop|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/business-analysis/|mobile|check:http": {
+      "fingerprint": "https://assurity.nz/business-analysis/|mobile|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/business-analysis/|mobile|check:nav": {
+      "fingerprint": "https://assurity.nz/business-analysis/|mobile|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/case-studies/|desktop|check:http": {
+      "fingerprint": "https://assurity.nz/case-studies/|desktop|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/case-studies/|desktop|check:nav": {
+      "fingerprint": "https://assurity.nz/case-studies/|desktop|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/case-studies/|mobile|check:http": {
+      "fingerprint": "https://assurity.nz/case-studies/|mobile|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/case-studies/|mobile|check:nav": {
+      "fingerprint": "https://assurity.nz/case-studies/|mobile|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|desktop|check:http": {
+      "fingerprint": "https://assurity.nz/careers/|desktop|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|desktop|check:nav": {
+      "fingerprint": "https://assurity.nz/careers/|desktop|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|mobile|check:http": {
+      "fingerprint": "https://assurity.nz/careers/|mobile|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/careers/|mobile|check:nav": {
+      "fingerprint": "https://assurity.nz/careers/|mobile|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/contact/|desktop|check:http": {
+      "fingerprint": "https://assurity.nz/contact/|desktop|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/contact/|desktop|check:nav": {
+      "fingerprint": "https://assurity.nz/contact/|desktop|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/contact/|mobile|check:http": {
+      "fingerprint": "https://assurity.nz/contact/|mobile|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/contact/|mobile|check:nav": {
+      "fingerprint": "https://assurity.nz/contact/|mobile|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/engagement-models/|desktop|check:http": {
+      "fingerprint": "https://assurity.nz/engagement-models/|desktop|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/engagement-models/|desktop|check:nav": {
+      "fingerprint": "https://assurity.nz/engagement-models/|desktop|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/engagement-models/|mobile|check:http": {
+      "fingerprint": "https://assurity.nz/engagement-models/|mobile|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/engagement-models/|mobile|check:nav": {
+      "fingerprint": "https://assurity.nz/engagement-models/|mobile|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|check:http": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|check:nav": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|check:http": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|check:nav": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|check:http": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|check:nav": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "desktop",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|check:http": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|check:http",
+      "ruleId": "check:http",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
+      "resolvedRun": null,
+      "resolutionDate": null
+    },
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|check:nav": {
+      "fingerprint": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|check:nav",
+      "ruleId": "check:nav",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "mobile",
+      "impact": null,
+      "firstSeen": "2026-11-27T01:00:06.597Z",
+      "lastSeen": "2026-11-27T01:00:06.597Z",
+      "occurrenceCount": 1,
+      "runsSeen": [
+        "run_mwy9wvma091a8e3b2537"
+      ],
+      "state": "new",
+      "lastSeenRun": "run_mwy9wvma091a8e3b2537",
       "resolvedRun": null,
       "resolutionDate": null
     }
