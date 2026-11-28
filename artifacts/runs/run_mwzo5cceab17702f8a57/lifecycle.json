@@ -1,0 +1,473 @@
+{
+  "schemaVersion": 2,
+  "runId": "run_mwzo5cceab17702f8a57",
+  "historyStatus": "restored",
+  "states": {
+    "https://assurity.nz/business-analysis/|desktop|link-name": "new",
+    "https://assurity.nz/business-analysis/|desktop|target-size": "new",
+    "https://assurity.nz/business-analysis/|desktop|visual-diff": "recurring",
+    "https://assurity.nz/business-analysis/|mobile|button-name": "new",
+    "https://assurity.nz/business-analysis/|mobile|link-name": "new",
+    "https://assurity.nz/business-analysis/|mobile|target-size": "new",
+    "https://assurity.nz/business-analysis/|mobile|visual-diff": "recurring",
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|link-name": "new",
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|visual-diff": "recurring",
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|button-name": "new",
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|link-name": "new",
+    "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|visual-diff": "recurring",
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|link-name": "new",
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|visual-diff": "recurring",
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|button-name": "new",
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|link-name": "new",
+    "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|visual-diff": "recurring",
+    "https://assurity.nz/careers/|desktop|label": "new",
+    "https://assurity.nz/careers/|desktop|link-name": "new",
+    "https://assurity.nz/careers/|desktop|select-name": "new",
+    "https://assurity.nz/careers/|desktop|visual-diff": "recurring",
+    "https://assurity.nz/careers/|mobile|button-name": "new",
+    "https://assurity.nz/careers/|mobile|label": "new",
+    "https://assurity.nz/careers/|mobile|link-name": "new",
+    "https://assurity.nz/careers/|mobile|select-name": "new",
+    "https://assurity.nz/careers/|mobile|visual-diff": "recurring",
+    "https://assurity.nz/case-studies/|desktop|link-name": "new",
+    "https://assurity.nz/case-studies/|desktop|visual-diff": "recurring",
+    "https://assurity.nz/case-studies/|mobile|button-name": "new",
+    "https://assurity.nz/case-studies/|mobile|link-name": "new",
+    "https://assurity.nz/case-studies/|mobile|visual-diff": "recurring",
+    "https://assurity.nz/contact/|desktop|color-contrast": "recurring",
+    "https://assurity.nz/contact/|desktop|link-name": "new",
+    "https://assurity.nz/contact/|desktop|visual-diff": "recurring",
+    "https://assurity.nz/contact/|mobile|button-name": "new",
+    "https://assurity.nz/contact/|mobile|color-contrast": "recurring",
+    "https://assurity.nz/contact/|mobile|link-name": "new",
+    "https://assurity.nz/contact/|mobile|visual-diff": "recurring",
+    "https://assurity.nz/engagement-models/|desktop|link-name": "new",
+    "https://assurity.nz/engagement-models/|desktop|target-size": "new",
+    "https://assurity.nz/engagement-models/|desktop|visual-diff": "recurring",
+    "https://assurity.nz/engagement-models/|mobile|button-name": "new",
+    "https://assurity.nz/engagement-models/|mobile|link-name": "new",
+    "https://assurity.nz/engagement-models/|mobile|target-size": "new",
+    "https://assurity.nz/engagement-models/|mobile|visual-diff": "recurring",
+    "https://assurity.nz/performance-testing/|desktop|link-name": "new",
+    "https://assurity.nz/performance-testing/|desktop|target-size": "new",
+    "https://assurity.nz/performance-testing/|desktop|visual-diff": "recurring",
+    "https://assurity.nz/performance-testing/|mobile|button-name": "new",
+    "https://assurity.nz/performance-testing/|mobile|link-name": "new",
+    "https://assurity.nz/performance-testing/|mobile|target-size": "new",
+    "https://assurity.nz/performance-testing/|mobile|visual-diff": "recurring",
+    "https://assurity.nz/software-quality-services/|desktop|link-name": "new",
+    "https://assurity.nz/software-quality-services/|desktop|visual-diff": "recurring",
+    "https://assurity.nz/software-quality-services/|mobile|button-name": "new",
+    "https://assurity.nz/software-quality-services/|mobile|link-name": "new",
+    "https://assurity.nz/software-quality-services/|mobile|visual-diff": "recurring",
+    "https://assurity.nz/|desktop|link-name": "new",
+    "https://assurity.nz/|desktop|nested-interactive": "new",
+    "https://assurity.nz/|desktop|visual-diff": "recurring",
+    "https://assurity.nz/|mobile|button-name": "new",
+    "https://assurity.nz/|mobile|color-contrast": "recurring",
+    "https://assurity.nz/|mobile|link-name": "new",
+    "https://assurity.nz/|mobile|nested-interactive": "new",
+    "https://assurity.nz/|mobile|visual-diff": "recurring"
+  },
+  "resolved": [
+    {
+      "key": "https://assurity.nz/business-analysis/|desktop|check:http",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "desktop",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/business-analysis/|desktop|check:nav",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "desktop",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/business-analysis/|desktop|color-contrast",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "desktop",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/business-analysis/|mobile|check:http",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "mobile",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/business-analysis/|mobile|check:nav",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "mobile",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/business-analysis/|mobile|color-contrast",
+      "pageUrl": "https://assurity.nz/business-analysis/",
+      "viewport": "mobile",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|check:http",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "desktop",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|check:nav",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "desktop",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|desktop|color-contrast",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "desktop",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|check:http",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "mobile",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|check:nav",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "mobile",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/|mobile|color-contrast",
+      "pageUrl": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "viewport": "mobile",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|check:http",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "desktop",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|check:nav",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "desktop",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|desktop|color-contrast",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "desktop",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|check:http",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "mobile",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|check:nav",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "mobile",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/|mobile|color-contrast",
+      "pageUrl": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "viewport": "mobile",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/careers/|desktop|check:http",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "desktop",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/careers/|desktop|check:nav",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "desktop",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/careers/|desktop|color-contrast",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "desktop",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/careers/|mobile|check:http",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "mobile",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/careers/|mobile|check:nav",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "mobile",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/careers/|mobile|color-contrast",
+      "pageUrl": "https://assurity.nz/careers/",
+      "viewport": "mobile",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/case-studies/|desktop|check:http",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "desktop",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/case-studies/|desktop|check:nav",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "desktop",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/case-studies/|desktop|color-contrast",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "desktop",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/case-studies/|mobile|check:http",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "mobile",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/case-studies/|mobile|check:nav",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "mobile",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/case-studies/|mobile|color-contrast",
+      "pageUrl": "https://assurity.nz/case-studies/",
+      "viewport": "mobile",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/contact/|desktop|check:http",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "desktop",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/contact/|desktop|check:nav",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "desktop",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/contact/|mobile|check:http",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "mobile",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/contact/|mobile|check:nav",
+      "pageUrl": "https://assurity.nz/contact/",
+      "viewport": "mobile",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/engagement-models/|desktop|check:http",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "desktop",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/engagement-models/|desktop|check:nav",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "desktop",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/engagement-models/|desktop|color-contrast",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "desktop",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/engagement-models/|mobile|check:http",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "mobile",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/engagement-models/|mobile|check:nav",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "mobile",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/engagement-models/|mobile|color-contrast",
+      "pageUrl": "https://assurity.nz/engagement-models/",
+      "viewport": "mobile",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/performance-testing/|desktop|check:http",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "desktop",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/performance-testing/|desktop|check:nav",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "desktop",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/performance-testing/|desktop|color-contrast",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "desktop",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/performance-testing/|mobile|check:http",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "mobile",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/performance-testing/|mobile|check:nav",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "mobile",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/performance-testing/|mobile|color-contrast",
+      "pageUrl": "https://assurity.nz/performance-testing/",
+      "viewport": "mobile",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/software-quality-services/|desktop|check:http",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "desktop",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/software-quality-services/|desktop|check:nav",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "desktop",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/software-quality-services/|desktop|color-contrast",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "desktop",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/software-quality-services/|mobile|check:http",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "mobile",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/software-quality-services/|mobile|check:nav",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "mobile",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/software-quality-services/|mobile|color-contrast",
+      "pageUrl": "https://assurity.nz/software-quality-services/",
+      "viewport": "mobile",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/|desktop|check:http",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "desktop",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/|desktop|check:nav",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "desktop",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/|desktop|color-contrast",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "desktop",
+      "ruleId": "color-contrast",
+      "severity": "serious"
+    },
+    {
+      "key": "https://assurity.nz/|mobile|check:http",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "mobile",
+      "ruleId": "check:http",
+      "severity": "unrated"
+    },
+    {
+      "key": "https://assurity.nz/|mobile|check:nav",
+      "pageUrl": "https://assurity.nz/",
+      "viewport": "mobile",
+      "ruleId": "check:nav",
+      "severity": "unrated"
+    }
+  ]
+}

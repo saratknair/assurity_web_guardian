@@ -1,0 +1,857 @@
+{
+  "runId": "run_mwzo5cceab17702f8a57",
+  "correlationId": "cor_mwzo5cce1a823f6fb76f",
+  "awaitingReview": true,
+  "pages": [
+    {
+      "page": "https://assurity.nz/",
+      "slug": "assurity-nz",
+      "outcomes": [
+        {
+          "findingId": "fnd_mwzo5lxade965a4e476a",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "desktop:a11y-critical-serious: link-name, nested-interactive",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo5lxb71c661cb484b",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "mobile:a11y-critical-serious: button-name, color-contrast, link-name, nested-interactive",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo5lxb8c64fef798a3",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).",
+          "requiresHumanReview": true
+        }
+      ],
+      "aiItems": [
+        {
+          "findingId": "fnd_mwzo5lxbd5af6f859178",
+          "relatedFindingId": "fnd_mwzo5lxade965a4e476a",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"desktop:a11y-critical-serious: link-name, nested-interactive\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo5lxb89e4c2d48b31",
+          "relatedFindingId": "fnd_mwzo5lxb71c661cb484b",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"mobile:a11y-critical-serious: button-name, color-contrast, link-name, nested-interactive\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo5lxb30ac4e6a7352",
+          "relatedFindingId": "fnd_mwzo5lxb8c64fef798a3",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo5lxb97ef6c49df96",
+          "relatedFindingId": "fnd_mwzo5lxade965a4e476a",
+          "classification": "agent-recommendation",
+          "agent": "Triage_Agent",
+          "label": "Agent recommendation (not a deterministic fact)",
+          "text": "Recommend prioritising 3 failing check(s) for human review before the 0 observed change(s).",
+          "confidence": 0.55
+        }
+      ],
+      "visual": {
+        "desktop": {
+          "differs": true,
+          "diffPixels": 46707,
+          "totalPixels": 15788160,
+          "diffRatio": 0.002958356135230451,
+          "dimensionsChanged": false,
+          "baselineHash": "5aac138c825f357b",
+          "note": "Visual difference detected (46707 px, 0.296%). Requires human review; run is NOT auto-failed on pixel percentage."
+        },
+        "mobile": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "611f39bd3e97987c",
+          "note": "Dimensions changed: baseline 390x11175 vs current 390x11266."
+        }
+      }
+    },
+    {
+      "page": "https://assurity.nz/software-quality-services/",
+      "slug": "assurity-nz-software-quality-services",
+      "outcomes": [
+        {
+          "findingId": "fnd_mwzo5su25703ffb4ea7e",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "desktop:a11y-critical-serious: link-name",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo5su21f4d9a34cdef",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "mobile:a11y-critical-serious: button-name, link-name",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo5su2243589991b35",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).",
+          "requiresHumanReview": true
+        }
+      ],
+      "aiItems": [
+        {
+          "findingId": "fnd_mwzo5su3d635e57f3f4b",
+          "relatedFindingId": "fnd_mwzo5su25703ffb4ea7e",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"desktop:a11y-critical-serious: link-name\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo5su3befc832001d5",
+          "relatedFindingId": "fnd_mwzo5su21f4d9a34cdef",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"mobile:a11y-critical-serious: button-name, link-name\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo5su310629c66b3d0",
+          "relatedFindingId": "fnd_mwzo5su2243589991b35",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo5su38969041e2f0a",
+          "relatedFindingId": "fnd_mwzo5su25703ffb4ea7e",
+          "classification": "agent-recommendation",
+          "agent": "Triage_Agent",
+          "label": "Agent recommendation (not a deterministic fact)",
+          "text": "Recommend prioritising 3 failing check(s) for human review before the 0 observed change(s).",
+          "confidence": 0.55
+        }
+      ],
+      "visual": {
+        "desktop": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "6e4f9ce730fcdde6",
+          "note": "Dimensions changed: baseline 1440x10814 vs current 1440x10846."
+        },
+        "mobile": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "0fdfeb7375ea9961",
+          "note": "Dimensions changed: baseline 390x17637 vs current 390x17899."
+        }
+      }
+    },
+    {
+      "page": "https://assurity.nz/performance-testing/",
+      "slug": "assurity-nz-performance-testing",
+      "outcomes": [
+        {
+          "findingId": "fnd_mwzo60cj6b6c16862369",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "desktop:a11y-critical-serious: link-name, target-size",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo60cjb2386f9d2953",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "mobile:a11y-critical-serious: button-name, link-name, target-size",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo60cj9126b6b77a77",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).",
+          "requiresHumanReview": true
+        }
+      ],
+      "aiItems": [
+        {
+          "findingId": "fnd_mwzo60ck45d4d80b4d4d",
+          "relatedFindingId": "fnd_mwzo60cj6b6c16862369",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"desktop:a11y-critical-serious: link-name, target-size\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo60ck51b517d9d6b3",
+          "relatedFindingId": "fnd_mwzo60cjb2386f9d2953",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"mobile:a11y-critical-serious: button-name, link-name, target-size\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo60ck40fead0520ac",
+          "relatedFindingId": "fnd_mwzo60cj9126b6b77a77",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo60ck40ef96ad0458",
+          "relatedFindingId": "fnd_mwzo60cj6b6c16862369",
+          "classification": "agent-recommendation",
+          "agent": "Triage_Agent",
+          "label": "Agent recommendation (not a deterministic fact)",
+          "text": "Recommend prioritising 3 failing check(s) for human review before the 0 observed change(s).",
+          "confidence": 0.55
+        }
+      ],
+      "visual": {
+        "desktop": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "3451cdf85a00ad56",
+          "note": "Dimensions changed: baseline 1440x12784 vs current 1440x12880."
+        },
+        "mobile": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "3fa8a00e603335d3",
+          "note": "Dimensions changed: baseline 390x17723 vs current 390x18020."
+        }
+      }
+    },
+    {
+      "page": "https://assurity.nz/business-analysis/",
+      "slug": "assurity-nz-business-analysis",
+      "outcomes": [
+        {
+          "findingId": "fnd_mwzo685p7a455bc2ef6b",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "desktop:a11y-critical-serious: link-name, target-size",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo685p84a72f78e098",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "mobile:a11y-critical-serious: button-name, link-name, target-size",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo685p6c7d71d813f0",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).",
+          "requiresHumanReview": true
+        }
+      ],
+      "aiItems": [
+        {
+          "findingId": "fnd_mwzo685q75837078517b",
+          "relatedFindingId": "fnd_mwzo685p7a455bc2ef6b",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"desktop:a11y-critical-serious: link-name, target-size\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo685q55a2a522f05c",
+          "relatedFindingId": "fnd_mwzo685p84a72f78e098",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"mobile:a11y-critical-serious: button-name, link-name, target-size\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo685qfdadddfe6ac3",
+          "relatedFindingId": "fnd_mwzo685p6c7d71d813f0",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo685q413f3db2a96f",
+          "relatedFindingId": "fnd_mwzo685p7a455bc2ef6b",
+          "classification": "agent-recommendation",
+          "agent": "Triage_Agent",
+          "label": "Agent recommendation (not a deterministic fact)",
+          "text": "Recommend prioritising 3 failing check(s) for human review before the 0 observed change(s).",
+          "confidence": 0.55
+        }
+      ],
+      "visual": {
+        "desktop": {
+          "differs": true,
+          "diffPixels": 300710,
+          "totalPixels": 15655680,
+          "diffRatio": 0.019207725247322376,
+          "dimensionsChanged": false,
+          "baselineHash": "37661d70ad5477ae",
+          "note": "Visual difference detected (300710 px, 1.921%). Requires human review; run is NOT auto-failed on pixel percentage."
+        },
+        "mobile": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "943a310263995c04",
+          "note": "Dimensions changed: baseline 390x15592 vs current 390x15666."
+        }
+      }
+    },
+    {
+      "page": "https://assurity.nz/case-studies/",
+      "slug": "assurity-nz-case-studies",
+      "outcomes": [
+        {
+          "findingId": "fnd_mwzo6eog740393b25dc6",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "desktop:a11y-critical-serious: link-name",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo6eoga871480efe66",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "mobile:a11y-critical-serious: button-name, link-name",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo6eog9c0182cc8328",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).",
+          "requiresHumanReview": true
+        }
+      ],
+      "aiItems": [
+        {
+          "findingId": "fnd_mwzo6eoga478d1931566",
+          "relatedFindingId": "fnd_mwzo6eog740393b25dc6",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"desktop:a11y-critical-serious: link-name\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo6eogfe84e0c15f69",
+          "relatedFindingId": "fnd_mwzo6eoga871480efe66",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"mobile:a11y-critical-serious: button-name, link-name\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo6eoga55c51d0f1e3",
+          "relatedFindingId": "fnd_mwzo6eog9c0182cc8328",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo6eogb28c03e1d9fa",
+          "relatedFindingId": "fnd_mwzo6eog740393b25dc6",
+          "classification": "agent-recommendation",
+          "agent": "Triage_Agent",
+          "label": "Agent recommendation (not a deterministic fact)",
+          "text": "Recommend prioritising 3 failing check(s) for human review before the 0 observed change(s).",
+          "confidence": 0.55
+        }
+      ],
+      "visual": {
+        "desktop": {
+          "differs": true,
+          "diffPixels": 2263480,
+          "totalPixels": 8123040,
+          "diffRatio": 0.2786493726486636,
+          "dimensionsChanged": false,
+          "baselineHash": "a321b8b9d69f5b25",
+          "note": "Visual difference detected (2263480 px, 27.865%). Requires human review; run is NOT auto-failed on pixel percentage."
+        },
+        "mobile": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "db8a67649351e499",
+          "note": "Dimensions changed: baseline 390x6986 vs current 390x7010."
+        }
+      }
+    },
+    {
+      "page": "https://assurity.nz/careers/",
+      "slug": "assurity-nz-careers",
+      "outcomes": [
+        {
+          "findingId": "fnd_mwzo6mjfefaec48eda9b",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "desktop:a11y-critical-serious: label, link-name, select-name",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo6mjf760bbec238ea",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "mobile:a11y-critical-serious: button-name, label, link-name, select-name",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo6mjf158a37b22c72",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).",
+          "requiresHumanReview": true
+        }
+      ],
+      "aiItems": [
+        {
+          "findingId": "fnd_mwzo6mjgc6bb79fc407e",
+          "relatedFindingId": "fnd_mwzo6mjfefaec48eda9b",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"desktop:a11y-critical-serious: label, link-name, select-name\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo6mjg48143f2c047e",
+          "relatedFindingId": "fnd_mwzo6mjf760bbec238ea",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"mobile:a11y-critical-serious: button-name, label, link-name, select-name\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo6mjg0b55efcab3b2",
+          "relatedFindingId": "fnd_mwzo6mjf158a37b22c72",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo6mjg7a1eded8564f",
+          "relatedFindingId": "fnd_mwzo6mjfefaec48eda9b",
+          "classification": "agent-recommendation",
+          "agent": "Triage_Agent",
+          "label": "Agent recommendation (not a deterministic fact)",
+          "text": "Recommend prioritising 3 failing check(s) for human review before the 0 observed change(s).",
+          "confidence": 0.55
+        }
+      ],
+      "visual": {
+        "desktop": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "56c82f5a50c12ee1",
+          "note": "Dimensions changed: baseline 1440x10307 vs current 1440x11002."
+        },
+        "mobile": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "728ed7391a1cb828",
+          "note": "Dimensions changed: baseline 390x13210 vs current 390x14156."
+        }
+      }
+    },
+    {
+      "page": "https://assurity.nz/contact/",
+      "slug": "assurity-nz-contact",
+      "outcomes": [
+        {
+          "findingId": "fnd_mwzo6t55de4381fbb5dd",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "desktop:a11y-critical-serious: color-contrast, link-name",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo6t55694f71fad9a7",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "mobile:a11y-critical-serious: button-name, color-contrast, link-name",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo6t55b0001ad36702",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).",
+          "requiresHumanReview": true
+        }
+      ],
+      "aiItems": [
+        {
+          "findingId": "fnd_mwzo6t55defcf3a3fb53",
+          "relatedFindingId": "fnd_mwzo6t55de4381fbb5dd",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"desktop:a11y-critical-serious: color-contrast, link-name\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo6t55d4c35c8d0292",
+          "relatedFindingId": "fnd_mwzo6t55694f71fad9a7",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"mobile:a11y-critical-serious: button-name, color-contrast, link-name\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo6t557e5c2c1ca779",
+          "relatedFindingId": "fnd_mwzo6t55b0001ad36702",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo6t55a3128bb4fe76",
+          "relatedFindingId": "fnd_mwzo6t55de4381fbb5dd",
+          "classification": "agent-recommendation",
+          "agent": "Triage_Agent",
+          "label": "Agent recommendation (not a deterministic fact)",
+          "text": "Recommend prioritising 3 failing check(s) for human review before the 0 observed change(s).",
+          "confidence": 0.55
+        }
+      ],
+      "visual": {
+        "desktop": {
+          "differs": true,
+          "diffPixels": 130137,
+          "totalPixels": 6988320,
+          "diffRatio": 0.018622072257710006,
+          "dimensionsChanged": false,
+          "baselineHash": "9b779617b13d8b34",
+          "note": "Visual difference detected (130137 px, 1.862%). Requires human review; run is NOT auto-failed on pixel percentage."
+        },
+        "mobile": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "d9fab0d9130e56a6",
+          "note": "Dimensions changed: baseline 390x7998 vs current 390x7686."
+        }
+      }
+    },
+    {
+      "page": "https://assurity.nz/engagement-models/",
+      "slug": "assurity-nz-engagement-models",
+      "outcomes": [
+        {
+          "findingId": "fnd_mwzo70jfa049cb53bf3a",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "desktop:a11y-critical-serious: link-name, target-size",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo70jf14120bb7a98e",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "mobile:a11y-critical-serious: button-name, link-name, target-size",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo70jfc91c931fae4e",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).",
+          "requiresHumanReview": true
+        }
+      ],
+      "aiItems": [
+        {
+          "findingId": "fnd_mwzo70jfb2890ba7295e",
+          "relatedFindingId": "fnd_mwzo70jfa049cb53bf3a",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"desktop:a11y-critical-serious: link-name, target-size\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo70jfdbcf0901a8da",
+          "relatedFindingId": "fnd_mwzo70jf14120bb7a98e",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"mobile:a11y-critical-serious: button-name, link-name, target-size\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo70jf5c1d6317c2a3",
+          "relatedFindingId": "fnd_mwzo70jfc91c931fae4e",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo70jf49906b8d2d5c",
+          "relatedFindingId": "fnd_mwzo70jfa049cb53bf3a",
+          "classification": "agent-recommendation",
+          "agent": "Triage_Agent",
+          "label": "Agent recommendation (not a deterministic fact)",
+          "text": "Recommend prioritising 3 failing check(s) for human review before the 0 observed change(s).",
+          "confidence": 0.55
+        }
+      ],
+      "visual": {
+        "desktop": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "6d312f0c20e7484f",
+          "note": "Dimensions changed: baseline 1440x15574 vs current 1440x15608."
+        },
+        "mobile": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "4c1d96321d93e1c9",
+          "note": "Dimensions changed: baseline 390x19239 vs current 390x19580."
+        }
+      }
+    },
+    {
+      "page": "https://assurity.nz/capability/software-quality-services/test-automation-engineering/",
+      "slug": "assurity-nz-capability-software-quality-services-test-automation-engineering",
+      "outcomes": [
+        {
+          "findingId": "fnd_mwzo77u79f8780b95320",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "desktop:a11y-critical-serious: link-name",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo77u7d32b32579a47",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "mobile:a11y-critical-serious: button-name, link-name",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo77u78b177b726a43",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).",
+          "requiresHumanReview": true
+        }
+      ],
+      "aiItems": [
+        {
+          "findingId": "fnd_mwzo77u8d430dcb50532",
+          "relatedFindingId": "fnd_mwzo77u79f8780b95320",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"desktop:a11y-critical-serious: link-name\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo77u8d5923704f318",
+          "relatedFindingId": "fnd_mwzo77u7d32b32579a47",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"mobile:a11y-critical-serious: button-name, link-name\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo77u8a2978cd2f50e",
+          "relatedFindingId": "fnd_mwzo77u78b177b726a43",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo77u80128f7d019ca",
+          "relatedFindingId": "fnd_mwzo77u79f8780b95320",
+          "classification": "agent-recommendation",
+          "agent": "Triage_Agent",
+          "label": "Agent recommendation (not a deterministic fact)",
+          "text": "Recommend prioritising 3 failing check(s) for human review before the 0 observed change(s).",
+          "confidence": 0.55
+        }
+      ],
+      "visual": {
+        "desktop": {
+          "differs": true,
+          "diffPixels": 271473,
+          "totalPixels": 14964480,
+          "diffRatio": 0.01814115826276623,
+          "dimensionsChanged": false,
+          "baselineHash": "b038be83e0c8903b",
+          "note": "Visual difference detected (271473 px, 1.814%). Requires human review; run is NOT auto-failed on pixel percentage."
+        },
+        "mobile": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "2177c13ef036952f",
+          "note": "Dimensions changed: baseline 390x14511 vs current 390x14637."
+        }
+      }
+    },
+    {
+      "page": "https://assurity.nz/capability/software-quality-accelerators/exmonitoring/",
+      "slug": "assurity-nz-capability-software-quality-accelerators-exmonitoring",
+      "outcomes": [
+        {
+          "findingId": "fnd_mwzo7ez1a32815f9b417",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "desktop:a11y-critical-serious: link-name",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo7ez121d3192bc5a7",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "mobile:a11y-critical-serious: button-name, link-name",
+          "requiresHumanReview": true
+        },
+        {
+          "findingId": "fnd_mwzo7ez15d74662d2b4c",
+          "kind": "failed-check",
+          "classification": "deterministic-test-evidence",
+          "detail": "Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).",
+          "requiresHumanReview": true
+        }
+      ],
+      "aiItems": [
+        {
+          "findingId": "fnd_mwzo7ez2dd45c0b00024",
+          "relatedFindingId": "fnd_mwzo7ez1a32815f9b417",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"desktop:a11y-critical-serious: link-name\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo7ez2e95e86386df0",
+          "relatedFindingId": "fnd_mwzo7ez121d3192bc5a7",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"mobile:a11y-critical-serious: button-name, link-name\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo7ez247a0d5443d26",
+          "relatedFindingId": "fnd_mwzo7ez15d74662d2b4c",
+          "classification": "ai-generated-analysis",
+          "agent": "Quality_Analysis_Agent",
+          "label": "Template text (not a deterministic fact)",
+          "text": "Likely impact: a failing deterministic check (\"Screenshot difference with a violated deterministic rule (visual finding suppressed; evidence attached).\") may affect users; recommend human review.",
+          "confidence": 0.6
+        },
+        {
+          "findingId": "fnd_mwzo7ez2c18c51260efa",
+          "relatedFindingId": "fnd_mwzo7ez1a32815f9b417",
+          "classification": "agent-recommendation",
+          "agent": "Triage_Agent",
+          "label": "Agent recommendation (not a deterministic fact)",
+          "text": "Recommend prioritising 3 failing check(s) for human review before the 0 observed change(s).",
+          "confidence": 0.55
+        }
+      ],
+      "visual": {
+        "desktop": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "c6c47d1bec4e8cb7",
+          "note": "Dimensions changed: baseline 1440x9180 vs current 1440x9212."
+        },
+        "mobile": {
+          "differs": true,
+          "diffPixels": 0,
+          "totalPixels": 0,
+          "diffRatio": 0,
+          "dimensionsChanged": true,
+          "baselineHash": "dd82f8275934a7ad",
+          "note": "Dimensions changed: baseline 390x12703 vs current 390x12819."
+        }
+      }
+    }
+  ]
+}
